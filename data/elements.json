@@ -8,7 +8,7 @@
     "category": "nonmetal",
     "group": 1,
     "period": 1,
-    "el_configuration": "1S²"
+    "el_configuration": "1s¹"
   },
   "He": {
     "number": 2,
@@ -19,7 +19,7 @@
     "category": "noble-gas",
     "group": 18,
     "period": 1,
-    "el_configuration": "1S³"
+    "el_configuration": "1s²"
   },
   "Li": {
     "number": 3,
@@ -30,7 +30,7 @@
     "category": "alkali-metal",
     "group": 1,
     "period": 2,
-    "el_configuration": "[He]2S¹"
+    "el_configuration": "[He] 2s¹"
   },
   "Be": {
     "number": 4,
@@ -41,7 +41,7 @@
     "category": "alkaline-earth",
     "group": 2,
     "period": 2,
-    "el_configuration": "2s²"
+    "el_configuration": "[He] 2s²"
   },
   "B": {
     "number": 5,
@@ -52,7 +52,7 @@
     "category": "metalloid",
     "group": 13,
     "period": 2,
-    "el_configuration": "2S¹2P¹"
+    "el_configuration": "[He] 2s² 2p¹"
   },
   "C": {
     "number": 6,
@@ -63,7 +63,7 @@
     "category": "nonmetal",
     "group": 14,
     "period": 2,
-    "el_configuration": "2S²2P²"
+    "el_configuration": "[He] 2s² 2p²²"
   },
   "N": {
     "number": 7,
@@ -74,7 +74,7 @@
     "category": "nonmetal",
     "group": 15,
     "period": 2,
-    "el_configuration": "2S²2P³"
+    "el_configuration": "[He] 2s² 2p³"
   },
   "O": {
     "number": 8,
@@ -85,7 +85,7 @@
     "category": "nonmetal",
     "group": 16,
     "period": 2,
-    "el_configuration": "2S²2P⁴"
+    "el_configuration": "[He] 2s² 2p⁴"
   },
   "F": {
     "number": 9,
@@ -96,7 +96,7 @@
     "category": "halogen",
     "group": 17,
     "period": 2,
-    "el_configuration": "2S²2P⁵"
+    "el_configuration": "[He] 2s² 2p⁵"
   },
   "Ne": {
     "number": 10,
@@ -107,7 +107,7 @@
     "category": "noble-gas",
     "group": 18,
     "period": 2,
-    "el_configuration": "2S²2P⁶"
+    "el_configuration": "[He] 2s² 2p⁶"
   },
   "Na": {
     "number": 11,
@@ -118,7 +118,7 @@
     "category": "alkali-metal",
     "group": 1,
     "period": 3,
-    "el_configuration": "[Ne]3S¹"
+    "el_configuration": "[Ne] 3s¹"
   },
   "Mg": {
     "number": 12,
@@ -129,7 +129,7 @@
     "category": "alkaline-earth",
     "group": 2,
     "period": 3,
-    "el_configuration": "3S²"
+    "el_configuration": "[Ne] 3s²"
   },
   "Al": {
     "number": 13,
@@ -140,7 +140,7 @@
     "category": "post-transition",
     "group": 13,
     "period": 3,
-    "el_configuration": "3S²3P¹"
+    "el_configuration": "[Ne] 3s² 3p¹"
   },
   "Si": {
     "number": 14,
@@ -151,7 +151,7 @@
     "category": "metalloid",
     "group": 14,
     "period": 3,
-    "el_configuration": "3S²3P²"
+    "el_configuration": "[Ne] 3s² 3p²"
   },
   "P": {
     "number": 15,
@@ -162,7 +162,7 @@
     "category": "nonmetal",
     "group": 15,
     "period": 3,
-    "el_configuration": "3S²3P³"
+    "el_configuration": "[Ne] 3s² 3p³"
   },
   "S": {
     "number": 16,
@@ -173,7 +173,7 @@
     "category": "nonmetal",
     "group": 16,
     "period": 3,
-    "el_configuration": "3S²3P⁴"
+    "el_configuration": "[Ne] 3s² 3p⁴"
   },
   "Cl": {
     "number": 17,
@@ -184,7 +184,7 @@
     "category": "halogen",
     "group": 17,
     "period": 3,
-    "el_configuration": "3S²3P⁵"
+    "el_configuration": "[Ne] 3s² 3p⁵"
   },
   "Ar": {
     "number": 18,
@@ -195,7 +195,7 @@
     "category": "noble-gas",
     "group": 18,
     "period": 3,
-    "el_configuration": "3S²3P⁶"
+    "el_configuration": "[Ne] 3s² 3p⁶"
   },
   "K": {
     "number": 19,
@@ -206,7 +206,7 @@
     "category": "alkali-metal",
     "group": 1,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 4s¹"
   },
   "Ca": {
     "number": 20,
@@ -217,7 +217,7 @@
     "category": "alkaline-earth",
     "group": 2,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 4s²"
   },
   "Sc": {
     "number": 21,
@@ -228,7 +228,7 @@
     "category": "transition-metal",
     "group": 3,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹ 4s²"
   },
   "Ti": {
     "number": 22,
@@ -239,7 +239,7 @@
     "category": "transition-metal",
     "group": 4,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d² 4s²"
   },
   "V": {
     "number": 23,
@@ -250,7 +250,7 @@
     "category": "transition-metal",
     "group": 5,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d³ 4s²"
   },
   "Cr": {
     "number": 24,
@@ -261,7 +261,7 @@
     "category": "transition-metal",
     "group": 6,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d⁵ 4s¹"
   },
   "Mn": {
     "number": 25,
@@ -272,7 +272,7 @@
     "category": "transition-metal",
     "group": 7,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d⁵ 4s²"
   },
   "Fe": {
     "number": 26,
@@ -283,7 +283,7 @@
     "category": "transition-metal",
     "group": 8,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d⁶ 4s²"
   },
   "Co": {
     "number": 27,
@@ -294,7 +294,7 @@
     "category": "transition-metal",
     "group": 9,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d⁷ 4s²"
   },
   "Ni": {
     "number": 28,
@@ -305,7 +305,7 @@
     "category": "transition-metal",
     "group": 10,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d⁸ 4s²"
   },
   "Cu": {
     "number": 29,
@@ -316,7 +316,7 @@
     "category": "transition-metal",
     "group": 11,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s¹"
   },
   "Zn": {
     "number": 30,
@@ -327,7 +327,7 @@
     "category": "transition-metal",
     "group": 12,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s²"
   },
   "Ga": {
     "number": 31,
@@ -338,7 +338,7 @@
     "category": "post-transition",
     "group": 13,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s² 4p¹"
   },
   "Ge": {
     "number": 32,
@@ -349,7 +349,7 @@
     "category": "metalloid",
     "group": 14,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s² 4p²"
   },
   "As": {
     "number": 33,
@@ -360,7 +360,7 @@
     "category": "metalloid",
     "group": 15,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s² 4p³"
   },
   "Se": {
     "number": 34,
@@ -371,7 +371,7 @@
     "category": "nonmetal",
     "group": 16,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s² 4p⁴"
   },
   "Br": {
     "number": 35,
@@ -382,7 +382,7 @@
     "category": "halogen",
     "group": 17,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s² 4p⁵"
   },
   "Kr": {
     "number": 36,
@@ -393,7 +393,7 @@
     "category": "noble-gas",
     "group": 18,
     "period": 4,
-    "el_configuration": ""
+    "el_configuration": "[Ar] 3d¹⁰ 4s² 4p⁶"
   },
   "Rb": {
     "number": 37,
@@ -404,7 +404,7 @@
     "category": "alkali-metal",
     "group": 1,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 5s¹"
   },
   "Sr": {
     "number": 38,
@@ -415,7 +415,7 @@
     "category": "alkaline-earth",
     "group": 2,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 5s²"
   },
   "Y": {
     "number": 39,
@@ -426,7 +426,7 @@
     "category": "transition-metal",
     "group": 3,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹ 5s²"
   },
   "Zr": {
     "number": 40,
@@ -437,7 +437,7 @@
     "category": "transition-metal",
     "group": 4,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d² 5s²"
   },
   "Nb": {
     "number": 41,
@@ -448,7 +448,7 @@
     "category": "transition-metal",
     "group": 5,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d⁴ 5s¹"
   },
   "Mo": {
     "number": 42,
@@ -459,7 +459,7 @@
     "category": "transition-metal",
     "group": 6,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d⁵ 5s¹"
   },
   "Tc": {
     "number": 43,
@@ -470,7 +470,7 @@
     "category": "transition-metal",
     "group": 7,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d⁵ 5s²"
   },
   "Ru": {
     "number": 44,
@@ -481,7 +481,7 @@
     "category": "transition-metal",
     "group": 8,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d⁷ 5s¹"
   },
   "Rh": {
     "number": 45,
@@ -492,7 +492,7 @@
     "category": "transition-metal",
     "group": 9,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d⁸ 5s¹"
   },
   "Pd": {
     "number": 46,
@@ -503,7 +503,7 @@
     "category": "transition-metal",
     "group": 10,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰"
   },
   "Ag": {
     "number": 47,
@@ -514,7 +514,7 @@
     "category": "transition-metal",
     "group": 11,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s¹"
   },
   "Cd": {
     "number": 48,
@@ -525,7 +525,7 @@
     "category": "transition-metal",
     "group": 12,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s²"
   },
   "In": {
     "number": 49,
@@ -536,7 +536,7 @@
     "category": "post-transition",
     "group": 13,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s² 5p¹"
   },
   "Sn": {
     "number": 50,
@@ -547,7 +547,7 @@
     "category": "post-transition",
     "group": 14,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s² 5p²"
   },
   "Sb": {
     "number": 51,
@@ -558,7 +558,7 @@
     "category": "metalloid",
     "group": 15,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s² 5p³"
   },
   "Te": {
     "number": 52,
@@ -569,7 +569,7 @@
     "category": "metalloid",
     "group": 16,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s² 5p⁴"
   },
   "I": {
     "number": 53,
@@ -580,7 +580,7 @@
     "category": "halogen",
     "group": 17,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s² 5p⁵"
   },
   "Xe": {
     "number": 54,
@@ -591,7 +591,7 @@
     "category": "noble-gas",
     "group": 18,
     "period": 5,
-    "el_configuration": ""
+    "el_configuration": "[Kr] 4d¹⁰ 5s² 5p⁶"
   },
   "Cs": {
     "number": 55,
@@ -602,7 +602,7 @@
     "category": "alkali-metal",
     "group": 1,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 6s¹"
   },
   "Ba": {
     "number": 56,
@@ -613,7 +613,7 @@
     "category": "alkaline-earth",
     "group": 2,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 6s²"
   },
   "La": {
     "number": 57,
@@ -624,7 +624,7 @@
     "category": "lanthanide",
     "group": 3,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 5d¹ 6s²"
   },
   "Ce": {
     "number": 58,
@@ -635,7 +635,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹ 5d¹ 6s²"
   },
   "Pr": {
     "number": 59,
@@ -646,7 +646,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f³ 6s²"
   },
   "Nd": {
     "number": 60,
@@ -657,7 +657,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f⁴ 6s²"
   },
   "Pm": {
     "number": 61,
@@ -668,7 +668,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f⁵ 6s²"
   },
   "Sm": {
     "number": 62,
@@ -679,7 +679,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f⁶ 6s²"
   },
   "Eu": {
     "number": 63,
@@ -690,7 +690,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f⁷ 6s²"
   },
   "Gd": {
     "number": 64,
@@ -701,7 +701,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f⁷ 5d¹ 6s²"
   },
   "Tb": {
     "number": 65,
@@ -712,7 +712,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f⁹ 6s²"
   },
   "Dy": {
     "number": 66,
@@ -723,7 +723,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁰ 6s²"
   },
   "Ho": {
     "number": 67,
@@ -734,7 +734,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹¹ 6s²"
   },
   "Er": {
     "number": 68,
@@ -745,7 +745,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹² 6s²"
   },
   "Tm": {
     "number": 69,
@@ -756,7 +756,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹³ 6s²"
   },
   "Yb": {
     "number": 70,
@@ -767,7 +767,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 6s²"
   },
   "Lu": {
     "number": 71,
@@ -778,7 +778,7 @@
     "category": "lanthanide",
     "group": 0,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹ 6s²"
   },
   "Hf": {
     "number": 72,
@@ -789,7 +789,7 @@
     "category": "transition-metal",
     "group": 4,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d² 6s²"
   },
   "Ta": {
     "number": 73,
@@ -800,7 +800,7 @@
     "category": "transition-metal",
     "group": 5,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d³ 6s²"
   },
   "W": {
     "number": 74,
@@ -811,7 +811,7 @@
     "category": "transition-metal",
     "group": 6,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d⁴ 6s²"
   },
   "Re": {
     "number": 75,
@@ -822,7 +822,7 @@
     "category": "transition-metal",
     "group": 7,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d⁵ 6s²"
   },
   "Os": {
     "number": 76,
@@ -833,7 +833,7 @@
     "category": "transition-metal",
     "group": 8,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d⁶ 6s²"
   },
   "Ir": {
     "number": 77,
@@ -844,7 +844,7 @@
     "category": "transition-metal",
     "group": 9,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d⁷ 6s²"
   },
   "Pt": {
     "number": 78,
@@ -855,7 +855,7 @@
     "category": "transition-metal",
     "group": 10,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d⁹ 6s¹"
   },
   "Au": {
     "number": 79,
@@ -866,7 +866,7 @@
     "category": "transition-metal",
     "group": 11,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s¹"
   },
   "Hg": {
     "number": 80,
@@ -877,7 +877,7 @@
     "category": "transition-metal",
     "group": 12,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s²"
   },
   "Tl": {
     "number": 81,
@@ -888,7 +888,7 @@
     "category": "post-transition",
     "group": 13,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹"
   },
   "Pb": {
     "number": 82,
@@ -899,7 +899,7 @@
     "category": "post-transition",
     "group": 14,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²"
   },
   "Bi": {
     "number": 83,
@@ -910,7 +910,7 @@
     "category": "post-transition",
     "group": 15,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³"
   },
   "Po": {
     "number": 84,
@@ -921,7 +921,7 @@
     "category": "metalloid",
     "group": 16,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴"
   },
   "At": {
     "number": 85,
@@ -932,7 +932,7 @@
     "category": "halogen",
     "group": 17,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵"
   },
   "Rn": {
     "number": 86,
@@ -943,7 +943,7 @@
     "category": "noble-gas",
     "group": 18,
     "period": 6,
-    "el_configuration": ""
+    "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶"
   },
   "Fr": {
     "number": 87,
@@ -954,7 +954,7 @@
     "category": "alkali-metal",
     "group": 1,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 7s¹"
   },
   "Ra": {
     "number": 88,
@@ -965,7 +965,7 @@
     "category": "alkaline-earth",
     "group": 2,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 7s²"
   },
   "Ac": {
     "number": 89,
@@ -976,7 +976,7 @@
     "category": "actinide",
     "group": 3,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 6d¹ 7s²"
   },
   "Th": {
     "number": 90,
@@ -987,7 +987,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 6d² 7s²"
   },
   "Pa": {
     "number": 91,
@@ -998,7 +998,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f² 6d¹ 7s²"
   },
   "U": {
     "number": 92,
@@ -1009,7 +1009,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f³ 6d¹ 7s²"
   },
   "Np": {
     "number": 93,
@@ -1020,7 +1020,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f⁴ 6d¹ 7s²"
   },
   "Pu": {
     "number": 94,
@@ -1031,7 +1031,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f⁶ 7s²"
   },
   "Am": {
     "number": 95,
@@ -1042,7 +1042,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f⁷ 7s²"
   },
   "Cm": {
     "number": 96,
@@ -1053,7 +1053,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f⁷ 6d¹ 7s²"
   },
   "Bk": {
     "number": 97,
@@ -1064,7 +1064,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f⁹ 7s²"
   },
   "Cf": {
     "number": 98,
@@ -1075,7 +1075,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁰ 7s²"
   },
   "Es": {
     "number": 99,
@@ -1086,7 +1086,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹¹ 7s²"
   },
   "Fm": {
     "number": 100,
@@ -1097,7 +1097,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹² 7s²"
   },
   "Md": {
     "number": 101,
@@ -1108,7 +1108,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹³ 7s²"
   },
   "No": {
     "number": 102,
@@ -1119,7 +1119,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 7s²"
   },
   "Lr": {
     "number": 103,
@@ -1130,7 +1130,7 @@
     "category": "actinide",
     "group": 0,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 7s² 7p¹"
   },
   "Rf": {
     "number": 104,
@@ -1141,7 +1141,7 @@
     "category": "transition-metal",
     "group": 4,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d² 7s²"
   },
   "Db": {
     "number": 105,
@@ -1152,7 +1152,7 @@
     "category": "transition-metal",
     "group": 5,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d³ 7s²"
   },
   "Sg": {
     "number": 106,
@@ -1163,7 +1163,7 @@
     "category": "transition-metal",
     "group": 6,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d⁴ 7s²"
   },
   "Bh": {
     "number": 107,
@@ -1174,7 +1174,7 @@
     "category": "transition-metal",
     "group": 7,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d⁵ 7s²"
   },
   "Hs": {
     "number": 108,
@@ -1185,7 +1185,7 @@
     "category": "transition-metal",
     "group": 8,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d⁶ 7s²"
   },
   "Mt": {
     "number": 109,
@@ -1196,7 +1196,7 @@
     "category": "transition-metal",
     "group": 9,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d⁷ 7s²"
   },
   "Ds": {
     "number": 110,
@@ -1207,7 +1207,7 @@
     "category": "transition-metal",
     "group": 10,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d⁸ 7s²"
   },
   "Rg": {
     "number": 111,
@@ -1218,7 +1218,7 @@
     "category": "transition-metal",
     "group": 11,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s¹"
   },
   "Cn": {
     "number": 112,
@@ -1229,7 +1229,7 @@
     "category": "transition-metal",
     "group": 12,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s²"
   },
   "Nh": {
     "number": 113,
@@ -1240,7 +1240,7 @@
     "category": "post-transition",
     "group": 13,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹"
   },
   "Fl": {
     "number": 114,
@@ -1251,7 +1251,7 @@
     "category": "post-transition",
     "group": 14,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²"
   },
   "Mc": {
     "number": 115,
@@ -1262,7 +1262,7 @@
     "category": "post-transition",
     "group": 15,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³"
   },
   "Lv": {
     "number": 116,
@@ -1273,7 +1273,7 @@
     "category": "post-transition",
     "group": 16,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴"
   },
   "Ts": {
     "number": 117,
@@ -1284,7 +1284,7 @@
     "category": "halogen",
     "group": 17,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵"
   },
   "Og": {
     "number": 118,
@@ -1295,6 +1295,6 @@
     "category": "noble-gas",
     "group": 18,
     "period": 7,
-    "el_configuration": ""
+    "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶"
   }
 }
