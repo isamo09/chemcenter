@@ -9,7 +9,7 @@
     "group": 1,
     "period": 1,
     "el_configuration": "1s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s¹"
   },
   "He": {
     "number": 2,
@@ -21,7 +21,7 @@
     "group": 18,
     "period": 1,
     "el_configuration": "1s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s²"
   },
   "Li": {
     "number": 3,
@@ -33,7 +33,7 @@
     "group": 1,
     "period": 2,
     "el_configuration": "[He] 2s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s¹"
   },
   "Be": {
     "number": 4,
@@ -45,7 +45,7 @@
     "group": 2,
     "period": 2,
     "el_configuration": "[He] 2s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s²"
   },
   "B": {
     "number": 5,
@@ -57,7 +57,7 @@
     "group": 13,
     "period": 2,
     "el_configuration": "[He] 2s² 2p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p¹"
   },
   "C": {
     "number": 6,
@@ -69,7 +69,7 @@
     "group": 14,
     "period": 2,
     "el_configuration": "[He] 2s² 2p²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p²"
   },
   "N": {
     "number": 7,
@@ -81,7 +81,7 @@
     "group": 15,
     "period": 2,
     "el_configuration": "[He] 2s² 2p³",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p³"
   },
   "O": {
     "number": 8,
@@ -93,7 +93,7 @@
     "group": 16,
     "period": 2,
     "el_configuration": "[He] 2s² 2p⁴",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁴"
   },
   "F": {
     "number": 9,
@@ -105,7 +105,7 @@
     "group": 17,
     "period": 2,
     "el_configuration": "[He] 2s² 2p⁵",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁵"
   },
   "Ne": {
     "number": 10,
@@ -117,7 +117,7 @@
     "group": 18,
     "period": 2,
     "el_configuration": "[He] 2s² 2p⁶",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶"
   },
   "Na": {
     "number": 11,
@@ -129,7 +129,7 @@
     "group": 1,
     "period": 3,
     "el_configuration": "[Ne] 3s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s¹"
   },
   "Mg": {
     "number": 12,
@@ -141,7 +141,7 @@
     "group": 2,
     "period": 3,
     "el_configuration": "[Ne] 3s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s²"
   },
   "Al": {
     "number": 13,
@@ -153,7 +153,7 @@
     "group": 13,
     "period": 3,
     "el_configuration": "[Ne] 3s² 3p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p¹"
   },
   "Si": {
     "number": 14,
@@ -165,7 +165,7 @@
     "group": 14,
     "period": 3,
     "el_configuration": "[Ne] 3s² 3p²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p²"
   },
   "P": {
     "number": 15,
@@ -177,7 +177,7 @@
     "group": 15,
     "period": 3,
     "el_configuration": "[Ne] 3s² 3p³",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p³"
   },
   "S": {
     "number": 16,
@@ -189,7 +189,7 @@
     "group": 16,
     "period": 3,
     "el_configuration": "[Ne] 3s² 3p⁴",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁴"
   },
   "Cl": {
     "number": 17,
@@ -201,7 +201,7 @@
     "group": 17,
     "period": 3,
     "el_configuration": "[Ne] 3s² 3p⁵",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁵"
   },
   "Ar": {
     "number": 18,
@@ -213,7 +213,7 @@
     "group": 18,
     "period": 3,
     "el_configuration": "[Ne] 3s² 3p⁶",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶"
   },
   "K": {
     "number": 19,
@@ -225,7 +225,7 @@
     "group": 1,
     "period": 4,
     "el_configuration": "[Ar] 4s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹"
   },
   "Ca": {
     "number": 20,
@@ -237,7 +237,7 @@
     "group": 2,
     "period": 4,
     "el_configuration": "[Ar] 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²"
   },
   "Sc": {
     "number": 21,
@@ -249,7 +249,7 @@
     "group": 3,
     "period": 4,
     "el_configuration": "[Ar] 3d¹ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹"
   },
   "Ti": {
     "number": 22,
@@ -261,7 +261,7 @@
     "group": 4,
     "period": 4,
     "el_configuration": "[Ar] 3d² 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d²"
   },
   "V": {
     "number": 23,
@@ -273,7 +273,7 @@
     "group": 5,
     "period": 4,
     "el_configuration": "[Ar] 3d³ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d³"
   },
   "Cr": {
     "number": 24,
@@ -285,7 +285,7 @@
     "group": 6,
     "period": 4,
     "el_configuration": "[Ar] 3d⁵ 4s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d⁵"
   },
   "Mn": {
     "number": 25,
@@ -297,7 +297,7 @@
     "group": 7,
     "period": 4,
     "el_configuration": "[Ar] 3d⁵ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁵"
   },
   "Fe": {
     "number": 26,
@@ -309,7 +309,7 @@
     "group": 8,
     "period": 4,
     "el_configuration": "[Ar] 3d⁶ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶"
   },
   "Co": {
     "number": 27,
@@ -321,7 +321,7 @@
     "group": 9,
     "period": 4,
     "el_configuration": "[Ar] 3d⁷ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁷"
   },
   "Ni": {
     "number": 28,
@@ -333,7 +333,7 @@
     "group": 10,
     "period": 4,
     "el_configuration": "[Ar] 3d⁸ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁸"
   },
   "Cu": {
     "number": 29,
@@ -345,7 +345,7 @@
     "group": 11,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d¹⁰"
   },
   "Zn": {
     "number": 30,
@@ -357,7 +357,7 @@
     "group": 12,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰"
   },
   "Ga": {
     "number": 31,
@@ -369,7 +369,7 @@
     "group": 13,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s² 4p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p¹"
   },
   "Ge": {
     "number": 32,
@@ -381,7 +381,7 @@
     "group": 14,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s² 4p²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p²"
   },
   "As": {
     "number": 33,
@@ -393,7 +393,7 @@
     "group": 15,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s² 4p³",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p³"
   },
   "Se": {
     "number": 34,
@@ -405,7 +405,7 @@
     "group": 16,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s² 4p⁴",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁴"
   },
   "Br": {
     "number": 35,
@@ -417,7 +417,7 @@
     "group": 17,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s² 4p⁵",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁵"
   },
   "Kr": {
     "number": 36,
@@ -429,7 +429,7 @@
     "group": 18,
     "period": 4,
     "el_configuration": "[Ar] 3d¹⁰ 4s² 4p⁶",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶"
   },
   "Rb": {
     "number": 37,
@@ -441,7 +441,7 @@
     "group": 1,
     "period": 5,
     "el_configuration": "[Kr] 5s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹"
   },
   "Sr": {
     "number": 38,
@@ -453,7 +453,7 @@
     "group": 2,
     "period": 5,
     "el_configuration": "[Kr] 5s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s²"
   },
   "Y": {
     "number": 39,
@@ -465,7 +465,7 @@
     "group": 3,
     "period": 5,
     "el_configuration": "[Kr] 4d¹ 5s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹"
   },
   "Zr": {
     "number": 40,
@@ -477,7 +477,7 @@
     "group": 4,
     "period": 5,
     "el_configuration": "[Kr] 4d² 5s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d²"
   },
   "Nb": {
     "number": 41,
@@ -489,7 +489,7 @@
     "group": 5,
     "period": 5,
     "el_configuration": "[Kr] 4d⁴ 5s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹ 4d⁴"
   },
   "Mo": {
     "number": 42,
@@ -501,7 +501,7 @@
     "group": 6,
     "period": 5,
     "el_configuration": "[Kr] 4d⁵ 5s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹ 4d⁵"
   },
   "Tc": {
     "number": 43,
@@ -513,7 +513,7 @@
     "group": 7,
     "period": 5,
     "el_configuration": "[Kr] 4d⁵ 5s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d⁵"
   },
   "Ru": {
     "number": 44,
@@ -525,7 +525,7 @@
     "group": 8,
     "period": 5,
     "el_configuration": "[Kr] 4d⁷ 5s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹ 4d⁷"
   },
   "Rh": {
     "number": 45,
@@ -537,7 +537,7 @@
     "group": 9,
     "period": 5,
     "el_configuration": "[Kr] 4d⁸ 5s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹ 4d⁸"
   },
   "Pd": {
     "number": 46,
@@ -549,7 +549,7 @@
     "group": 10,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 4d¹⁰"
   },
   "Ag": {
     "number": 47,
@@ -561,7 +561,7 @@
     "group": 11,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s¹ 4d¹⁰"
   },
   "Cd": {
     "number": 48,
@@ -573,7 +573,7 @@
     "group": 12,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰"
   },
   "In": {
     "number": 49,
@@ -585,7 +585,7 @@
     "group": 13,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s² 5p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p¹"
   },
   "Sn": {
     "number": 50,
@@ -597,7 +597,7 @@
     "group": 14,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s² 5p²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p²"
   },
   "Sb": {
     "number": 51,
@@ -609,7 +609,7 @@
     "group": 15,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s² 5p³",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p³"
   },
   "Te": {
     "number": 52,
@@ -621,7 +621,7 @@
     "group": 16,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s² 5p⁴",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁴"
   },
   "I": {
     "number": 53,
@@ -633,7 +633,7 @@
     "group": 17,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s² 5p⁵",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁵"
   },
   "Xe": {
     "number": 54,
@@ -645,7 +645,7 @@
     "group": 18,
     "period": 5,
     "el_configuration": "[Kr] 4d¹⁰ 5s² 5p⁶",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶"
   },
   "Cs": {
     "number": 55,
@@ -657,7 +657,7 @@
     "group": 1,
     "period": 6,
     "el_configuration": "[Xe] 6s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s¹"
   },
   "Ba": {
     "number": 56,
@@ -669,7 +669,7 @@
     "group": 2,
     "period": 6,
     "el_configuration": "[Xe] 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s²"
   },
   "La": {
     "number": 57,
@@ -681,7 +681,7 @@
     "group": 3,
     "period": 6,
     "el_configuration": "[Xe] 5d¹ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 5d¹"
   },
   "Ce": {
     "number": 58,
@@ -693,7 +693,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹ 5d¹ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹ 5d¹"
   },
   "Pr": {
     "number": 59,
@@ -705,7 +705,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f³ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f³"
   },
   "Nd": {
     "number": 60,
@@ -717,7 +717,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f⁴ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f⁴"
   },
   "Pm": {
     "number": 61,
@@ -729,7 +729,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f⁵ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f⁵"
   },
   "Sm": {
     "number": 62,
@@ -741,7 +741,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f⁶ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f⁶"
   },
   "Eu": {
     "number": 63,
@@ -753,7 +753,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f⁷ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f⁷"
   },
   "Gd": {
     "number": 64,
@@ -765,7 +765,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f⁷ 5d¹ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f⁷ 5d¹"
   },
   "Tb": {
     "number": 65,
@@ -777,7 +777,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f⁹ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f⁹"
   },
   "Dy": {
     "number": 66,
@@ -789,7 +789,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁰ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁰"
   },
   "Ho": {
     "number": 67,
@@ -801,7 +801,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹¹ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹¹"
   },
   "Er": {
     "number": 68,
@@ -813,7 +813,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹² 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹²"
   },
   "Tm": {
     "number": 69,
@@ -825,7 +825,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹³ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹³"
   },
   "Yb": {
     "number": 70,
@@ -837,7 +837,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴"
   },
   "Lu": {
     "number": 71,
@@ -849,7 +849,7 @@
     "group": 0,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹"
   },
   "Hf": {
     "number": 72,
@@ -861,7 +861,7 @@
     "group": 4,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d² 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d²"
   },
   "Ta": {
     "number": 73,
@@ -873,7 +873,7 @@
     "group": 5,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d³ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d³"
   },
   "W": {
     "number": 74,
@@ -885,7 +885,7 @@
     "group": 6,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d⁴ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d⁴"
   },
   "Re": {
     "number": 75,
@@ -897,7 +897,7 @@
     "group": 7,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d⁵ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d⁵"
   },
   "Os": {
     "number": 76,
@@ -909,7 +909,7 @@
     "group": 8,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d⁶ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d⁶"
   },
   "Ir": {
     "number": 77,
@@ -921,7 +921,7 @@
     "group": 9,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d⁷ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d⁷"
   },
   "Pt": {
     "number": 78,
@@ -933,7 +933,7 @@
     "group": 10,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d⁹ 6s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s¹ 4f¹⁴ 5d⁹"
   },
   "Au": {
     "number": 79,
@@ -945,7 +945,7 @@
     "group": 11,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s¹ 4f¹⁴ 5d¹⁰"
   },
   "Hg": {
     "number": 80,
@@ -957,7 +957,7 @@
     "group": 12,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰"
   },
   "Tl": {
     "number": 81,
@@ -969,7 +969,7 @@
     "group": 13,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p¹"
   },
   "Pb": {
     "number": 82,
@@ -981,7 +981,7 @@
     "group": 14,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p²"
   },
   "Bi": {
     "number": 83,
@@ -993,7 +993,7 @@
     "group": 15,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p³"
   },
   "Po": {
     "number": 84,
@@ -1005,7 +1005,7 @@
     "group": 16,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁴"
   },
   "At": {
     "number": 85,
@@ -1017,7 +1017,7 @@
     "group": 17,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁵"
   },
   "Rn": {
     "number": 86,
@@ -1029,7 +1029,7 @@
     "group": 18,
     "period": 6,
     "el_configuration": "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶"
   },
   "Fr": {
     "number": 87,
@@ -1041,7 +1041,7 @@
     "group": 1,
     "period": 7,
     "el_configuration": "[Rn] 7s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s¹"
   },
   "Ra": {
     "number": 88,
@@ -1053,7 +1053,7 @@
     "group": 2,
     "period": 7,
     "el_configuration": "[Rn] 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s²"
   },
   "Ac": {
     "number": 89,
@@ -1065,7 +1065,7 @@
     "group": 3,
     "period": 7,
     "el_configuration": "[Rn] 6d¹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d¹"
   },
   "Th": {
     "number": 90,
@@ -1077,7 +1077,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 6d² 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d²"
   },
   "Pa": {
     "number": 91,
@@ -1089,7 +1089,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f² 6d¹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f² 6d¹"
   },
   "U": {
     "number": 92,
@@ -1101,7 +1101,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f³ 6d¹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f³ 6d¹"
   },
   "Np": {
     "number": 93,
@@ -1113,7 +1113,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f⁴ 6d¹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f⁴ 6d¹"
   },
   "Pu": {
     "number": 94,
@@ -1125,7 +1125,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f⁶ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f⁶"
   },
   "Am": {
     "number": 95,
@@ -1137,7 +1137,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f⁷ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f⁷"
   },
   "Cm": {
     "number": 96,
@@ -1149,7 +1149,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f⁷ 6d¹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f⁷ 6d¹"
   },
   "Bk": {
     "number": 97,
@@ -1161,7 +1161,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f⁹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f⁹"
   },
   "Cf": {
     "number": 98,
@@ -1173,7 +1173,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁰ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f¹⁰"
   },
   "Es": {
     "number": 99,
@@ -1185,7 +1185,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f¹¹ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f¹¹"
   },
   "Fm": {
     "number": 100,
@@ -1197,7 +1197,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f¹² 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f¹²"
   },
   "Md": {
     "number": 101,
@@ -1209,7 +1209,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f¹³ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f¹³"
   },
   "No": {
     "number": 102,
@@ -1221,7 +1221,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f¹⁴"
   },
   "Lr": {
     "number": 103,
@@ -1233,7 +1233,7 @@
     "group": 0,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 7s² 7p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 5f¹⁴ 7p¹"
   },
   "Rf": {
     "number": 104,
@@ -1245,7 +1245,7 @@
     "group": 4,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d² 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d²"
   },
   "Db": {
     "number": 105,
@@ -1257,7 +1257,7 @@
     "group": 5,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d³ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d³"
   },
   "Sg": {
     "number": 106,
@@ -1269,7 +1269,7 @@
     "group": 6,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d⁴ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d⁴"
   },
   "Bh": {
     "number": 107,
@@ -1281,7 +1281,7 @@
     "group": 7,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d⁵ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d⁵"
   },
   "Hs": {
     "number": 108,
@@ -1293,7 +1293,7 @@
     "group": 8,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d⁶ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d⁶"
   },
   "Mt": {
     "number": 109,
@@ -1305,7 +1305,7 @@
     "group": 9,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d⁷ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d⁷"
   },
   "Ds": {
     "number": 110,
@@ -1317,7 +1317,7 @@
     "group": 10,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d⁸ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d⁸"
   },
   "Rg": {
     "number": 111,
@@ -1329,7 +1329,7 @@
     "group": 11,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s¹ 6d¹⁰"
   },
   "Cn": {
     "number": 112,
@@ -1341,7 +1341,7 @@
     "group": 12,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 6d¹⁰"
   },
   "Nh": {
     "number": 113,
@@ -1353,7 +1353,7 @@
     "group": 13,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 7p¹"
   },
   "Fl": {
     "number": 114,
@@ -1365,7 +1365,7 @@
     "group": 14,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 7p²"
   },
   "Mc": {
     "number": 115,
@@ -1377,7 +1377,7 @@
     "group": 15,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 7p³"
   },
   "Lv": {
     "number": 116,
@@ -1389,7 +1389,7 @@
     "group": 16,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 7p⁴"
   },
   "Ts": {
     "number": 117,
@@ -1401,7 +1401,7 @@
     "group": 17,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 7p⁵"
   },
   "Og": {
     "number": 118,
@@ -1413,6 +1413,6 @@
     "group": 18,
     "period": 7,
     "el_configuration": "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶",
-    "full_el_configuration": ""
+    "full_el_configuration": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ 4p⁶ 5s² 4d¹⁰ 5p⁶ 6s² 4f¹⁴ 5d¹⁰ 6p⁶ 7s² 7p⁶"
   }
 }
