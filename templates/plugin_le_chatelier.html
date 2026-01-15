@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Принцип Ле Шателье - {{ config.site_title }}{% endblock %}
+
+{% block content %}
+<div class="plugin-container">
+    <header class="plugin-header">
+        <div class="plugin-header-content">
+            <a href="/" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <div class="plugin-title-section">
+                <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
+                <h1><i class="fas fa-scale-balanced"></i> Принцип Ле Шателье</h1>
+            </div>
+            <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="principle-container">
+
+            <div class="info-section">
+                <h2>Калькулятор смещения равновесия</h2>
+                <p>Введите коэффициенты реакции в формате:</p>
+                <code>1-2=3+4+1</code>
+            </div>
+
+            <form id="equilibriumForm" class="form">
+                <div class="form-group">
+                    <label>Уравнение:</label>
+                    <input id="equation" class="form-control" placeholder="1-2=3+4+1" required>
+                </div>
+                <button class="btn-primary">Рассчитать</button>
+            </form>
+
+            <div id="result" class="result-section hidden">
+                <h3>Результат</h3>
+
+                <div class="equation-card">
+                    <div class="equation-number">1</div>
+                    <div id="equationDisplay" class="equation-display"></div>
+                </div>
+
+                <!-- ► НОВАЯ ФОРМУЛА (дробь с буквами) -->
+                <div class="formula-card">
+                    <div class="formula-title">Формула с буквами:</div>
+                    <div class="fraction">
+                        <div id="letterFractionNum" class="fraction-numerator"></div>
+                        <div class="fraction-line"></div>
+                        <div id="letterFractionDen" class="fraction-denominator"></div>
+                    </div>
+                </div>
+
+                <div class="result-header">
+                    <div class="result-item">
+                        <div class="label">Δn:</div>
+                        <div id="deltaValue" class="value"></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Направление:</div>
+                        <div id="direction" class="value"></div>
+                    </div>
+                </div>
+
+                <div class="explanation-box">
+                    <div class="explanation-header"><i class="fas fa-lightbulb"></i> Объяснение</div>
+                    <p id="explanation"></p>
+                </div>
+            </div>
+
+            <div id="error" class="error-section hidden">
+                <h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3>
+                <p id="errorMessage"></p>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+
+<script>
+/* =======================================================
+                Тёме привет!!
+======================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    document.getElementById("equilibriumForm")
+        .addEventListener("submit", calculateEquilibrium);
+});
+
+function initTheme() {
+    const btn = document.getElementById("themeToggle");
+    const saved = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", saved);
+
+    btn.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+    });
+}
+
+/* =======================================================
+        ГЕНЕРАЦИЯ ФОРМУЛЫ ПО 😃➰ ЛОГИКЕ
+======================================================= */
+
+function generateLetterFormula(eq) {
+    const parts = eq.split("=");
+    if (parts.length !== 2) return { numerator: "—", denominator: "—" };
+
+    const left = parts[0].match(/[+-]?\d+/g)?.map(Number) || [];
+
+    const rightRaw = parts[1].match(/[+-]?\d+/g)?.map(Number) || [];
+    const right = rightRaw.slice(0, -1); // убираем служебный
+
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+
+    const SUP = {
+        "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³",
+        "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷",
+        "8": "⁸", "9": "⁹"
+    };
+
+    const toSup = n => n.toString().split("").map(c => SUP[c]).join("");
+
+    function build(arr, offset) {
+        return arr.map((coef, i) => {
+            const letter = letters[i + offset];
+            return `C${letter}${toSup(coef)}`;
+        }).join(" * ");
+    }
+
+    return {
+        numerator: build(left, 0),                  // левая часть → Ca¹, Cb⁻²
+        denominator: build(right, left.length)      // правая часть → Cc³, Cd⁴
+    };
+}
+
+/* =======================================================
+                API РАСЧЁТА
+======================================================= */
+
+async function calculateEquilibrium(e) {
+    e.preventDefault();
+
+    const input = document.getElementById("equation").value.trim();
+    if (!input) return;
+
+    try {
+        const r = await fetch(`/api/plugin/le_chatelier?equation=${encodeURIComponent(input)}`);
+        const data = await r.json();
+        if (data.error) return showError(data.message);
+        showResult(data, input);
+    } catch (err) {
+        showError(err.message);
+    }
+}
+
+/* =======================================================
+                ОТОБРАЖЕНИЕ
+======================================================= */
+
+function showResult(result, eq) {
+    document.getElementById("error").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    document.getElementById("equationDisplay").innerHTML = `<code>${eq}</code>`;
+    document.getElementById("deltaValue").innerText = result.delta;
+
+    const f = generateLetterFormula(eq);
+    document.getElementById("letterFractionNum").innerHTML = f.numerator;
+    document.getElementById("letterFractionDen").innerHTML = f.denominator;
+
+    document.getElementById("direction").innerText =
+        result.direction === "right" ? "→ Вправо" :
+        result.direction === "left" ? "← Влево" :
+        "↔ Без смещения";
+
+    document.getElementById("explanation").innerText = result.explanation;
+}
+
+function showError(msg) {
+    document.getElementById("result").classList.add("hidden");
+    document.getElementById("error").classList.remove("hidden");
+    document.getElementById("errorMessage").innerText = msg;
+}
+</script>
+
+{% endblock %}

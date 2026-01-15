@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Периодическая таблица - {{ config.site_title }}{% endblock %}
+
+{% block content %}
+<div class="plugin-container">
+    <header class="plugin-header">
+        <div class="plugin-header-content">
+            <a href="/" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <div class="plugin-title-section">
+                <img src="{{ config.site_logo_dark }}" alt="Логотип" class="header-logo plugin-logo">
+                <h1><i class="fas fa-atom"></i> Периодическая таблица элементов</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="periodic-main-content">
+        <!-- Search and Filter Controls -->
+        <div class="periodic-controls">
+            <div class="search-box">
+                <input type="text" id="searchElement" placeholder="Поиск элемента (название, символ или номер)...">
+            </div>
+            <div class="view-tabs">
+                <button class="view-tab active" data-view="table" onclick="switchView('table')">
+                    <i class="fas fa-table"></i> Таблица
+                </button>
+                <button class="view-tab" data-view="metals" onclick="switchView('metals')">
+                    <i class="fas fa-gem"></i> Металлы/Неметаллы
+                </button>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend-container" id="legendContainer">
+            <div class="legend">
+                <div class="legend-item"><span class="legend-color alkali-metal"></span> Щелочные металлы</div>
+                <div class="legend-item"><span class="legend-color alkaline-earth"></span> Щёлочноземельные</div>
+                <div class="legend-item"><span class="legend-color transition-metal"></span> Переходные металлы</div>
+                <div class="legend-item"><span class="legend-color post-transition"></span> Постпереходные</div>
+                <div class="legend-item"><span class="legend-color metalloid"></span> Полуметаллы</div>
+                <div class="legend-item"><span class="legend-color nonmetal"></span> Неметаллы</div>
+                <div class="legend-item"><span class="legend-color halogen"></span> Галогены</div>
+                <div class="legend-item"><span class="legend-color noble-gas"></span> Благородные газы</div>
+                <div class="legend-item"><span class="legend-color lanthanide"></span> Лантаноиды</div>
+                <div class="legend-item"><span class="legend-color actinide"></span> Актиноиды</div>
+            </div>
+        </div>
+
+        <!-- Classical Periodic Table View -->
+        <div id="tableView" class="view-content active">
+            <div class="periodic-table-wrapper">
+                <div class="periodic-table-classic" id="periodicTable">
+                    <!-- Table will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Metals/Non-metals Classification View -->
+        <div id="metalsView" class="view-content">
+            <div class="classification-grid">
+                <div class="classification-section metals-section">
+                    <h2><i class="fas fa-cube"></i> Металлы</h2>
+                    <div class="classification-subsections">
+                        <div class="subsection">
+                            <h3>Щелочные металлы</h3>
+                            <div class="elements-row" id="alkaliMetals"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Щёлочноземельные металлы</h3>
+                            <div class="elements-row" id="alkalineEarthMetals"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Переходные металлы</h3>
+                            <div class="elements-row" id="transitionMetals"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Постпереходные металлы</h3>
+                            <div class="elements-row" id="postTransitionMetals"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Лантаноиды</h3>
+                            <div class="elements-row" id="lanthanides"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Актиноиды</h3>
+                            <div class="elements-row" id="actinides"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="classification-section metalloids-section">
+                    <h2><i class="fas fa-star-half-alt"></i> Полуметаллы</h2>
+                    <div class="elements-row" id="metalloids"></div>
+                </div>
+                
+                <div class="classification-section nonmetals-section">
+                    <h2><i class="fas fa-wind"></i> Неметаллы</h2>
+                    <div class="classification-subsections">
+                        <div class="subsection">
+                            <h3>Другие неметаллы</h3>
+                            <div class="elements-row" id="otherNonmetals"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Галогены</h3>
+                            <div class="elements-row" id="halogens"></div>
+                        </div>
+                        <div class="subsection">
+                            <h3>Благородные газы</h3>
+                            <div class="elements-row" id="nobleGases"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Element Detail Modal -->
+        <div id="elementDetail" class="element-detail hidden">
+            <div class="detail-content">
+                <button class="close-btn" onclick="closeDetail()">&times;</button>
+                <div id="detailBody"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Load elements API client -->
+<script src="{{ url_for('static', filename='js/elements-api.js') }}"></script>
+
+<script>
+let PERIODIC_TABLE = {};
+
+const POSITION_MAP = {
+    // Period 1
+    'H': [1,1], 'He': [1,18],
+    // Period 2
+    'Li': [2,1], 'Be': [2,2], 'B': [2,13], 'C': [2,14], 'N': [2,15], 'O': [2,16], 'F': [2,17], 'Ne': [2,18],
+    // Period 3
+    'Na': [3,1], 'Mg': [3,2], 'Al': [3,13], 'Si': [3,14], 'P': [3,15], 'S': [3,16], 'Cl': [3,17], 'Ar': [3,18],
+    // Period 4
+    'K': [4,1], 'Ca': [4,2], 'Sc': [4,3], 'Ti': [4,4], 'V': [4,5], 'Cr': [4,6], 'Mn': [4,7], 'Fe': [4,8],
+    'Co': [4,9], 'Ni': [4,10], 'Cu': [4,11], 'Zn': [4,12], 'Ga': [4,13], 'Ge': [4,14], 'As': [4,15],
+    'Se': [4,16], 'Br': [4,17], 'Kr': [4,18],
+    // Period 5
+    'Rb': [5,1], 'Sr': [5,2], 'Y': [5,3], 'Zr': [5,4], 'Nb': [5,5], 'Mo': [5,6], 'Tc': [5,7], 'Ru': [5,8],
+    'Rh': [5,9], 'Pd': [5,10], 'Ag': [5,11], 'Cd': [5,12], 'In': [5,13], 'Sn': [5,14], 'Sb': [5,15],
+    'Te': [5,16], 'I': [5,17], 'Xe': [5,18],
+    // Period 6
+    'Cs': [6,1], 'Ba': [6,2], 'La': [6,3],
+    'Hf': [6,4], 'Ta': [6,5], 'W': [6,6], 'Re': [6,7], 'Os': [6,8], 'Ir': [6,9], 'Pt': [6,10], 'Au': [6,11],
+    'Hg': [6,12], 'Tl': [6,13], 'Pb': [6,14], 'Bi': [6,15], 'Po': [6,16], 'At': [6,17], 'Rn': [6,18],
+    // Period 7
+    'Fr': [7,1], 'Ra': [7,2], 'Ac': [7,3],
+    'Rf': [7,4], 'Db': [7,5], 'Sg': [7,6], 'Bh': [7,7], 'Hs': [7,8], 'Mt': [7,9], 'Ds': [7,10], 'Rg': [7,11],
+    'Cn': [7,12], 'Nh': [7,13], 'Fl': [7,14], 'Mc': [7,15], 'Lv': [7,16], 'Ts': [7,17], 'Og': [7,18],
+    // Lanthanides (row 9)
+    'Ce': [9,4], 'Pr': [9,5], 'Nd': [9,6], 'Pm': [9,7], 'Sm': [9,8], 'Eu': [9,9], 'Gd': [9,10],
+    'Tb': [9,11], 'Dy': [9,12], 'Ho': [9,13], 'Er': [9,14], 'Tm': [9,15], 'Yb': [9,16], 'Lu': [9,17],
+    // Actinides (row 10)
+    'Th': [10,4], 'Pa': [10,5], 'U': [10,6], 'Np': [10,7], 'Pu': [10,8], 'Am': [10,9], 'Cm': [10,10],
+    'Bk': [10,11], 'Cf': [10,12], 'Es': [10,13], 'Fm': [10,14], 'Md': [10,15], 'No': [10,16], 'Lr': [10,17]
+};
+
+const CATEGORY_NAMES = {
+    'alkali-metal': 'Щелочный металл',
+    'alkaline-earth': 'Щёлочноземельный металл',
+    'transition-metal': 'Переходный металл',
+    'post-transition': 'Постпереходный металл',
+    'metalloid': 'Полуметалл',
+    'nonmetal': 'Неметалл',
+    'halogen': 'Галоген',
+    'noble-gas': 'Благородный газ',
+    'lanthanide': 'Лантаноид',
+    'actinide': 'Актиноид'
+};
+
+async function loadElementsData() {
+    try {
+        const elements = await elementsAPI.getAll();
+        // Convert array to object with symbols as keys
+        PERIODIC_TABLE = {};
+        elements.forEach(el => {
+            PERIODIC_TABLE[el.symbol] = el;
+        });
+        initializePeriodicTable();
+    } catch (error) {
+        console.error('Error loading elements data:', error);
+        alert('Ошибка загрузки данных элементов');
+    }
+}
+
+// Initialize the periodic table after data is loaded
+function initializePeriodicTable() {
+    renderPeriodicTable();
+    renderClassificationView();
+    initTheme();
+    initSearch();
+}
+
+function renderPeriodicTable() {
+    const table = document.getElementById('periodicTable');
+    table.innerHTML = '';
+
+    // Create grid with 10 rows and 18 columns
+    for (let row = 1; row <= 10; row++) {
+        for (let col = 1; col <= 18; col++) {
+            const cell = document.createElement('div');
+            cell.style.gridRow = row;
+            cell.style.gridColumn = col;
+
+            // Find element for this position
+            let elementSymbol = null;
+            for (const [symbol, pos] of Object.entries(POSITION_MAP)) {
+                if (pos[0] === row && pos[1] === col) {
+                    elementSymbol = symbol;
+                    break;
+                }
+            }
+
+            if (elementSymbol && PERIODIC_TABLE[elementSymbol]) {
+                const element = PERIODIC_TABLE[elementSymbol];
+                cell.className = `element-tile ${element.category}`;
+                cell.setAttribute('data-symbol', elementSymbol);
+                cell.setAttribute('data-name', element.name);
+                cell.setAttribute('data-number', element.number);
+                cell.onclick = () => showDetail(elementSymbol, element);
+                cell.innerHTML = `
+                    <span class="element-number">${element.number}</span>
+                    <span class="element-symbol">${elementSymbol}</span>
+                    <span class="element-el_configuration">${element.el_configuration}</span>
+                    <span class="element-name">${element.name}</span>
+                    <span class="element-mass">${typeof element.mass === 'number' ? element.mass.toFixed(element.mass < 10 ? 3 : 2) : element.mass}</span>
+                `;
+            } else if (row === 6 && col === 3) {
+                // Lanthanide placeholder
+                cell.className = 'lanthanide-label';
+                cell.innerHTML = '<span>57-71</span>';
+            } else if (row === 7 && col === 3) {
+                // Actinide placeholder
+                cell.className = 'actinide-label';
+                cell.innerHTML = '<span>89-103</span>';
+            } else if (row === 8) {
+                // Spacer row
+                cell.className = 'spacer-row';
+            } else {
+                cell.className = 'empty-cell';
+            }
+
+            table.appendChild(cell);
+        }
+    }
+}
+
+function renderClassificationView() {
+    const categories = {
+        'alkaliMetals': ['Li', 'Na', 'K', 'Rb', 'Cs', 'Fr'],
+        'alkalineEarthMetals': ['Be', 'Mg', 'Ca', 'Sr', 'Ba', 'Ra'],
+        'transitionMetals': ['Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn'],
+        'postTransitionMetals': ['Al', 'Ga', 'In', 'Sn', 'Tl', 'Pb', 'Bi', 'Nh', 'Fl', 'Mc', 'Lv'],
+        'lanthanides': ['La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu'],
+        'actinides': ['Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr'],
+        'metalloids': ['B', 'Si', 'Ge', 'As', 'Sb', 'Te', 'Po'],
+        'otherNonmetals': ['H', 'C', 'N', 'O', 'P', 'S', 'Se'],
+        'halogens': ['F', 'Cl', 'Br', 'I', 'At', 'Ts'],
+        'nobleGases': ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn', 'Og']
+    };
+
+    for (const [containerId, symbols] of Object.entries(categories)) {
+        const container = document.getElementById(containerId);
+        if (!container) continue;
+        container.innerHTML = '';
+
+        symbols.forEach(symbol => {
+            if (PERIODIC_TABLE[symbol]) {
+                const element = PERIODIC_TABLE[symbol];
+                const tile = document.createElement('div');
+                tile.className = `element-tile-small ${element.category}`;
+                tile.onclick = () => showDetail(symbol, element);
+                tile.innerHTML = `
+                    <span class="element-number">${element.number}</span>
+                    <span class="element-symbol">${symbol}</span>
+                    <span class="element-name">${element.name}</span>
+                `;
+                container.appendChild(tile);
+            }
+        });
+    }
+}
+
+function showDetail(symbol, element) {
+    const detailBody = document.getElementById('detailBody');
+    detailBody.innerHTML = `
+        <div class="detail-header ${element.category}">
+            <div class="detail-symbol-large">${symbol}</div>
+            <div class="detail-name">
+                <h2>${element.name}</h2>
+                <p>${element.nameEn}</p>
+            </div>
+        </div>
+        <div class="detail-table">
+            <div class="detail-row">
+                <span class="detail-label">Атомный номер</span>
+                <span class="detail-value">${element.number}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Атомная масса</span>
+                <span class="detail-value">${typeof element.mass === 'number' ? element.mass.toFixed(3) : element.mass} а.е.м.</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Категория</span>
+                <span class="detail-value">${CATEGORY_NAMES[element.category]}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Электронная конфигурация</span>
+                <span class="detail-value">${element.el_configuration}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Период</span>
+                <span class="detail-value">${element.period}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Группа</span>
+                <span class="detail-value">${element.group || 'Лантаноиды/Актиноиды'}</span>
+            </div>
+        </div>
+    `;
+    document.getElementById('elementDetail').classList.remove('hidden');
+}
+
+function closeDetail() {
+    document.getElementById('elementDetail').classList.add('hidden');
+}
+
+function switchView(view) {
+    // Update tabs
+    document.querySelectorAll('.view-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.view === view);
+    });
+
+    // Update views
+    document.querySelectorAll('.view-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    if (view === 'table') {
+        document.getElementById('tableView').classList.add('active');
+    } else {
+        document.getElementById('metalsView').classList.add('active');
+    }
+}
+
+function initSearch() {
+    const searchInput = document.getElementById('searchElement');
+
+    searchInput.addEventListener('input', (e) => {
+        const search = e.target.value.toLowerCase();
+        const tiles = document.querySelectorAll('.element-tile, .element-tile-small');
+
+        tiles.forEach(tile => {
+            const symbol = tile.getAttribute('data-symbol') || '';
+            const name = tile.getAttribute('data-name') || tile.querySelector('.element-name')?.textContent || '';
+            const number = tile.getAttribute('data-number') || tile.querySelector('.element-number')?.textContent || '';
+
+            const matches = symbol.toLowerCase().includes(search) ||
+                           name.toLowerCase().includes(search) ||
+                           number.includes(search);
+
+            tile.style.opacity = matches || !search ? '1' : '0.2';
+            tile.style.pointerEvents = matches || !search ? 'auto' : 'none';
+        });
+    });
+}
+
+function initTheme() {
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('themeToggle').querySelector('i');
+    icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+window.onclick = function(event) {
+    const detail = document.getElementById('elementDetail');
+    if (event.target === detail) {
+        closeDetail();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadElementsData);
+</script>
+{% endblock %}

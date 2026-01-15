@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Вход в админ-панель - {{ config.site_title }}{% endblock %}
+
+{% block content %}
+<!-- Redesigned login page with better styles and removed default credentials hint -->
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-card-header">
+            <img id="loginLogo" src="{{ config.site_logo_dark }}" alt="Логотип" class="login-logo">
+            <h1>Вход в систему</h1>
+            <p class="login-subtitle">{{ config.site_title }}</p>
+        </div>
+        
+        {% if error %}
+        <div class="login-alert login-alert-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+        
+        <form class="login-form" method="POST" action="/login">
+            <div class="login-form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Имя пользователя
+                </label>
+                <input type="text" id="username" name="username" class="login-input" 
+                       placeholder="Введите имя пользователя" required autofocus>
+            </div>
+            <div class="login-form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Пароль
+                </label>
+                <input type="password" id="password" name="password" class="login-input" 
+                       placeholder="Введите пароль" required>
+            </div>
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </form>
+        
+        <div class="login-card-footer">
+            <a href="/" class="login-back-link">
+                <i class="fas fa-arrow-left"></i> Вернуться на главную
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateLoginLogo(savedTheme);
+});
+
+function updateLoginLogo(theme) {
+    const logo = document.getElementById('loginLogo');
+    if (logo) {
+        logo.src = theme === 'light' 
+            ? '{{ config.site_logo_dark }}'
+            : '{{ config.site_logo_light }}';
+    }
+}
+</script>
+{% endblock %}

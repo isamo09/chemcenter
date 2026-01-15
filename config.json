@@ -1,0 +1,12 @@
+{
+  "theme": "light",
+  "site_title": "Химический центр",
+  "site_description": "Интерактивный химический центр вивт",
+  "site_logo_light": "/static/images/logo-light.png",
+  "site_logo_dark": "/static/images/logo-dark.png",
+  "enabled_plugins": [
+    "periodic_table",
+    "le_chatelier"
+  ],
+  "tiles": []
+}
