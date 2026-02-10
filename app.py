@@ -4,11 +4,12 @@ from functools import wraps
 import json
 import os
 import hashlib
-from datetime import datetime
+import uuid
+from datetime import datetime, timedelta
 from pathlib import Path
 
 app = Flask(__name__)
-app.secret_key = 'fYfguehg*GJ&hjgisg93'
+app.secret_key = 'key'
 CORS(app)
 
 # Configuration
@@ -17,10 +18,131 @@ DATA_DIR = Path('data')
 DATA_DIR.mkdir(exist_ok=True)
 PLUGINS_DIR.mkdir(exist_ok=True)
 
+STATS_FILE = DATA_DIR / 'visits.json'
+
 
 def hash_password(password):
     """Hash password using SHA-256"""
     return hashlib.sha256(password.encode()).hexdigest()
+
+
+def load_visits():
+    """Load visits data from file"""
+    if STATS_FILE.exists():
+        with open(STATS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {'visits': []}
+
+
+def save_visits(data):
+    """Save visits data to file"""
+    with open(STATS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def record_visit():
+    """Record a new visit"""
+    data = load_visits()
+
+    # Get or create session ID
+    if 'visitor_id' not in session:
+        session['visitor_id'] = str(uuid.uuid4())
+
+    visit = {
+        'timestamp': datetime.now().isoformat(),
+        'session_id': session['visitor_id'],
+        'ip': request.remote_addr,
+        'user_agent': request.headers.get('User-Agent', '')[:200]
+    }
+
+    data['visits'].append(visit)
+
+    # Keep only last 100000 visits to prevent file from growing too large
+    if len(data['visits']) > 100000:
+        data['visits'] = data['visits'][-100000:]
+
+    save_visits(data)
+
+
+def get_statistics():
+    """Calculate visit statistics"""
+    data = load_visits()
+    visits = data.get('visits', [])
+
+    now = datetime.now()
+
+    # Define time periods
+    periods = {
+        'hour': {
+            'current_start': now.replace(minute=0, second=0, microsecond=0),
+            'prev_start': now.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1),
+            'prev_end': now.replace(minute=0, second=0, microsecond=0)
+        },
+        'day': {
+            'current_start': now.replace(hour=0, minute=0, second=0, microsecond=0),
+            'prev_start': now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1),
+            'prev_end': now.replace(hour=0, minute=0, second=0, microsecond=0)
+        },
+        'month': {
+            'current_start': now.replace(day=1, hour=0, minute=0, second=0, microsecond=0),
+            'prev_start': (now.replace(day=1) - timedelta(days=1)).replace(day=1, hour=0, minute=0, second=0,
+                                                                           microsecond=0),
+            'prev_end': now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        },
+        'year': {
+            'current_start': now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0),
+            'prev_start': now.replace(year=now.year - 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0),
+            'prev_end': now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        }
+    }
+
+    stats = {
+        'total': {'visits': 0, 'unique': 0},
+        'hour': {'current': {'visits': 0, 'unique': 0}, 'previous': {'visits': 0, 'unique': 0}},
+        'day': {'current': {'visits': 0, 'unique': 0}, 'previous': {'visits': 0, 'unique': 0}},
+        'month': {'current': {'visits': 0, 'unique': 0}, 'previous': {'visits': 0, 'unique': 0}},
+        'year': {'current': {'visits': 0, 'unique': 0}, 'previous': {'visits': 0, 'unique': 0}}
+    }
+
+    # Session sets for unique counting
+    total_sessions = set()
+    period_sessions = {
+        'hour': {'current': set(), 'previous': set()},
+        'day': {'current': set(), 'previous': set()},
+        'month': {'current': set(), 'previous': set()},
+        'year': {'current': set(), 'previous': set()}
+    }
+
+    for visit in visits:
+        try:
+            visit_time = datetime.fromisoformat(visit['timestamp'])
+            session_id = visit.get('session_id', visit.get('ip', 'unknown'))
+
+            # Total
+            stats['total']['visits'] += 1
+            total_sessions.add(session_id)
+
+            # Check each period
+            for period_name, period_times in periods.items():
+                # Current period
+                if visit_time >= period_times['current_start']:
+                    stats[period_name]['current']['visits'] += 1
+                    period_sessions[period_name]['current'].add(session_id)
+
+                # Previous period
+                if period_times['prev_start'] <= visit_time < period_times['prev_end']:
+                    stats[period_name]['previous']['visits'] += 1
+                    period_sessions[period_name]['previous'].add(session_id)
+        except (ValueError, KeyError):
+            continue
+
+    # Calculate unique visits
+    stats['total']['unique'] = len(total_sessions)
+    for period_name in periods:
+        stats[period_name]['current']['unique'] = len(period_sessions[period_name]['current'])
+        stats[period_name]['previous']['unique'] = len(period_sessions[period_name]['previous'])
+
+    return stats
 
 
 def init_admin():
@@ -114,6 +236,7 @@ plugin_manager = PluginManager()
 @app.route('/')
 def index():
     """Main page"""
+    record_visit()  # Record visit
     config = load_config()
     return render_template('index.html', config=config)
 
@@ -171,6 +294,14 @@ def toggle_plugin(name):
     config['enabled_plugins'] = enabled_plugins
     save_config(config)
     return jsonify({'success': True, 'enabled': name in enabled_plugins})
+
+
+@app.route('/api/admin/statistics')
+@login_required
+def get_visit_statistics():
+    """Get visit statistics"""
+    stats = get_statistics()
+    return jsonify(stats)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -325,6 +456,7 @@ def change_password():
 @app.route('/plugin/<name>')
 def view_plugin(name):
     """View plugin page"""
+    record_visit()  # Record visit
     plugin = plugin_manager.get_plugin(name)
     if not plugin:
         return "Plugin not found", 404
@@ -333,20 +465,39 @@ def view_plugin(name):
 
     template_map = {
         'periodic_table': 'plugin_periodic_table.html',
-        'le_chatelier': 'plugin_le_chatelier.html'
+        'le_chatelier': 'plugin_le_chatelier.html',
+        'Ionic_equation': 'plugin_Ionic_equation.html',
+        'solubility_table': 'plugin_solubility_table.html',
+        'balancing_chemical_equations': 'plugin_balancing_chemical_equations.html',
+        'electrochemical_voltage_series': 'plugin_electrochemical_voltage_series.html',
+        'hydrocarbon_equations': 'plugin_hydrocarbon_equations.html',
+        'molar_mass_calculator': 'plugin_molar_mass_calculator.html',
+        'classification_and_nomenclature': 'plugin_classification_and_nomenclature.html',
+        'equals': 'plugin_equals.html'
     }
 
     template = template_map.get(name, f'plugin_{name}.html')
     return render_template(template, config=config)
 
 
-@app.route('/api/plugin/<name>')
+@app.route('/api/plugin/<name>', methods=['GET', 'POST'])
 def get_plugin_content(name):
     """Get plugin content"""
     plugin = plugin_manager.get_plugin(name)
     if not plugin:
         return jsonify({'error': 'Plugin not found'}), 404
 
+    # Обработка POST запросов для плагинов с расчетами
+    if request.method == 'POST':
+        if name == 'Ionic_equation':
+            data = request.json
+            equation = data.get('equation', '')
+            if equation and hasattr(plugin, 'solve_ionic_equation'):
+                result = plugin.solve_ionic_equation(equation)
+                return jsonify(result)
+            return jsonify({'error': 'Invalid request'}), 400
+
+    # Обработка GET запросов
     if name == 'le_chatelier':
         equation = request.args.get('equation')
         if equation and hasattr(plugin, 'calculate_equilibrium'):
@@ -363,6 +514,7 @@ def get_plugin_content(name):
 @app.route('/post/<int:post_id>')
 def view_post(post_id):
     """View individual post"""
+    record_visit()  # Record visit
     posts_file = DATA_DIR / 'posts.json'
     config = load_config()
 
@@ -488,7 +640,18 @@ def get_default_config():
         'site_description': 'Интерактивная научная платформа',
         'site_logo_light': '/static/images/logo-light.png',
         'site_logo_dark': '/static/images/logo-dark.png',
-        'enabled_plugins': ['periodic_table', 'le_chatelier'],
+        'enabled_plugins': [
+            'periodic_table',
+            'le_chatelier',
+            'solubility_table',
+            'Ionic_equation',
+            'balancing_chemical_equations',
+            'electrochemical_voltage_series',
+            'hydrocarbon_equations',
+            'molar_mass_calculator',
+            'classification_and_nomenclature',
+            'equals'
+        ],
         'tiles': []
     }
 
@@ -501,4 +664,4 @@ def save_posts(posts):
 
 
 if __name__ == '__main__':
-    app.run(debug=False, port=1253, host="0.0.0.0")
+    app.run(debug=True, port=1253, host="0.0.0.0")

@@ -6,7 +6,15 @@
   "site_logo_dark": "/static/images/logo-dark.png",
   "enabled_plugins": [
     "periodic_table",
-    "le_chatelier"
+    "le_chatelier",
+    "solubility_table",
+    "Ionic_equation",
+    "balancing_chemical_equations",
+    "electrochemical_voltage_series",
+    "hydrocarbon_equations",
+    "molar_mass_calculator",
+    "classification_and_nomenclature",
+    "equals"
   ],
   "tiles": []
 }

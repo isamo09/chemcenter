@@ -1,0 +1,1455 @@
+{% extends "base.html" %}
+
+{% block title %}Органическая химия: Классификация и номенклатура - {{ config.site_title }}{% endblock %}
+
+{% block content %}
+<div class="plugin-container">
+    <header class="plugin-header">
+        <div class="plugin-header-content">
+            <a href="/" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <div class="plugin-title-section">
+                <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
+                <h1><i class="fas fa-atom"></i> Органическая химия: Классификация и номенклатура</h1>
+            </div>
+            <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="principle-container">
+            <!-- Режимы работы -->
+            <div class="info-section">
+                <h2>Классификация органических соединений</h2>
+                <p>Выберите режим работы:</p>
+            </div>
+
+            <div class="mode-selector">
+                <button class="btn-primary mode-btn active" data-mode="find">Найти класс и название</button>
+                <button class="btn-primary mode-btn" data-mode="build">Построить по названию</button>
+                <button class="btn-primary mode-btn" data-mode="handbook">Справочник классов</button>
+            </div>
+
+            <!-- Режим 1: Найти класс и название -->
+            <div id="mode-find" class="mode-content active">
+                <div class="info-section">
+                    <h3>Определение класса соединения</h3>
+                    <p>Введите структурную формулу органического соединения:</p>
+                    <div class="code-examples">
+                        <code>CH3-CH2-OH</code> (этанол)<br>
+                        <code>CH3-CO-CH3</code> (ацетон)<br>
+                        <code>CH2=CH-CH3</code> (пропен)
+                    </div>
+                </div>
+
+                <form id="findForm" class="form">
+                    <div class="form-group">
+                        <label>Структурная формула:</label>
+                        <input id="formulaInput" class="form-control" placeholder="CH3-CH2-CH3" required>
+                    </div>
+                    <button class="btn-primary">Определить</button>
+                </form>
+
+                <div id="findResult" class="result-section hidden">
+                    <h3>Результат анализа</h3>
+
+                    <div class="equation-card">
+                        <div class="equation-number">1</div>
+                        <div id="inputFormula" class="equation-display"></div>
+                    </div>
+
+                    <div class="result-header">
+                        <div class="result-item">
+                            <div class="label">Класс соединения:</div>
+                            <div id="compoundClass" class="value"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Название IUPAC:</div>
+                            <div id="iupacName" class="value"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Молекулярная формула:</div>
+                            <div id="molecularFormula" class="value"></div>
+                        </div>
+                    </div>
+
+                    <div class="explanation-box">
+                        <div class="explanation-header"><i class="fas fa-lightbulb"></i> Характерные свойства</div>
+                        <ul id="propertiesList" class="properties-list">
+                            <!-- Сюда вставляются свойства -->
+                        </ul>
+                    </div>
+
+                    <div class="formula-card">
+                        <div class="formula-title">Структурная формула:</div>
+                        <div id="structureDisplay" class="equation-display">
+                            <!-- Отображение структурной формулы -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Режим 2: Построить по названию -->
+            <div id="mode-build" class="mode-content hidden">
+                <div class="info-section">
+                    <h3>Построение формулы по названию</h3>
+                    <p>Введите название органического соединения:</p>
+                    <div class="code-examples">
+                        <code>этанол</code><br>
+                        <code>пропановая кислота</code><br>
+                        <code>2-метилпропен</code>
+                    </div>
+                </div>
+
+                <form id="buildForm" class="form">
+                    <div class="form-group">
+                        <label>Название соединения:</label>
+                        <input id="nameInput" class="form-control" placeholder="этанол" required>
+                    </div>
+                    <button class="btn-primary">Построить формулу</button>
+                </form>
+
+                <div id="buildResult" class="result-section hidden">
+                    <h3>Результат</h3>
+
+                    <div class="equation-card">
+                        <div class="equation-number">2</div>
+                        <div id="requestedName" class="equation-display"></div>
+                    </div>
+
+                    <div class="result-header">
+                        <div class="result-item">
+                            <div class="label">Молекулярная формула:</div>
+                            <div id="builtFormula" class="value"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Структурная формула:</div>
+                            <div id="builtStructure" class="value"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Изомеры:</div>
+                            <div id="isomers" class="value"></div>
+                        </div>
+                    </div>
+
+                    <div class="explanation-box">
+                        <div class="explanation-header"><i class="fas fa-atom"></i> Информация о соединении</div>
+                        <div id="compoundInfo" class="compound-info">
+                            <!-- Информация о соединении -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Режим 3: Справочник классов -->
+            <div id="mode-handbook" class="mode-content hidden">
+                <div class="info-section">
+                    <h3>Справочник классов органических соединений</h3>
+                    <p>Основные классы органических соединений:</p>
+                </div>
+
+                <div class="form">
+                    <div class="form-group">
+                        <input type="text" id="classSearch" class="form-control" placeholder="Поиск класса...">
+                    </div>
+                </div>
+
+                <div id="handbookContent" class="handbook-content">
+                    <!-- Классы генерируются через JS -->
+                </div>
+
+                <div class="info-section">
+                    <h3>Типичные реакции</h3>
+                    <div id="reactionsTable" class="reactions-table">
+                        <!-- Таблица реакций -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="error" class="error-section hidden">
+                <div class="error-header">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Ошибка</h3>
+                </div>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+// =======================================================
+// БАЗА ДАННЫХ ОРГАНИЧЕСКИХ СОЕДИНЕНИЙ
+// =======================================================
+const organicDB = {
+    compounds: {
+        "CH4": {
+            class: "Алканы (предельные углеводороды)",
+            iupac: "Метан",
+            trivial: "Метан",
+            molecular: "CH₄",
+            properties: ["Горение с образованием CO₂ и H₂O", "Реакции замещения с галогенами", "Инертность к большинству реагентов"],
+            structure: "CH₄",
+            isomers: "Нет изомеров"
+        },
+        "CH3-CH3": {
+            class: "Алканы (предельные углеводороды)",
+            iupac: "Этан",
+            trivial: "Этан",
+            molecular: "C₂H₆",
+            properties: ["Горение", "Галогенирование", "Крекинг"],
+            structure: "CH₃-CH₃",
+            isomers: "Нет изомеров"
+        },
+        "CH3-CH2-CH3": {
+            class: "Алканы (предельные углеводороды)",
+            iupac: "Пропан",
+            trivial: "Пропан",
+            molecular: "C₃H₈",
+            properties: ["Горение", "Получение из нефти", "Топливо"],
+            structure: "CH₃-CH₂-CH₃",
+            isomers: "Нет изомеров"
+        },
+        "CH2=CH2": {
+            class: "Алкены (непредельные углеводороды)",
+            iupac: "Этен",
+            trivial: "Этилен",
+            molecular: "C₂H₄",
+            properties: ["Реакции присоединения", "Полимеризация", "Окисление KMnO₄ (обесцвечивание)"],
+            structure: "CH₂=CH₂",
+            isomers: "Нет изомеров"
+        },
+        "CH3-CH=CH2": {
+            class: "Алкены (непредельные углеводороды)",
+            iupac: "Пропен",
+            trivial: "Пропилен",
+            molecular: "C₃H₆",
+            properties: ["Присоединение галогеноводородов", "Гидратация", "Полимеризация"],
+            structure: "CH₃-CH=CH₂",
+            isomers: "Циклопропан"
+        },
+        "CH≡CH": {
+            class: "Алкины (непредельные углеводороды)",
+            iupac: "Этин",
+            trivial: "Ацетилен",
+            molecular: "C₂H₂",
+            properties: ["Горение с коптящим пламенем", "Реакции присоединения", "Образование ацетиленидов"],
+            structure: "HC≡CH",
+            isomers: "Нет изомеров"
+        },
+        "CH3-OH": {
+            class: "Предельные одноатомные спирты",
+            iupac: "Метанол",
+            trivial: "Метиловый спирт",
+            molecular: "CH₄O",
+            properties: ["Горение", "Окисление до альдегида", "Реакция с активными металлами"],
+            structure: "CH₃-OH",
+            isomers: "Нет"
+        },
+        "CH3-CH2-OH": {
+            class: "Предельные одноатомные спирты",
+            iupac: "Этанол",
+            trivial: "Этиловый спирт",
+            molecular: "C₂H₆O",
+            properties: ["Горение", "Дегидратация", "Окисление до уксусной кислоты"],
+            structure: "CH₃-CH₂-OH",
+            isomers: "Диметиловый эфир"
+        },
+        "H-CHO": {
+            class: "Альдегиды",
+            iupac: "Метанaль",
+            trivial: "Формальдегид",
+            molecular: "CH₂O",
+            properties: ["Реакция серебряного зеркала", "Окисление до кислоты", "Поликонденсация"],
+            structure: "H-CHO",
+            isomers: "Нет"
+        },
+        "CH3-CHO": {
+            class: "Альдегиды",
+            iupac: "Этаналь",
+            trivial: "Ацетальдегид",
+            molecular: "C₂H₄O",
+            properties: ["Реакция с фелинговой жидкостью", "Гидрирование до спирта", "Полимеризация"],
+            structure: "CH₃-CHO",
+            isomers: "Оксид этилена"
+        },
+        "H-COOH": {
+            class: "Предельные одноосновные карбоновые кислоты",
+            iupac: "Метановая кислота",
+            trivial: "Муравьиная кислота",
+            molecular: "CH₂O₂",
+            properties: ["Реакция с металлами", "Реакция этерификации", "Обладает восстановительными свойствами"],
+            structure: "H-COOH",
+            isomers: "Нет"
+        },
+        "CH3-COOH": {
+            class: "Предельные одноосновные карбоновые кислоты",
+            iupac: "Этановая кислота",
+            trivial: "Уксусная кислота",
+            molecular: "C₂H₄O₂",
+            properties: ["Образование солей", "Реакция этерификации", "Диссоциация в воде"],
+            structure: "CH₃-COOH",
+            isomers: "Метилформиат"
+        }
+    },
+
+    classes: [
+        {
+            name: "Алканы",
+            general: "CₙH₂ₙ₊₂",
+            examples: ["Метан CH₄", "Этан C₂H₆", "Пропан C₃H₈"],
+            functional: "-C-C- (одинарные связи)",
+            properties: "Малореакционноспособны, горят, галогенирование",
+            reactions: "Горение, крекинг, замещение"
+        },
+        {
+            name: "Алкены",
+            general: "CₙH₂ₙ",
+            examples: ["Этилен C₂H₄", "Пропен C₃H₆", "Бутен C₄H₈"],
+            functional: ">C=C< (двойная связь)",
+            properties: "Реакции присоединения, полимеризация",
+            reactions: "Гидратация, галогенирование, гидрирование"
+        },
+        {
+            name: "Алкины",
+            general: "CₙH₂ₙ₋₂",
+            examples: ["Ацетилен C₂H₂", "Пропин C₃H₄"],
+            functional: "-C≡C- (тройная связь)",
+            properties: "Кислотные свойства терминальных, присоединение",
+            reactions: "Гидратация (Кучерова), галогенирование"
+        },
+        {
+            name: "Спирты",
+            general: "R-OH",
+            examples: ["Метанол CH₃OH", "Этанол C₂H₅OH", "Пропанол C₃H₇OH"],
+            functional: "-OH (гидроксильная группа)",
+            properties: "Водородные связи, кислотные свойства",
+            reactions: "Дегидратация, окисление, этерификация"
+        },
+        {
+            name: "Альдегиды",
+            general: "R-CHO",
+            examples: ["Формальдегид HCHO", "Ацетальдегид CH₃CHO"],
+            functional: "-CHO (карбонильная группа)",
+            properties: "Восстановители, характерный запах",
+            reactions: "Окисление до кислот, восстановление до спиртов"
+        },
+        {
+            name: "Карбоновые кислоты",
+            general: "R-COOH",
+            examples: ["Уксусная CH₃COOH", "Муравьиная HCOOH"],
+            functional: "-COOH (карбоксильная группа)",
+            properties: "Кислотные свойства, водородные связи",
+            reactions: "Образование солей, эфиров, амидов"
+        }
+    ],
+
+    reactions: [
+        { class: "Алканы", reaction: "CₙH₂ₙ₊₂ + O₂ → CO₂ + H₂O", type: "Горение" },
+        { class: "Алканы", reaction: "CₙH₂ₙ₊₂ + Cl₂ → CₙH₂ₙ₊₁Cl + HCl", type: "Галогенирование" },
+        { class: "Алкены", reaction: "CₙH₂ₙ + H₂ → CₙH₂ₙ₊₂", type: "Гидрирование" },
+        { class: "Алкены", reaction: "CₙH₂ₙ + H₂O → CₙH₂ₙ₊₁OH", type: "Гидратация" },
+        { class: "Алкины", reaction: "CₙH₂ₙ₋₂ + 2H₂ → CₙH₂ₙ₊₂", type: "Гидрирование" },
+        { class: "Спирты", reaction: "R-OH + Na → R-ONa + H₂", type: "С металлами" },
+        { class: "Спирты", reaction: "R-OH → R-H + H₂O", type: "Дегидратация" },
+        { class: "Альдегиды", reaction: "R-CHO + 2[Ag(NH₃)₂]OH → R-COONH₄ + 2Ag↓", type: "Серебряное зеркало" },
+        { class: "Кислоты", reaction: "R-COOH + NaOH → R-COONa + H₂O", type: "Нейтрализация" },
+        { class: "Кислоты", reaction: "R-COOH + R'-OH → R-COO-R' + H₂O", type: "Этерификация" }
+    ]
+};
+
+// =======================================================
+// ОСНОВНАЯ ЛОГИКА
+// =======================================================
+document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    initModeSwitcher();
+    initForms();
+    loadHandbook();
+});
+
+function initTheme() {
+    const btn = document.getElementById("themeToggle");
+    const saved = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", saved);
+
+    btn.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+    });
+}
+
+function initModeSwitcher() {
+    const buttons = document.querySelectorAll('.mode-btn');
+    const contents = document.querySelectorAll('.mode-content');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            contents.forEach(c => c.classList.add('hidden'));
+            document.getElementById(`mode-${mode}`).classList.remove('hidden');
+
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('findResult')?.classList.add('hidden');
+            document.getElementById('buildResult')?.classList.add('hidden');
+        });
+    });
+}
+
+function initForms() {
+    document.getElementById('findForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formula = document.getElementById('formulaInput').value.trim().toUpperCase();
+        findCompound(formula);
+    });
+
+    document.getElementById('buildForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('nameInput').value.trim().toLowerCase();
+        buildFromName(name);
+    });
+
+    document.getElementById('classSearch')?.addEventListener('input', (e) => {
+        filterClasses(e.target.value);
+    });
+}
+
+// =======================================================
+// ФУНКЦИИ ДЛЯ РЕЖИМА "НАЙТИ"
+// =======================================================
+function findCompound(formula) {
+    hideAllResults();
+
+    let found = null;
+    const simpleFormula = formula.replace(/[₀₁₂₃₄₅₆₇₈₉-]/g, '').toUpperCase();
+
+    for (const [key, data] of Object.entries(organicDB.compounds)) {
+        const simpleKey = key.replace(/[-=]/g, '');
+        if (simpleFormula.includes(simpleKey) || key.includes(formula)) {
+            found = { key, data };
+            break;
+        }
+    }
+
+    if (!found) {
+        found = determineClassByStructure(formula);
+    }
+
+    if (found) {
+        displayFindResult(formula, found);
+    } else {
+        showError(`Соединение "${formula}" не найдено. Проверьте правильность написания.`);
+    }
+}
+
+function determineClassByStructure(formula) {
+    formula = formula.toUpperCase();
+
+    if (formula.includes('≡')) {
+        return {
+            key: formula,
+            data: {
+                class: "Алкины (непредельные углеводороды)",
+                iupac: "Определить по номенклатуре",
+                trivial: "Алкин",
+                molecular: formula.replace(/[^CHON0-9]/g, ''),
+                properties: ["Характерны реакции присоединения", "Кислотные свойства терминальных алкинов"],
+                structure: formula,
+                isomers: "Может иметь изомеры положения"
+            }
+        };
+    } else if (formula.includes('=')) {
+        return {
+            key: formula,
+            data: {
+                class: "Алкены (непредельные углеводороды)",
+                iupac: "Определить по номенклатуре",
+                trivial: "Алкен",
+                molecular: formula.replace(/[^CHON0-9]/g, ''),
+                properties: ["Реакции присоединения", "Обесцвечивание KMnO₄", "Полимеризация"],
+                structure: formula,
+                isomers: "Может иметь геометрические изомеры"
+            }
+        };
+    } else if (formula.includes('OH') && !formula.includes('COOH')) {
+        return {
+            key: formula,
+            data: {
+                class: "Спирты",
+                iupac: "Определить по номенклатуре",
+                trivial: "Спирт",
+                molecular: formula.replace(/[^CHON0-9]/g, ''),
+                properties: ["Реакции с металлами", "Дегидратация", "Окисление"],
+                structure: formula,
+                isomers: "Может иметь изомеры положения OH-группы"
+            }
+        };
+    } else if (formula.includes('COOH') || formula.includes('CO2H')) {
+        return {
+            key: formula,
+            data: {
+                class: "Карбоновые кислоты",
+                iupac: "Определить по номенклатуре",
+                trivial: "Карбоновая кислота",
+                molecular: formula.replace(/[^CHON0-9]/g, ''),
+                properties: ["Кислотные свойства", "Образование солей", "Этерификация"],
+                structure: formula,
+                isomers: "Может иметь изомеры углеродного скелета"
+            }
+        };
+    } else if (formula.includes('CHO') && formula.indexOf('CHO') === formula.length - 3) {
+        return {
+            key: formula,
+            data: {
+                class: "Альдегиды",
+                iupac: "Определить по номенклатуре",
+                trivial: "Альдегид",
+                molecular: formula.replace(/[^CHON0-9]/g, ''),
+                properties: ["Реакции окисления", "Реакция серебряного зеркала", "Восстановление до спиртов"],
+                structure: formula,
+                isomers: "Может иметь изомеры"
+            }
+        };
+    }
+
+    return {
+        key: formula,
+        data: {
+            class: "Алканы (предельные углеводороды)",
+            iupac: "Определить по номенклатуре",
+            trivial: "Алкан",
+            molecular: formula.replace(/[^CHON0-9]/g, ''),
+            properties: ["Горение", "Галогенирование", "Крекинг"],
+            structure: formula,
+            isomers: "Может иметь структурные изомеры"
+        }
+    };
+}
+
+function displayFindResult(originalFormula, result) {
+    const { data } = result;
+
+    document.getElementById('inputFormula').innerHTML = `<code>${originalFormula}</code>`;
+    document.getElementById('compoundClass').textContent = data.class;
+    document.getElementById('iupacName').textContent = data.iupac;
+    document.getElementById('molecularFormula').textContent = data.molecular;
+
+    const propsList = document.getElementById('propertiesList');
+    propsList.innerHTML = '';
+    data.properties.forEach(prop => {
+        const li = document.createElement('li');
+        li.textContent = prop;
+        propsList.appendChild(li);
+    });
+
+    const structureDisplay = document.getElementById('structureDisplay');
+    structureDisplay.innerHTML = `<code>${data.structure}</code>`;
+
+    document.getElementById('findResult').classList.remove('hidden');
+    document.getElementById('error').classList.add('hidden');
+}
+
+// =======================================================
+// ФУНКЦИИ ДЛЯ РЕЖИМА "ПОСТРОИТЬ"
+// =======================================================
+function buildFromName(name) {
+    hideAllResults();
+
+    let found = null;
+
+    for (const [key, data] of Object.entries(organicDB.compounds)) {
+        if (data.iupac.toLowerCase().includes(name) ||
+            data.trivial.toLowerCase().includes(name) ||
+            name.includes(data.iupac.toLowerCase()) ||
+            name.includes(data.trivial.toLowerCase())) {
+            found = { key, data };
+            break;
+        }
+    }
+
+    if (found) {
+        displayBuildResult(name, found);
+    } else {
+        const generated = generateFromName(name);
+        displayBuildResult(name, generated);
+    }
+}
+
+function generateFromName(name) {
+    let formula = "";
+    let structure = "";
+    let isomers = "Возможны изомеры";
+
+    if (name.includes('метан') || name.includes('meth')) {
+        formula = "CH₄";
+        structure = "CH₄";
+        isomers = "Нет изомеров";
+    } else if (name.includes('этан') || name.includes('eth')) {
+        formula = "C₂H₆";
+        structure = "CH₃—CH₃";
+        isomers = "Нет изомеров";
+    } else if (name.includes('пропан') || name.includes('prop')) {
+        formula = "C₃H₈";
+        structure = "CH₃—CH₂—CH₃";
+        isomers = "Нет изомеров";
+    } else if (name.includes('алкен') || name.includes('ен')) {
+        formula = "CₙH₂ₙ";
+        structure = "R—CH=CH—R'";
+        isomers = "Геометрические изомеры";
+    } else if (name.includes('алкин') || name.includes('ин')) {
+        formula = "CₙH₂ₙ₋₂";
+        structure = "R—C≡C—R'";
+        isomers = "Изомеры положения тройной связи";
+    } else {
+        formula = "Определить по номенклатуре";
+        structure = "Используйте систематическое название";
+        isomers = "Зависит от строения";
+    }
+
+    return {
+        key: name,
+        data: {
+            molecular: formula,
+            structure: structure,
+            isomers: isomers
+        }
+    };
+}
+
+function displayBuildResult(name, result) {
+    const { data } = result;
+
+    document.getElementById('requestedName').innerHTML = `<code>${name}</code>`;
+    document.getElementById('builtFormula').textContent = data.molecular;
+    document.getElementById('builtStructure').textContent = data.structure;
+    document.getElementById('isomers').textContent = data.isomers;
+
+    document.getElementById('buildResult').classList.remove('hidden');
+    document.getElementById('error').classList.add('hidden');
+}
+
+// =======================================================
+// ФУНКЦИИ ДЛЯ РЕЖИМА "СПРАВОЧНИК"
+// =======================================================
+function loadHandbook() {
+    const container = document.getElementById('handbookContent');
+    container.innerHTML = '';
+
+    organicDB.classes.forEach((cls, index) => {
+        const card = document.createElement('div');
+        card.className = 'equation-card';
+        card.innerHTML = `
+            <div class="equation-number">${index + 1}</div>
+            <div class="equation-display">
+                <strong>${cls.name}</strong><br>
+                <small>Общая формула: ${cls.general}</small><br>
+                <small>Функциональная группа: ${cls.functional}</small><br>
+                <small>Свойства: ${cls.properties}</small><br>
+                <small>Примеры: ${cls.examples.join(', ')}</small>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    loadReactionsTable();
+}
+
+function filterClasses(query) {
+    const cards = document.querySelectorAll('.equation-card');
+    const normalizedQuery = query.toLowerCase();
+
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(normalizedQuery) ? 'block' : 'none';
+    });
+}
+
+function loadReactionsTable() {
+    const container = document.getElementById('reactionsTable');
+    container.innerHTML = '';
+
+    organicDB.reactions.forEach(rxn => {
+        const row = document.createElement('div');
+        row.className = 'reaction-row';
+        row.innerHTML = `
+            <div class="reaction-class">${rxn.class}:</div>
+            <div class="reaction-equation"><code>${rxn.reaction}</code></div>
+            <div class="reaction-type">(${rxn.type})</div>
+        `;
+        container.appendChild(row);
+    });
+}
+
+// =======================================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// =======================================================
+function hideAllResults() {
+    document.getElementById('findResult')?.classList.add('hidden');
+    document.getElementById('buildResult')?.classList.add('hidden');
+    document.getElementById('error').classList.add('hidden');
+}
+
+function showError(message) {
+    document.getElementById('errorMessage').textContent = message;
+    document.getElementById('error').classList.remove('hidden');
+
+    document.getElementById('findResult')?.classList.add('hidden');
+    document.getElementById('buildResult')?.classList.add('hidden');
+}
+</script>
+
+<style>
+/* =======================================================
+   CSS ПЕРЕМЕННЫЕ (СООТВЕТСТВИЕ plugin_le_chatelier.html)
+======================================================= */
+:root {
+    --bg-color: #f8f9fa;
+    --content-bg: #ffffff;
+    --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-bg: #ffffff;
+    --info-bg: #f1f8ff;
+    --form-bg: #f8f9fa;
+    --equation-bg: #f8f9fa;
+    --item-bg: #ffffff;
+    --input-bg: #ffffff;
+    --code-bg: #f1f1f1;
+    --border-color: #dee2e6;
+    --text-color: #333333;
+    --accent-color: #4a6ee0;
+    --accent-hover: #3a5ecf;
+    --accent-rgb: 74, 110, 224;
+    --button-bg: #e9ecef;
+    --button-text: #333333;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --content-bg: #1e1e1e;
+    --header-bg: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+    --card-bg: #252525;
+    --info-bg: #1a3a5f;
+    --form-bg: #252525;
+    --equation-bg: #2d2d2d;
+    --item-bg: #2d2d2d;
+    --input-bg: #2d2d2d;
+    --code-bg: #333333;
+    --border-color: #444444;
+    --text-color: #e0e0e0;
+    --accent-color: #5c6bc0;
+    --accent-hover: #7986cb;
+    --accent-rgb: 92, 107, 192;
+    --button-bg: #333333;
+    --button-text: #e0e0e0;
+    --success-color: #4caf50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+}
+
+/* =======================================================
+   ОСНОВНЫЕ СТИЛИ КОНТЕЙНЕРА
+======================================================= */
+.plugin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    min-height: 100vh;
+}
+
+.plugin-header {
+    background: var(--header-bg);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.plugin-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.plugin-title-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.plugin-title-section h1 {
+    margin: 0;
+    color: white;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.plugin-logo {
+    height: 60px;
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* =======================================================
+   ОСНОВНОЙ КОНТЕНТ
+======================================================= */
+.main-content {
+    background: var(--content-bg);
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.principle-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* =======================================================
+   СЕКЦИИ ИНФОРМАЦИИ
+======================================================= */
+.info-section {
+    background: var(--info-bg);
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    border-left: 5px solid var(--accent-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.info-section h2, .info-section h3 {
+    color: var(--accent-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.info-section h2 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.info-section h3 {
+    font-size: 1.4rem;
+}
+
+.info-section p {
+    margin-bottom: 20px;
+    line-height: 1.7;
+    color: var(--text-color);
+}
+
+.code-examples {
+    background: var(--code-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid var(--border-color);
+}
+
+.code-examples code {
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin: 5px 10px 5px 0;
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+/* =======================================================
+   СЕЛЕКТОР РЕЖИМОВ
+======================================================= */
+.mode-selector {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.mode-btn {
+    flex: 1;
+    min-width: 250px;
+    padding: 20px 30px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.mode-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.mode-btn.active {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    transform: translateY(-3px);
+}
+
+.mode-btn i {
+    font-size: 1.3rem;
+}
+
+/* =======================================================
+   СОДЕРЖАНИЕ РЕЖИМОВ
+======================================================= */
+.mode-content {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =======================================================
+   ФОРМЫ
+======================================================= */
+.form {
+    background: var(--form-bg);
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 700;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.15);
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(var(--accent-rgb), 0.4);
+}
+
+/* =======================================================
+   КАРТОЧКИ РЕЗУЛЬТАТОВ
+======================================================= */
+.result-section {
+    background: var(--card-bg);
+    padding: 35px;
+    border-radius: 15px;
+    margin-top: 30px;
+    border: 1px solid var(--border-color);
+    animation: slideIn 0.5s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-section h3 {
+    color: var(--accent-color);
+    font-size: 1.6rem;
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.equation-card {
+    background: var(--equation-bg);
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border-left: 5px solid var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.equation-card:hover {
+    transform: translateX(5px);
+}
+
+.equation-number {
+    background: var(--accent-color);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.3);
+}
+
+.equation-display {
+    flex-grow: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    color: var(--text-color);
+    overflow-x: auto;
+    padding: 15px;
+    background: var(--code-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    line-height: 1.5;
+}
+
+.equation-display code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-weight: 600;
+}
+
+.formula-card {
+    background: var(--info-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
+}
+
+.formula-title {
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+/* =======================================================
+   ЗАГОЛОВКИ РЕЗУЛЬТАТОВ
+======================================================= */
+.result-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin: 30px 0;
+}
+
+.result-item {
+    background: var(--item-bg);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.result-item:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.result-item .label {
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-item .value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* =======================================================
+   ОБЪЯСНЕНИЯ И ИНФОРМАЦИЯ
+======================================================= */
+.explanation-box {
+    background: var(--info-bg);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 30px 0;
+    border-left: 5px solid var(--accent-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.explanation-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--accent-color);
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.explanation-header i {
+    font-size: 1.5rem;
+}
+
+.properties-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.properties-list li {
+    padding: 15px 0;
+    padding-left: 35px;
+    position: relative;
+    border-bottom: 2px dashed var(--border-color);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.properties-list li:last-child {
+    border-bottom: none;
+}
+
+.properties-list li:before {
+    content: "✓";
+    color: var(--success-color);
+    font-size: 1.4rem;
+    position: absolute;
+    left: 0;
+    top: 15px;
+    font-weight: bold;
+    background: rgba(40, 167, 69, 0.1);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compound-info {
+    color: var(--text-color);
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+
+/* =======================================================
+   СПРАВОЧНИК КЛАССОВ
+======================================================= */
+.handbook-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.reactions-table {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.reaction-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 150px;
+    gap: 20px;
+    align-items: center;
+    background: var(--equation-bg);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.reaction-row:hover {
+    transform: translateX(5px);
+    border-color: var(--accent-color);
+}
+
+.reaction-class {
+    font-weight: 700;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.reaction-equation {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.reaction-type {
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.95rem;
+    text-align: right;
+}
+
+/* =======================================================
+   ОШИБКИ
+======================================================= */
+.error-section {
+    background: rgba(220, 53, 69, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    margin-top: 30px;
+    border: 2px solid var(--error-color);
+    animation: fadeIn 0.3s ease;
+}
+
+.error-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--error-color);
+    margin-bottom: 20px;
+}
+
+.error-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.error-header i {
+    font-size: 2rem;
+}
+
+.error-section p {
+    color: var(--error-color);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* =======================================================
+   УТИЛИТЫ И АДАПТИВНОСТЬ
+======================================================= */
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 992px) {
+    .plugin-header-content {
+        flex-wrap: wrap;
+    }
+
+    .plugin-title-section {
+        order: 2;
+        width: 100%;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .back-button, .theme-toggle {
+        order: 1;
+    }
+
+    .mode-selector {
+        flex-direction: column;
+    }
+
+    .mode-btn {
+        min-width: 100%;
+    }
+
+    .result-header {
+        grid-template-columns: 1fr;
+    }
+
+    .reaction-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .reaction-class, .reaction-equation, .reaction-type {
+        text-align: left;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 25px;
+    }
+
+    .plugin-title-section h1 {
+        font-size: 1.4rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .equation-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .equation-number {
+        width: 40px;
+        height: 40px;
+    }
+
+    .equation-display {
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .plugin-container {
+        padding: 10px;
+    }
+
+    .plugin-header {
+        padding: 15px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .info-section, .form, .result-section {
+        padding: 20px;
+    }
+
+    .mode-btn {
+        padding: 15px 20px;
+        font-size: 1rem;
+    }
+}
+</style>
+{% endblock %}

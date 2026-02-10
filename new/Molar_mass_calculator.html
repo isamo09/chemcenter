@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор молярной массы - Химические плагины</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f5f7fa;
+            --dark-bg: #1a1a2e;
+            --card-bg: #ffffff;
+            --card-bg-dark: #2d3047;
+            --text-color: #333333;
+            --text-color-dark: #f0f0f0;
+            --border-color: #dddddd;
+            --border-color-dark: #444444;
+            --muted-color: #777777;
+            --muted-color-dark: #aaaaaa;
+            --code-bg: #f8f9fa;
+            --code-bg-dark: #2a2d3e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --input-bg: #ffffff;
+            --input-bg-dark: #2d3047;
+            --table-header-bg: #f8f9fa;
+            --table-header-bg-dark: #2a2d3e;
+            --table-hover-bg: #f8f9fa;
+            --table-hover-bg-dark: #3a3d4e;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-bg: #1a1a2e;
+            --dark-bg: #0d0d15;
+            --card-bg: #2d3047;
+            --card-bg-dark: #252736;
+            --text-color: #f0f0f0;
+            --text-color-dark: #e0e0e0;
+            --border-color: #444444;
+            --border-color-dark: #555555;
+            --muted-color: #aaaaaa;
+            --muted-color-dark: #cccccc;
+            --code-bg: #2a2d3e;
+            --code-bg-dark: #1a1d2e;
+            --input-bg: #2d3047;
+            --input-bg-dark: #252736;
+            --table-header-bg: #2a2d3e;
+            --table-header-bg-dark: #1a1d2e;
+            --table-hover-bg: #3a3d4e;
+            --table-hover-bg-dark: #4a4d5e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .plugin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .plugin-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .plugin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .plugin-title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-logo {
+            height: 50px;
+            width: auto;
+            font-size: 32px;
+        }
+
+        .plugin-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(15deg);
+        }
+
+        .principle-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .info-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .info-section p {
+            color: var(--text-color);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .info-section code {
+            background: var(--code-bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .form {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .formula-input {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 8px;
+            color: var(--muted-color);
+            font-size: 14px;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .examples-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .example-tag {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-color);
+        }
+
+        .example-tag:hover {
+            border-color: var(--accent-color);
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .example-tag.active {
+            border-color: var(--accent-color);
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-section.hidden {
+            display: none;
+        }
+
+        .result-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 22px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .equation-card {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .equation-number {
+            background: var(--accent-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .equation-display {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            color: var(--text-color);
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .result-header {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .result-item {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .result-item .label {
+            font-size: 14px;
+            color: var(--muted-color);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-item .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .mass-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .mass-card .label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+        }
+
+        .mass-card .value {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+
+        .mass-card .unit {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 5px;
+        }
+
+        .composition-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .composition-table thead {
+            background: var(--table-header-bg);
+        }
+
+        .composition-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .composition-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .composition-table tr:hover {
+            background: var(--table-hover-bg);
+        }
+
+        .element-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .explanation-box {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid var(--accent-color);
+            margin-top: 25px;
+        }
+
+        .explanation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 18px;
+        }
+
+        .explanation-content {
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        .error-section {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .error-section.hidden {
+            display: none;
+        }
+
+        .error-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .error-section p {
+            color: #e74c3c;
+            margin: 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="plugin-container">
+        <header class="plugin-header">
+            <div class="plugin-header-content">
+                <a href="#" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </a>
+                <div class="plugin-title-section">
+                    <div class="header-logo">⚖️</div>
+                    <h1><i class="fas fa-weight-scale"></i> Калькулятор молярной массы</h1>
+                </div>
+                <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </header>
+
+        <main class="principle-container">
+            <div class="info-section">
+                <h2>Расчет молярной массы вещества</h2>
+                <p>Введите химическую формулу вещества для расчета его молярной массы, элементного состава и массовых долей.</p>
+                <p>Примеры правильного ввода:</p>
+                <code>H2O</code> <code>NaCl</code> <code>H2SO4</code> <code>Ca(OH)2</code> <code>Al2(SO4)3</code>
+            </div>
+
+            <form id="massForm" class="form">
+                <div class="form-group">
+                    <label>Химическая формула:</label>
+                    <input type="text" id="formulaInput" class="form-control formula-input"
+                           placeholder="H2SO4" required>
+                    <small>Используйте заглавные и строчные буквы правильно (Na, Cl, H2O)</small>
+
+                    <div class="examples-grid">
+                        <div class="example-tag" data-formula="H2O">H₂O</div>
+                        <div class="example-tag" data-formula="NaCl">NaCl</div>
+                        <div class="example-tag" data-formula="HCl">HCl</div>
+                        <div class="example-tag" data-formula="NaOH">NaOH</div>
+                        <div class="example-tag" data-formula="H2SO4">H₂SO₄</div>
+                        <div class="example-tag" data-formula="CaCO3">CaCO₃</div>
+                        <div class="example-tag" data-formula="C6H12O6">C₆H₁₂O₆</div>
+                        <div class="example-tag" data-formula="Al2(SO4)3">Al₂(SO₄)₃</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-calculator"></i> Рассчитать молярную массу
+                </button>
+            </form>
+
+            <div id="result" class="result-section hidden">
+                <h3>Результаты расчета</h3>
+
+                <div class="equation-card">
+                    <div class="equation-number">1</div>
+                    <div id="formulaDisplay" class="equation-display">H₂SO₄</div>
+                </div>
+
+                <div class="mass-card">
+                    <div class="label">Молярная масса</div>
+                    <div class="value">98.08<span class="unit">г/моль</span></div>
+                </div>
+
+                <div class="result-header">
+                    <div class="result-item">
+                        <div class="label">Количество атомов:</div>
+                        <div class="value" id="totalAtoms">7</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="label">Различных элементов:</div>
+                        <div class="value" id="uniqueElements">3</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="label">Молекул в 1 моле:</div>
+                        <div class="value">6.022×10²³</div>
+                    </div>
+                </div>
+
+                <div class="formula-card">
+                    <div class="formula-title">Элементный состав:</div>
+                    <table class="composition-table">
+                        <thead>
+                            <tr>
+                                <th>Элемент</th>
+                                <th>Количество</th>
+                                <th>Атомная масса</th>
+                                <th>Масса, г/моль</th>
+                                <th>Массовая доля, %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compositionTable">
+                            <!-- Заполнится через JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="explanation-box">
+                    <div class="explanation-header"><i class="fas fa-lightbulb"></i> Объяснение расчета</div>
+                    <p id="explanation">Молярная масса H₂SO₄ рассчитывается как сумма атомных масс всех атомов в молекуле: (2×1.008) + (1×32.06) + (4×16.00) = 98.08 г/моль.</p>
+                </div>
+            </div>
+
+            <div id="error" class="error-section hidden">
+                <h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3>
+                <p id="errorMessage"></p>
+            </div>
+
+            <div class="info-section" style="margin-top: 40px;">
+                <h2>Атомные массы элементов (округленные)</h2>
+                <div class="elements-grid" id="elementsGrid">
+                    <!-- Заполнится через JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Атомные массы элементов (по IUPAC 2021)
+        const atomicMasses = {
+            // Водород и щелочные металлы
+            'H': 1.008, 'He': 4.0026,
+            'Li': 6.94, 'Be': 9.0122, 'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999, 'F': 18.998, 'Ne': 20.180,
+            'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974, 'S': 32.06, 'Cl': 35.45, 'Ar': 39.948,
+            'K': 39.098, 'Ca': 40.078, 'Sc': 44.956, 'Ti': 47.867, 'V': 50.942, 'Cr': 51.996, 'Mn': 54.938, 'Fe': 55.845,
+            'Co': 58.933, 'Ni': 58.693, 'Cu': 63.546, 'Zn': 65.38, 'Ga': 69.723, 'Ge': 72.630, 'As': 74.922, 'Se': 78.971,
+            'Br': 79.904, 'Kr': 83.798,
+            'Rb': 85.468, 'Sr': 87.62, 'Y': 88.906, 'Zr': 91.224, 'Nb': 92.906, 'Mo': 95.95, 'Tc': 98.0, 'Ru': 101.07,
+            'Rh': 102.91, 'Pd': 106.42, 'Ag': 107.87, 'Cd': 112.41, 'In': 114.82, 'Sn': 118.71, 'Sb': 121.76, 'Te': 127.60,
+            'I': 126.90, 'Xe': 131.29,
+            'Cs': 132.91, 'Ba': 137.33, 'La': 138.91, 'Ce': 140.12, 'Pr': 140.91, 'Nd': 144.24, 'Pm': 145.0, 'Sm': 150.36,
+            'Eu': 151.96, 'Gd': 157.25, 'Tb': 158.93, 'Dy': 162.50, 'Ho': 164.93, 'Er': 167.26, 'Tm': 168.93, 'Yb': 173.05,
+            'Lu': 174.97,
+            'Hf': 178.49, 'Ta': 180.95, 'W': 183.84, 'Re': 186.21, 'Os': 190.23, 'Ir': 192.22, 'Pt': 195.08, 'Au': 196.97,
+            'Hg': 200.59, 'Tl': 204.38, 'Pb': 207.2, 'Bi': 208.98, 'Po': 209.0, 'At': 210.0, 'Rn': 222.0,
+            'Fr': 223.0, 'Ra': 226.0, 'Ac': 227.0, 'Th': 232.04, 'Pa': 231.04, 'U': 238.03
+        };
+
+        // Элементы для отображения
+        const commonElements = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S',
+                               'Cl', 'K', 'Ca', 'Ti', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Br', 'Ag', 'Sn', 'I',
+                               'Ba', 'Pt', 'Au', 'Hg', 'Pb'];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initTheme();
+            initExamples();
+            initElementsGrid();
+            document.getElementById("massForm").addEventListener("submit", calculateMolarMass);
+        });
+
+        function initTheme() {
+            const btn = document.getElementById("themeToggle");
+            const saved = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", saved);
+
+            btn.innerHTML = saved === "light" ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+
+            btn.addEventListener("click", () => {
+                const current = document.documentElement.getAttribute("data-theme");
+                const next = current === "light" ? "dark" : "light";
+                document.documentElement.setAttribute("data-theme", next);
+                localStorage.setItem("theme", next);
+                btn.innerHTML = next === "light" ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            });
+        }
+
+        function initExamples() {
+            document.querySelectorAll('.example-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const formula = tag.getAttribute('data-formula');
+                    document.getElementById('formulaInput').value = formula;
+
+                    // Подсветка активного тега
+                    document.querySelectorAll('.example-tag').forEach(t => t.classList.remove('active'));
+                    tag.classList.add('active');
+
+                    calculateMolarMass({preventDefault: () => {}});
+                });
+            });
+        }
+
+        function initElementsGrid() {
+            const container = document.getElementById('elementsGrid');
+            container.innerHTML = '';
+
+            commonElements.forEach(element => {
+                const mass = atomicMasses[element] || 0;
+                const div = document.createElement('div');
+                div.className = 'element-badge';
+                div.textContent = `${element}: ${mass.toFixed(2)}`;
+                div.title = `${element} - ${mass.toFixed(3)} г/моль`;
+                container.appendChild(div);
+            });
+        }
+
+        function parseFormula(formula) {
+            const elements = {};
+            let i = 0;
+            const n = formula.length;
+
+            while (i < n) {
+                // Парсим элемент (заглавная + строчная буква)
+                let element = '';
+                if (i < n && /[A-Z]/.test(formula[i])) {
+                    element += formula[i++];
+                    if (i < n && /[a-z]/.test(formula[i])) {
+                        element += formula[i++];
+                    }
+
+                    // Парсим количество
+                    let count = '';
+                    while (i < n && /\d/.test(formula[i])) {
+                        count += formula[i++];
+                    }
+
+                    const elementCount = count === '' ? 1 : parseInt(count);
+
+                    if (!atomicMasses[element]) {
+                        throw new Error(`Неизвестный элемент: ${element}`);
+                    }
+
+                    elements[element] = (elements[element] || 0) + elementCount;
+                }
+                // Обработка скобок
+                else if (formula[i] === '(') {
+                    const start = i + 1;
+                    let depth = 1;
+                    i++;
+
+                    while (i < n && depth > 0) {
+                        if (formula[i] === '(') depth++;
+                        else if (formula[i] === ')') depth--;
+                        i++;
+                    }
+
+                    const inside = formula.substring(start, i - 1);
+                    const subElements = parseFormula(inside);
+
+                    // Парсим множитель после скобок
+                    let multiplier = '';
+                    while (i < n && /\d/.test(formula[i])) {
+                        multiplier += formula[i++];
+                    }
+
+                    const mult = multiplier === '' ? 1 : parseInt(multiplier);
+
+                    // Умножаем все элементы внутри скобок
+                    for (const [el, count] of Object.entries(subElements)) {
+                        elements[el] = (elements[el] || 0) + count * mult;
+                    }
+                }
+                // Игнорируем другие символы (точки гидратации и т.д.)
+                else {
+                    i++;
+                }
+            }
+
+            return elements;
+        }
+
+        function formatFormula(formula) {
+            return formula.replace(/(\d+)/g, (match) => {
+                const subscripts = {"0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄",
+                                   "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉"};
+                return match.split('').map(digit => subscripts[digit]).join('');
+            });
+        }
+
+        function calculateMolarMass(e) {
+            e.preventDefault();
+
+            const formula = document.getElementById("formulaInput").value.trim();
+            if (!formula) return;
+
+            try {
+                // Парсим формулу
+                const elements = parseFormula(formula);
+
+                // Рассчитываем молярную массу
+                let totalMass = 0;
+                let totalAtoms = 0;
+                const composition = [];
+
+                for (const [element, count] of Object.entries(elements)) {
+                    const atomicMass = atomicMasses[element];
+                    const elementMass = atomicMass * count;
+
+                    totalMass += elementMass;
+                    totalAtoms += count;
+
+                    composition.push({
+                        element,
+                        count,
+                        atomicMass,
+                        mass: elementMass,
+                        percentage: (elementMass / totalMass) * 100
+                    });
+                }
+
+                // Пересчитываем проценты после того как totalMass известен
+                composition.forEach(item => {
+                    item.percentage = (item.mass / totalMass) * 100;
+                });
+
+                // Сортируем по убыванию массовой доли
+                composition.sort((a, b) => b.mass - a.mass);
+
+                // Отображаем результаты
+                showResults(formula, totalMass, totalAtoms, composition);
+
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function showResults(formula, totalMass, totalAtoms, composition) {
+            document.getElementById("error").classList.add("hidden");
+            document.getElementById("result").classList.remove("hidden");
+
+            // Форматируем формулу
+            const formattedFormula = formatFormula(formula);
+            document.getElementById("formulaDisplay").innerHTML = formattedFormula;
+
+            // Молярная масса
+            document.querySelector(".mass-card .value").innerHTML =
+                `${totalMass.toFixed(2)}<span class="unit">г/моль</span>`;
+
+            // Общая статистика
+            document.getElementById("totalAtoms").textContent = totalAtoms;
+            document.getElementById("uniqueElements").textContent = composition.length;
+
+            // Таблица элементного состава
+            const tableBody = document.getElementById("compositionTable");
+            tableBody.innerHTML = '';
+
+            composition.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><strong>${item.element}</strong></td>
+                    <td>${item.count}</td>
+                    <td>${item.atomicMass.toFixed(2)}</td>
+                    <td>${item.mass.toFixed(2)}</td>
+                    <td>${item.percentage.toFixed(2)}%</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Объяснение
+            let explanation = `Молярная масса ${formula} рассчитывается как сумма атомных масс всех атомов в молекуле: `;
+
+            const parts = composition.map(item => {
+                if (item.count === 1) {
+                    return `${item.atomicMass.toFixed(2)} (${item.element})`;
+                } else {
+                    return `${item.count} × ${item.atomicMass.toFixed(2)} (${item.element})`;
+                }
+            });
+
+            explanation += parts.join(' + ') + ` = ${totalMass.toFixed(2)} г/моль.`;
+
+            if (composition.length > 1) {
+                const mainElement = composition[0];
+                explanation += ` Основной вклад вносит ${mainElement.element} (${mainElement.percentage.toFixed(1)}% массы).`;
+            }
+
+            document.getElementById("explanation").textContent = explanation;
+        }
+
+        function showError(message) {
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("error").classList.remove("hidden");
+            document.getElementById("errorMessage").textContent = message;
+        }
+    </script>
+</body>
+</html>

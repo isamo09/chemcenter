@@ -52,25 +52,6 @@ body {
   background-color: var(--surface);
 }
 
-.header-title {
-  max-width: 100%;
-  text-align: center;
-
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
-  white-space: normal;
-
-  line-height: 1.2;
-}
-
-@media (max-width: 480px) {
-  .header-title {
-    font-size: 1.1rem;
-    padding: 0 10px;
-  }
-}
-
-
 .header-content {
   max-width: 1400px;
   margin: 0 auto;

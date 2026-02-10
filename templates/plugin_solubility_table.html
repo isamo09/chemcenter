@@ -1,0 +1,834 @@
+{% extends "base.html" %}
+
+{% block title %}Таблица растворимости - {{ config.site_title }}{% endblock %}
+
+{% block content %}
+<div class="plugin-container">
+    <header class="plugin-header">
+        <div class="plugin-header-content">
+            <a href="/" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+            <div class="plugin-title-section">
+                <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
+                <h1><i class="fas fa-flask"></i> Таблица растворимости</h1>
+            </div>
+            <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="principle-container">
+            <div class="info-section">
+                <h2>Интерактивная таблица растворимости веществ</h2>
+                <p>Растворимость солей, оснований и кислот в воде при комнатной температуре</p>
+            </div>
+
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="search" class="form-control" 
+                           placeholder="Поиск соединений (NaCl, AgCl, сульфат...)" 
+                           autocomplete="off">
+                </div>
+            </div>
+
+            <div class="legend-section">
+                <div class="legend-item">
+                    <div class="legend-color soluble"></div>
+                    <span>Растворим (р)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color slightly"></div>
+                    <span>Малорастворим (м)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color insoluble"></div>
+                    <span>Нерастворим (н)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color not-exists"></div>
+                    <span>Не существует</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="loading" id="loading">Загрузка таблицы...</div>
+                <div id="table-content" class="table-wrapper"></div>
+            </div>
+
+            <div class="rules-section">
+                <div class="explanation-box">
+                    <div class="explanation-header"><i class="fas fa-book"></i> Основные правила растворимости</div>
+                    <ul id="rules-list" class="rules-list"></ul>
+                </div>
+            </div>
+
+            <div id="error" class="error-section hidden">
+                <h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+/* Стили для таблицы растворимости */
+.controls {
+    margin: 20px 0;
+}
+
+.search-box {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.legend-section {
+    display: flex;
+    gap: 20px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.legend-color.soluble {
+    background: rgba(26, 188, 156, 0.7);
+}
+
+.legend-color.slightly {
+    background: rgba(241, 196, 15, 0.7);
+}
+
+.legend-color.insoluble {
+    background: rgba(231, 76, 60, 0.7);
+}
+
+.legend-color.not-exists {
+    background: rgba(149, 165, 166, 0.7);
+}
+
+.table-container {
+    margin: 30px 0;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+#table-content table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px;
+}
+
+#table-content th {
+    background: var(--header-bg);
+    padding: 15px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#table-content td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s;
+}
+
+/* ПЕРЕВЕРНУТЫЕ СТИЛИ */
+.cation-cell {
+    background: var(--header-bg);
+    font-weight: bold;
+    color: #0b5dc4;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.anion-cell {
+    background: var(--bg-color);
+    font-weight: bold;
+    color: #b71313;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+}
+.anion-cell {
+    background: var(--bg-color);
+    font-weight: bold;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+
+.soluble {
+    background: rgba(26, 188, 156, 0.15);
+    color: #1ABC9C;
+    font-weight: bold;
+}
+
+.slightly {
+    background: rgba(241, 196, 15, 0.15);
+    color: #F1C40F;
+    font-weight: bold;
+}
+
+.insoluble {
+    background: rgba(231, 76, 60, 0.15);
+    color: #E74C3C;
+    font-weight: bold;
+}
+
+.not-exists {
+    background: rgba(149, 165, 166, 0.1);
+    color: #95A5A6;
+    font-style: italic;
+}
+
+.unknown {
+    background: rgba(149, 165, 166, 0.1);
+    color: #95A5A6;
+}
+
+.rules-section {
+    margin-top: 40px;
+}
+
+.rules-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.rules-list li {
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--primary-color);
+}
+
+.highlight {
+    background: rgba(0, 210, 211, 0.4) !important;
+    color: white !important;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 210, 211, 0.5);
+    transform: scale(1.05);
+}
+
+/* Темная тема адаптации */
+[data-theme="dark"] .soluble {
+    background: rgba(26, 188, 156, 0.2);
+}
+
+[data-theme="dark"] .slightly {
+    background: rgba(241, 196, 15, 0.2);
+}
+
+[data-theme="dark"] .insoluble {
+    background: rgba(231, 76, 60, 0.2);
+}
+
+@media (max-width: 768px) {
+    .legend-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .legend-item {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+</style>
+
+<script>
+// Данные таблицы растворимости
+const SOLUBILITY_DATA = {
+    cations: ['H⁺', 'Li⁺', 'Na⁺', 'K⁺', 'NH₄⁺', 'Mg²⁺', 'Ca²⁺', 'Ba²⁺', 'Sr²⁺', 'Al³⁺', 'Cr³⁺', 'Zn²⁺', 'Mn²⁺', 'Fe²⁺', 'Fe³⁺', 'Co²⁺', 'Ni²⁺', 'Cu²⁺', 'Ag⁺', 'Hg²⁺', 'Pb²⁺'],
+    anions: ['OH⁻', 'F⁻', 'Cl⁻', 'Br⁻', 'I⁻', 'S²⁻', 'HS⁻', 'NO₃⁻', 'SO₃²⁻', 'SO₄²⁻', 'S₂O₃²⁻', 'CO₃²⁻', 'SiO₃²⁻', 'PO₄³⁻', 'CrO₄²⁻', 'CH₃COO⁻'],
+    cationNames: {
+        'H⁺': 'Водород', 'Li⁺': 'Литий', 'Na⁺': 'Натрий', 'K⁺': 'Калий', 'NH₄⁺': 'Аммоний',
+        'Mg²⁺': 'Магний', 'Ca²⁺': 'Кальций', 'Ba²⁺': 'Барий', 'Sr²⁺': 'Стронций', 'Al³⁺': 'Алюминий',
+        'Cr³⁺': 'Хром', 'Zn²⁺': 'Цинк', 'Mn²⁺': 'Марганец', 'Fe²⁺': 'Железо(II)', 'Fe³⁺': 'Железо(III)',
+        'Co²⁺': 'Кобальт', 'Ni²⁺': 'Никель', 'Cu²⁺': 'Медь', 'Ag⁺': 'Серебро', 'Hg²⁺': 'Ртуть',
+        'Pb²⁺': 'Свинец'
+    },
+    anionNames: {
+        'OH⁻': 'Гидроксид', 'F⁻': 'Фторид', 'Cl⁻': 'Хлорид', 'Br⁻': 'Бромид', 'I⁻': 'Иодид',
+        'S²⁻': 'Сульфид', 'HS⁻': 'Гидросульфид', 'NO₃⁻': 'Нитрат', 'SO₃²⁻': 'Сульфит',
+        'SO₄²⁻': 'Сульфат', 'S₂O₃²⁻': 'Тиосульфат', 'CO₃²⁻': 'Карбонат', 'SiO₃²⁻': 'Силикат',
+        'PO₄³⁻': 'Фосфат', 'CrO₄²⁻': 'Хромат', 'CH₃COO⁻': 'Ацетат'
+    }
+};
+
+
+// Матрица растворимости
+const SOLUBILITY_MATRIX = {
+    // --- ГИДРОКСИДЫ (OH⁻) ---
+    'H⁺ + OH⁻': {'sol': 'р', 'desc': 'Вода', 'color': '#1ABC9C'},
+    'Li⁺ + OH⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + OH⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + OH⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + OH⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ca²⁺ + OH⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Sr²⁺ + OH⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Ba²⁺ + OH⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe³⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Al³⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cr³⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Zn²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cu²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ag⁺ + OH⁻': {'sol': '-', 'desc': 'Разлагается', 'color': '#95A5A6'},
+    'Pb²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + OH⁻': {'sol': '-', 'desc': 'Разлагается', 'color': '#95A5A6'},
+    'Co²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ni²⁺ + OH⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg²⁺ + OH⁻': {'sol': '-', 'desc': 'Разлагается', 'color': '#95A5A6'},
+
+    // --- ФТОРИДЫ (F⁻) ---
+    'H⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + F⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Na⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + F⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ca²⁺ + F⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Sr²⁺ + F⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + F⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + F⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Fe³⁺ + F⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Al³⁺ + F⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Cr³⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + F⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Ag⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Pb²⁺ + F⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + F⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- ХЛОРИДЫ (Cl⁻) ---
+    'H⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + Cl⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + Cl⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Hg₂²⁺ + Cl⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + Cl⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- БРОМИДЫ (Br⁻) ---
+    'H⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + Br⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + Br⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Hg₂²⁺ + Br⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + Br⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- ИОДИДЫ (I⁻) ---
+    'H⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + I⁻': {'sol': '-', 'desc': 'ОВР (разложение)', 'color': '#95A5A6'},
+    'Al³⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + I⁻': {'sol': '-', 'desc': 'ОВР (разложение)', 'color': '#95A5A6'},
+    'Ag⁺ + I⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + I⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + I⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + I⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + I⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+
+    // --- СУЛЬФИДЫ (S²⁻) ---
+    'H⁺ + S²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + S²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + S²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + S²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + S²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + S²⁻': {'sol': '-', 'desc': 'Гидролиз', 'color': '#95A5A6'},
+    'Ca²⁺ + S²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Sr²⁺ + S²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Ba²⁺ + S²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe³⁺ + S²⁻': {'sol': '-', 'desc': 'Гидролиз', 'color': '#95A5A6'},
+    'Al³⁺ + S²⁻': {'sol': '-', 'desc': 'Гидролиз', 'color': '#95A5A6'},
+    'Cr³⁺ + S²⁻': {'sol': '-', 'desc': 'Гидролиз', 'color': '#95A5A6'},
+    'Zn²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cu²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ag⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ni²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg²⁺ + S²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+
+    // --- ГИДРОСУЛЬФИДЫ (HS⁻) ---
+    'H⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + HS⁻': {'sol': '-', 'desc': 'Полный гидролиз', 'color': '#95A5A6'},
+    'Al³⁺ + HS⁻': {'sol': '-', 'desc': 'Полный гидролиз', 'color': '#95A5A6'},
+    'Cr³⁺ + HS⁻': {'sol': '-', 'desc': 'Полный гидролиз', 'color': '#95A5A6'},
+    'Zn²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Pb²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg₂²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + HS⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- НИТРАТЫ (NO₃⁻) ---
+    'H⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Pb²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg₂²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + NO₃⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- СУЛЬФИТЫ (SO₃²⁻) ---
+    'H⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим (неустойчив)', 'color': '#1ABC9C'},
+    'Li⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + SO₃²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Ca²⁺ + SO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Sr²⁺ + SO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + SO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + SO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + SO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + SO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- СУЛЬФАТЫ (SO₄²⁻) ---
+    'H⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + SO₄²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Sr²⁺ + SO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + SO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + SO₄²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Pb²⁺ + SO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + SO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- ТИОСУЛЬФАТЫ (S₂O₃²⁻) ---
+    'H⁺ + S₂O₃²⁻': {'sol': '-', 'desc': 'Разлагается (S+SO2)', 'color': '#95A5A6'},
+    'Li⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + S₂O₃²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Mn²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + S₂O₃²⁻': {'sol': 'н', 'desc': 'Нерастворим (в избытке р)', 'color': '#E74C3C'},
+    'Pb²⁺ + S₂O₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + S₂O₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+
+    // --- КАРБОНАТЫ (CO₃²⁻) ---
+    'H⁺ + CO₃²⁻': {'sol': 'р', 'desc': 'Растворим (CO2+H2O)', 'color': '#1ABC9C'},
+    'Li⁺ + CO₃²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Na⁺ + CO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + CO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + CO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ca²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Sr²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe³⁺ + CO₃²⁻': {'sol': '-', 'desc': 'Не существует', 'color': '#95A5A6'},
+    'Al³⁺ + CO₃²⁻': {'sol': '-', 'desc': 'Гидролиз', 'color': '#95A5A6'},
+    'Cr³⁺ + CO₃²⁻': {'sol': '-', 'desc': 'Гидролиз', 'color': '#95A5A6'},
+    'Zn²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cu²⁺ + CO₃²⁻': {'sol': '-', 'desc': 'Не существует', 'color': '#95A5A6'},
+    'Ag⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ni²⁺ + CO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg²⁺ + CO₃²⁻': {'sol': '-', 'desc': 'Не существует', 'color': '#95A5A6'},
+
+
+    // --- СИЛИКАТЫ (SiO₃²⁻) ---
+    'H⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Осадок (гель)', 'color': '#E74C3C'},
+    'Li⁺ + SiO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + SiO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + SiO₃²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + SiO₃²⁻': {'sol': '-', 'desc': 'Не существует', 'color': '#95A5A6'},
+    'Mg²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ca²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Sr²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe³⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Al³⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cr³⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Zn²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cu²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ag⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Pb²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ni²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg²⁺ + SiO₃²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+
+    // --- ФОСФАТЫ (PO₄³⁻) ---
+    'H⁺ + PO₄³⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Na⁺ + PO₄³⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + PO₄³⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + PO₄³⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ca²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Sr²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Fe³⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Al³⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cr³⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Zn²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Cu²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ag⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим (желтый)', 'color': '#E74C3C'},
+    'Pb²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg₂²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ni²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Hg²⁺ + PO₄³⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+
+    // --- ХРОМАТЫ (CrO₄²⁻) ---
+    'H⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Переходит в дихромат', 'color': '#1ABC9C'},
+    'Li⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + CrO₄²⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Sr²⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ba²⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Mn²⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Ag⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим (кирпично-красный)', 'color': '#E74C3C'},
+    'Pb²⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим (желтый)', 'color': '#E74C3C'},
+    'Hg₂²⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+    'Co²⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + CrO₄²⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + CrO₄²⁻': {'sol': 'н', 'desc': 'Нерастворим', 'color': '#E74C3C'},
+
+    // --- АЦЕТАТЫ (CH₃COO⁻) ---
+    'H⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Li⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Na⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'K⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'NH₄⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mg²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ca²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Sr²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ba²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Mn²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Fe³⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Al³⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cr³⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Zn²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Cu²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ag⁺ + CH₃COO⁻': {'sol': 'м', 'desc': 'Малорастворим', 'color': '#F1C40F'},
+    'Pb²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg₂²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Co²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Ni²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'},
+    'Hg²⁺ + CH₃COO⁻': {'sol': 'р', 'desc': 'Растворим', 'color': '#1ABC9C'}
+};
+
+// Правила растворимости
+const RULES = [
+    'Все нитраты (NO₃⁻) растворимы',
+    'Все соли натрия, калия, аммония растворимы',
+    'Хлориды, бромиды, иодиды растворимы, кроме Ag⁺, Pb²⁺',
+    'Сульфаты растворимы, кроме Ba²⁺, Pb²⁺, Ca²⁺ (малорастворим)',
+    'Карбонаты нерастворимы, кроме Na⁺, K⁺, NH₄⁺',
+    'Гидроксиды нерастворимы, кроме Na⁺, K⁺, Ba²⁺, Ca²⁺ (малорастворим)'
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    loadTable();
+    displayRules();
+    setupSearch();
+});
+
+function initTheme() {
+    const btn = document.getElementById("themeToggle");
+    const saved = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", saved);
+
+    btn.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+    });
+}
+
+// ПЕРЕВЁРНУТАЯ ФУНКЦИЯ ЗАГРУЗКИ ТАБЛИЦЫ
+function loadTable() {
+    let html = '<table>';
+
+    // Заголовок с КАТИОНАМИ сверху
+    html += '<thead><tr><th class="cell">Анион \\ Катион</th>';
+    SOLUBILITY_DATA.cations.forEach(cation => {
+        const name = SOLUBILITY_DATA.cationNames[cation] || cation;
+        html += `<th class="cation-cell" title="${name}">${cation}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    // Строки с АНИОНАМИ слева
+    SOLUBILITY_DATA.anions.forEach(anion => {
+        const anionName = SOLUBILITY_DATA.anionNames[anion] || anion;
+        html += `<tr><td class="anion-cell" title="${anionName}">${anion}</td>`;
+
+        SOLUBILITY_DATA.cations.forEach(cation => {
+            const key = `${cation} + ${anion}`;
+            const data = SOLUBILITY_MATRIX[key] || {'sol': '?', 'desc': 'Нет данных', 'color': '#95A5A6'};
+            const formula = generateFormula(cation, anion);
+            const cls = getSolubilityClass(data.sol);
+            const displayText = data.sol === '-' ? '—' : data.sol;
+
+            html += `<td class="${cls}" title="${data.desc}\nФормула: ${formula}"
+                    data-cation="${cation}" data-anion="${anion}"
+                    data-solubility="${data.sol}" data-formula="${formula}"
+                    style="background-color: ${data.color}20;">
+                ${displayText}
+            </td>`;
+        });
+
+        html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('table-content').innerHTML = html;
+    document.getElementById('loading').style.display = 'none';
+}
+
+function displayRules() {
+    const list = document.getElementById('rules-list');
+    RULES.forEach(rule => {
+        const li = document.createElement('li');
+        li.textContent = rule;
+        list.appendChild(li);
+    });
+}
+
+function setupSearch() {
+    document.getElementById('search').addEventListener('input', function(e) {
+        const query = e.target.value.trim().toLowerCase();
+
+        // Убираем подсветку
+        document.querySelectorAll('td.highlight').forEach(td => {
+            td.classList.remove('highlight');
+        });
+
+        if (query.length < 2) return;
+
+        // Поиск
+        document.querySelectorAll('td[data-formula]').forEach(td => {
+            const formula = td.getAttribute('data-formula').toLowerCase();
+            const cation = td.getAttribute('data-cation');
+            const anion = td.getAttribute('data-anion');
+            const cationName = (SOLUBILITY_DATA.cationNames[cation] || '').toLowerCase();
+            const anionName = (SOLUBILITY_DATA.anionNames[anion] || '').toLowerCase();
+
+            if (formula.includes(query) ||
+                cationName.includes(query) ||
+                anionName.includes(query) ||
+                cation.toLowerCase().includes(query) ||
+                anion.toLowerCase().includes(query)) {
+                td.classList.add('highlight');
+            }
+        });
+    });
+}
+
+// Вспомогательные функции
+function generateFormula(cation, anion) {
+    const cationBase = cation.replace('⁺', '').replace('²⁺', '').replace('³⁺', '');
+    const anionBase = anion.replace('⁻', '').replace('²⁻', '').replace('³⁻', '');
+
+    const formulas = {
+        'Na⁺Cl⁻': 'NaCl', 'K⁺Cl⁻': 'KCl', 'H⁺Cl⁻': 'HCl',
+        'Na⁺OH⁻': 'NaOH', 'K⁺OH⁻': 'KOH', 'Ag⁺NO₃⁻': 'AgNO₃',
+        'Ag⁺Cl⁻': 'AgCl', 'Na⁺NO₃⁻': 'NaNO₃', 'Ba²⁺Cl⁻': 'BaCl₂',
+        'Na⁺SO₄²⁻': 'Na₂SO₄', 'Ba²⁺SO₄²⁻': 'BaSO₄', 'H⁺SO₄²⁻': 'H₂SO₄',
+        'Na⁺CO₃²⁻': 'Na₂CO₃', 'Ca²⁺CO₃²⁻': 'CaCO₃', 'Ca²⁺Cl⁻': 'CaCl₂',
+        'Mg²⁺Cl⁻': 'MgCl₂', 'Al³⁺Cl⁻': 'AlCl₃', 'Fe³⁺Cl⁻': 'FeCl₃',
+        'Cu²⁺Cl⁻': 'CuCl₂', 'Pb²⁺Cl⁻': 'PbCl₂', 'Ca²⁺OH⁻': 'Ca(OH)₂',
+        'Mg²⁺OH⁻': 'Mg(OH)₂', 'Al³⁺OH⁻': 'Al(OH)₃', 'Fe³⁺OH⁻': 'Fe(OH)₃',
+        'Cu²⁺OH⁻': 'Cu(OH)₂'
+    };
+
+    return formulas[`${cation}${anion}`] || `${cationBase}${anionBase}`;
+}
+
+function getDescription(solubility) {
+    switch(solubility) {
+        case 'р': return 'Растворим';
+        case 'м': return 'Малорастворим';
+        case 'н': return 'Нерастворим';
+        case '-': return 'Не существует';
+        default: return 'Нет данных';
+    }
+}
+
+function getSolubilityClass(solubility) {
+    switch(solubility) {
+        case 'р': return 'soluble';
+        case 'м': return 'slightly';
+        case 'н': return 'insoluble';
+        case '-': return 'not-exists';
+        case '?':
+        default: return 'unknown';
+    }
+}
+</script>
+
+{% endblock %}

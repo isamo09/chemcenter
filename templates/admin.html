@@ -72,6 +72,52 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Added visit statistics table -->
+            <div class="tab-header" style="margin-top: 2rem;">
+                <h2><i class="fas fa-eye"></i> Статистика посещений</h2>
+                <button class="btn-secondary btn-sm" onclick="loadVisitStats()" style="margin-left: 1rem;">
+                    <i class="fas fa-sync-alt"></i> Обновить
+                </button>
+            </div>
+            <div class="stats-table-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Период</th>
+                            <th>Всего посещений</th>
+                            <th>Уникальных (сессий)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fas fa-clock"></i> За час</td>
+                            <td id="hourVisits">0 <span class="prev-stat">(пред: 0)</span></td>
+                            <td id="hourUnique">0 <span class="prev-stat">(пред: 0)</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-calendar-day"></i> За день</td>
+                            <td id="dayVisits">0 <span class="prev-stat">(пред: 0)</span></td>
+                            <td id="dayUnique">0 <span class="prev-stat">(пред: 0)</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-calendar-alt"></i> За месяц</td>
+                            <td id="monthVisits">0 <span class="prev-stat">(пред: 0)</span></td>
+                            <td id="monthUnique">0 <span class="prev-stat">(пред: 0)</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-calendar"></i> За год</td>
+                            <td id="yearVisits">0 <span class="prev-stat">(пред: 0)</span></td>
+                            <td id="yearUnique">0 <span class="prev-stat">(пред: 0)</span></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><i class="fas fa-globe"></i> <strong>Всего</strong></td>
+                            <td id="totalVisits"><strong>0</strong></td>
+                            <td id="totalUnique"><strong>0</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Tiles Tab -->
@@ -190,6 +236,107 @@
     </div>
 </div>
 
+<style>
+/* Added styles for statistics table */
+.stats-table-container {
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.stats-table th,
+.stats-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.stats-table th {
+    background: var(--table-header-bg, #f9fafb);
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.stats-table td {
+    color: var(--text-primary, #1f2937);
+}
+
+.stats-table td i {
+    margin-right: 0.5rem;
+    color: var(--primary-color, #3b82f6);
+    width: 1.25rem;
+}
+
+.stats-table tbody tr:hover {
+    background: var(--hover-bg, #f3f4f6);
+}
+
+.stats-table .total-row {
+    background: var(--primary-light, #eff6ff);
+    border-top: 2px solid var(--primary-color, #3b82f6);
+}
+
+.stats-table .total-row td {
+    font-weight: 600;
+}
+
+.prev-stat {
+    color: var(--text-muted, #9ca3af);
+    font-size: 0.85em;
+    margin-left: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.tab-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .stats-table-container {
+    background: var(--card-bg-dark, #1f2937);
+}
+
+[data-theme="dark"] .stats-table th {
+    background: var(--table-header-bg-dark, #374151);
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+[data-theme="dark"] .stats-table td {
+    color: var(--text-primary-dark, #f3f4f6);
+    border-color: var(--border-color-dark, #374151);
+}
+
+[data-theme="dark"] .stats-table tbody tr:hover {
+    background: var(--hover-bg-dark, #374151);
+}
+
+[data-theme="dark"] .stats-table .total-row {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="dark"] .prev-stat {
+    color: var(--text-muted-dark, #6b7280);
+}
+</style>
+
 <script>
 let currentPostId = null;
 
@@ -212,6 +359,7 @@ function setupEventListeners() {
 
 function initAdmin() {
     loadDashboard();
+    loadVisitStats(); // Load visit statistics
     loadTiles();
     loadPosts();
     loadPlugins();
@@ -225,22 +373,85 @@ function switchTab(tabName) {
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     document.getElementById(tabName + 'Tab').classList.add('active');
     event.target.closest('.nav-item').classList.add('active');
+
+    if (tabName === 'dashboard') {
+        loadVisitStats();
+    }
 }
 
 async function loadDashboard() {
     try {
         const pluginsRes = await axios.get('/api/plugins');
         const postsRes = await axios.get('/api/admin/posts');
-        
+
         const enabledPlugins = Object.values(pluginsRes.data).filter(p => p.enabled).length;
         document.getElementById('activeTilesCount').textContent = enabledPlugins;
         document.getElementById('totalPostsCount').textContent = postsRes.data.length;
         document.getElementById('pluginsCount').textContent = Object.keys(pluginsRes.data).length;
     } catch (error) {
         console.error('Error loading dashboard:', error);
+    }
+}
+
+async function loadVisitStats() {
+    try {
+        const response = await axios.get('/api/admin/statistics');
+        const stats = response.data;
+
+        // Helper function to format stat with previous value
+        const formatStat = (current, previous) => {
+            return `${current} <span class="prev-stat">(пред: ${previous})</span>`;
+        };
+
+        // Update hour stats
+        document.getElementById('hourVisits').innerHTML = formatStat(
+            stats.hour.current.visits,
+            stats.hour.previous.visits
+        );
+        document.getElementById('hourUnique').innerHTML = formatStat(
+            stats.hour.current.unique,
+            stats.hour.previous.unique
+        );
+
+        // Update day stats
+        document.getElementById('dayVisits').innerHTML = formatStat(
+            stats.day.current.visits,
+            stats.day.previous.visits
+        );
+        document.getElementById('dayUnique').innerHTML = formatStat(
+            stats.day.current.unique,
+            stats.day.previous.unique
+        );
+
+        // Update month stats
+        document.getElementById('monthVisits').innerHTML = formatStat(
+            stats.month.current.visits,
+            stats.month.previous.visits
+        );
+        document.getElementById('monthUnique').innerHTML = formatStat(
+            stats.month.current.unique,
+            stats.month.previous.unique
+        );
+
+        // Update year stats
+        document.getElementById('yearVisits').innerHTML = formatStat(
+            stats.year.current.visits,
+            stats.year.previous.visits
+        );
+        document.getElementById('yearUnique').innerHTML = formatStat(
+            stats.year.current.unique,
+            stats.year.previous.unique
+        );
+
+        // Update total stats
+        document.getElementById('totalVisits').innerHTML = `<strong>${stats.total.visits}</strong>`;
+        document.getElementById('totalUnique').innerHTML = `<strong>${stats.total.unique}</strong>`;
+
+    } catch (error) {
+        console.error('Error loading visit statistics:', error);
     }
 }
 
