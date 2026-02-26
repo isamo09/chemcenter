@@ -6,21 +6,19 @@
     <meta name="description" content="{{ config.site_description if config else 'Научный портал с интерактивными инструментами' }}">
     <meta name="theme-color" content="#3b82f6">
     <title>{% block title %}{{ config.site_title if config else 'Science Portal' }}{% endblock %}</title>
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}">
     <link rel="apple-touch-icon" href="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}">
-    <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/plugins.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div id="app">
+        {% block header %}{% endblock %}
         {% block content %}{% endblock %}
     </div>
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>

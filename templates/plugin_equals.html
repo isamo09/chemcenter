@@ -2,26 +2,35 @@
 
 {% block title %}Универсальный калькулятор ионных уравнений - {{ config.site_title }}{% endblock %}
 
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i>
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            </a>
+            <h1 class="site-title">Универсальный калькулятор</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
 {% block content %}
 <div class="plugin-container">
-    <header class="plugin-header">
-        <div class="plugin-header-content">
-            <a href="/" class="back-button">
-                <i class="fas fa-arrow-left"></i> Назад
-            </a>
-            <div class="plugin-title-section">
-                <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
-                <h1><i class="fas fa-calculator"></i> УНИВЕРСАЛЬНЫЙ КАЛЬКУЛЯТОР ИОННЫХ УРАВНЕНИЙ</h1>
-            </div>
-            <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
-        </div>
-    </header>
-
     <main class="main-content">
         <div class="principle-container">
             <!-- Информация -->
             <div class="info-section">
-                <h2>🔥 УНИВЕРСАЛЬНЫЙ РЕШАТЕЛЬ ИОННЫХ УРАВНЕНИЙ</h2>
+                <h2> УНИВЕРСАЛЬНЫЙ РЕШАТЕЛЬ ИОННЫХ УРАВНЕНИЙ</h2>
                 <p>Вводи ЛЮБОЕ уравнение - калькулятор сам всё уравняет, определит тип реакции, растворимость и даст правильные ионные уравнения.</p>
                 <p><strong>Формат:</strong> <code>Fe + 2HCl → FeCl2 + H2</code> или <code>AgNO3 + NaCl = AgCl + NaNO3</code></p>
             </div>

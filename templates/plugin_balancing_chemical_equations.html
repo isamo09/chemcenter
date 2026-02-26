@@ -2,6 +2,28 @@
 
 {% block title %}Балансировщик химических уравнений - {{ config.site_title }}{% endblock %}
 
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i>
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            </a>
+            <h1 class="site-title">Балансировщик химических уравнений</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
 {% block extra_css %}
 <style>
     /* Стили из Balancing_chemical_equations.html */
@@ -1097,10 +1119,139 @@
         }
     }
 
-    function showError(message) {
-        document.getElementById("result").classList.add("hidden");
-        document.getElementById("error").classList.remove("hidden");
-        document.getElementById("errorMessage").textContent = message;
-    }
-</script>
+        function determineReactionType(reactants, products) {
+            const rCount = reactants.length;
+            const pCount = products.length;
+
+            if (rCount === 2 && pCount === 1) return 'Соединения';
+            if (rCount === 1 && pCount === 2) return 'Разложения';
+            if (rCount === 1 && pCount === 1) {
+                const rElems = Object.keys(parseMolecule(reactants[0]));
+                const pElems = Object.keys(parseMolecule(products[0]));
+                if (JSON.stringify(rElems.sort()) === JSON.stringify(pElems.sort())) {
+                    return 'Изомеризации';
+                }
+                return 'Замещения/обмена';
+            }
+            if (rCount >= 2 && pCount >= 2) {
+                const hasAcidBase = reactants.some(r => r.includes('OH') || r.includes('H')) &&
+                                   products.some(p => p.includes('H2O'));
+                if (hasAcidBase) return 'Нейтрализации';
+                return 'Обмена';
+            }
+
+            return 'Неизвестный тип';
+        }
+
+        function balanceEquation(e) {
+            e.preventDefault();
+
+            const equation = document.getElementById("equationInput").value.trim();
+            if (!equation) return;
+
+            try {
+                const result = balanceChemicalEquation(equation);
+                const balanceCheck = checkBalance(result.reactants, result.products, result.coefficients);
+
+                showResults(equation, result, balanceCheck);
+
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function showResults(originalEquation, result, balanceCheck) {
+            document.getElementById("error").classList.add("hidden");
+            document.getElementById("result").classList.remove("hidden");
+
+            const equationDisplay = document.getElementById("balancedEquation");
+            equationDisplay.innerHTML = '';
+
+            result.reactants.forEach((r, i) => {
+                const coeff = result.coefficients[r];
+                if (i > 0) equationDisplay.innerHTML += ' + ';
+
+
+                const coeffSpan = document.createElement('span');
+                coeffSpan.className = 'coefficient';
+                coeffSpan.textContent = coeff === 1 ? '' : coeff;
+
+                const reactantSpan = document.createElement('span');
+                reactantSpan.className = 'reactant';
+                reactantSpan.textContent = formatFormula(r);
+
+                equationDisplay.appendChild(coeffSpan);
+                equationDisplay.appendChild(reactantSpan);
+            });
+
+            const arrowSpan = document.createElement('span');
+            arrowSpan.className = 'arrow';
+            arrowSpan.textContent = '→';
+            equationDisplay.appendChild(arrowSpan);
+
+            result.products.forEach((p, i) => {
+                const coeff = result.coefficients[p];
+                if (i > 0) equationDisplay.innerHTML += ' + ';
+
+
+                const coeffSpan = document.createElement('span');
+                coeffSpan.className = 'coefficient';
+                coeffSpan.textContent = coeff === 1 ? '' : coeff;
+
+                const productSpan = document.createElement('span');
+                productSpan.className = 'product';
+                productSpan.textContent = formatFormula(p);
+
+                equationDisplay.appendChild(coeffSpan);
+                equationDisplay.appendChild(productSpan);
+            });
+
+            const validationCard = document.getElementById("validationCard");
+            if (balanceCheck.isBalanced) {
+                validationCard.className = 'validation-card';
+                validationCard.innerHTML = `
+                    <div class="validation-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="validation-text">Уравнение сбалансировано</div>
+                    <div class="validation-details">Количество атомов каждого элемента одинаково слева и справа</div>
+                `;
+            } else {
+                validationCard.className = 'validation-card invalid';
+                validationCard.innerHTML = `
+                    <div class="validation-icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="validation-text">Уравнение не сбалансировано</div>
+                    <div class="validation-details">Требуется ручная балансировка</div>
+                `;
+            }
+
+            const coefficients = Object.values(result.coefficients);
+            document.getElementById("coefficientsCount").textContent = coefficients.filter(c => c > 1).length;
+            document.getElementById("elementsCount").textContent = balanceCheck.elements.length;
+            document.getElementById("reactionType").textContent = determineReactionType(result.reactants, result.products);
+
+            const tableBody = document.getElementById("balanceTable");
+            tableBody.innerHTML = '';
+
+            balanceCheck.details.forEach(item => {
+                const row = document.createElement("tr");
+
+                const statusIcon = item.balanced ?
+                    '<i class="fas fa-check" style="color: #27ae60;"></i>' :
+                    '<i class="fas fa-times" style="color: #e74c3c;"></i>';
+
+                row.innerHTML = `
+                    <td><strong>${item.element}</strong></td>
+                    <td>${item.left.toFixed(0)}</td>
+                    <td>${item.right.toFixed(0)}</td>
+                    <td>${statusIcon}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function showError(message) {
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("error").classList.remove("hidden");
+            document.getElementById("errorMessage").textContent = message;
+        }
+    </script>
 {% endblock %}

@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Optional
 PLUGIN_CONFIG = {
     'name': "Решатель ионных уравнений",
     'description': 'Решение полных и сокращенных ионных уравнений с проверкой растворимости',
-    'icon': 'ion-equation',
+    'icon': 'fa-flask-vial',
     'version': '1.0.0',
     'enabled': True,
     'route': '/plugin/Ionic_equation'

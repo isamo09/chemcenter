@@ -2,6 +2,28 @@
 
 {% block title %}Калькулятор молярной массы - {{ config.site_title }}{% endblock %}
 
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i>
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            </a>
+            <h1 class="site-title">Калькулятор молярной массы</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
 {% block extra_css %}
 <style>
         :root {
@@ -484,121 +506,109 @@
             line-height: 1.6;
         }
     </style>
-</head>
-<body>
-    <div class="plugin-container">
-        <header class="plugin-header">
-            <div class="plugin-header-content">
-                <a href="/" class="back-button">
-                    <i class="fas fa-arrow-left"></i> Назад
-                </a>
-                <div class="plugin-title-section">
-                    <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
-                    <h1><i class="fas fa-weight-scale"></i> Калькулятор молярной массы</h1>
-                </div>
-                <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
-            </div>
-        </header>
+{% endblock %}
 
-        <main class="principle-container">
-            <div class="info-section">
-                <h2>Расчет молярной массы вещества</h2>
-                <p>Введите химическую формулу вещества для расчета его молярной массы, элементного состава и массовых долей.</p>
-                <p>Примеры правильного ввода:</p>
-                <code>H2O</code> <code>NaCl</code> <code>H2SO4</code> <code>Ca(OH)2</code> <code>Al2(SO4)3</code>
-            </div>
+{% block content %}
+<div class="plugin-container">
+    <main class="main-content">
+        <div class="info-section">
+            <h2>Расчет молярной массы вещества</h2>
+            <p>Введите химическую формулу вещества для расчета его молярной массы, элементного состава и массовых долей.</p>
+            <p>Примеры правильного ввода:</p>
+            <code>H2O</code> <code>NaCl</code> <code>H2SO4</code> <code>Ca(OH)2</code> <code>Al2(SO4)3</code>
+        </div>
 
-            <form id="massForm" class="form">
-                <div class="form-group">
-                    <label>Химическая формула:</label>
-                    <input type="text" id="formulaInput" class="form-control formula-input"
-                           placeholder="H2SO4" required>
-                    <small>Используйте заглавные и строчные буквы правильно (Na, Cl, H2O)</small>
+        <form id="massForm" class="form">
+            <div class="form-group">
+                <label>Химическая формула:</label>
+                <input type="text" id="formulaInput" class="form-control formula-input"
+                       placeholder="H2SO4" required>
+                <small>Используйте заглавные и строчные буквы правильно (Na, Cl, H2O)</small>
 
-                    <div class="examples-grid">
-                        <div class="example-tag" data-formula="H2O">H₂O</div>
-                        <div class="example-tag" data-formula="NaCl">NaCl</div>
-                        <div class="example-tag" data-formula="HCl">HCl</div>
-                        <div class="example-tag" data-formula="NaOH">NaOH</div>
-                        <div class="example-tag" data-formula="H2SO4">H₂SO₄</div>
-                        <div class="example-tag" data-formula="CaCO3">CaCO₃</div>
-                        <div class="example-tag" data-formula="C6H12O6">C₆H₁₂O₆</div>
-                        <div class="example-tag" data-formula="Al2(SO4)3">Al₂(SO₄)₃</div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-calculator"></i> Рассчитать молярную массу
-                </button>
-            </form>
-
-            <div id="result" class="result-section hidden">
-                <h3>Результаты расчета</h3>
-
-                <div class="equation-card">
-                    <div class="equation-number">1</div>
-                    <div id="formulaDisplay" class="equation-display">H₂SO₄</div>
-                </div>
-
-                <div class="mass-card">
-                    <div class="label">Молярная масса</div>
-                    <div class="value">98.08<span class="unit">г/моль</span></div>
-                </div>
-
-                <div class="result-header">
-                    <div class="result-item">
-                        <div class="label">Количество атомов:</div>
-                        <div class="value" id="totalAtoms">7</div>
-                    </div>
-
-                    <div class="result-item">
-                        <div class="label">Различных элементов:</div>
-                        <div class="value" id="uniqueElements">3</div>
-                    </div>
-
-                    <div class="result-item">
-                        <div class="label">Молекул в 1 моле:</div>
-                        <div class="value">6.022×10²³</div>
-                    </div>
-                </div>
-
-                <div class="formula-card">
-                    <div class="formula-title">Элементный состав:</div>
-                    <table class="composition-table">
-                        <thead>
-                            <tr>
-                                <th>Элемент</th>
-                                <th>Количество</th>
-                                <th>Атомная масса</th>
-                                <th>Масса, г/моль</th>
-                                <th>Массовая доля, %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="compositionTable">
-                            <!-- Заполнится через JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="explanation-box">
-                    <div class="explanation-header"><i class="fas fa-lightbulb"></i> Объяснение расчета</div>
-                    <p id="explanation">Молярная масса H₂SO₄ рассчитывается как сумма атомных масс всех атомов в молекуле: (2×1.008) + (1×32.06) + (4×16.00) = 98.08 г/моль.</p>
+                <div class="examples-grid">
+                    <div class="example-tag" data-formula="H2O">H₂O</div>
+                    <div class="example-tag" data-formula="NaCl">NaCl</div>
+                    <div class="example-tag" data-formula="HCl">HCl</div>
+                    <div class="example-tag" data-formula="NaOH">NaOH</div>
+                    <div class="example-tag" data-formula="H2SO4">H₂SO₄</div>
+                    <div class="example-tag" data-formula="CaCO3">CaCO₃</div>
+                    <div class="example-tag" data-formula="C6H12O6">C₆H₁₂O₆</div>
+                    <div class="example-tag" data-formula="Al2(SO4)3">Al₂(SO₄)₃</div>
                 </div>
             </div>
 
-            <div id="error" class="error-section hidden">
-                <h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3>
-                <p id="errorMessage"></p>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-calculator"></i> Рассчитать молярную массу
+            </button>
+        </form>
+
+        <div id="result" class="result-section hidden">
+            <h3>Результаты расчета</h3>
+
+            <div class="equation-card">
+                <div class="equation-number">1</div>
+                <div id="formulaDisplay" class="equation-display">H₂SO₄</div>
             </div>
 
-            <div class="info-section" style="margin-top: 40px;">
-                <h2>Атомные массы элементов (округленные)</h2>
-                <div class="elements-grid" id="elementsGrid">
-                    <!-- Заполнится через JS -->
+            <div class="mass-card">
+                <div class="label">Молярная масса</div>
+                <div class="value">98.08<span class="unit">г/моль</span></div>
+            </div>
+
+            <div class="result-header">
+                <div class="result-item">
+                    <div class="label">Количество атомов:</div>
+                    <div class="value" id="totalAtoms">7</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="label">Различных элементов:</div>
+                    <div class="value" id="uniqueElements">3</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="label">Молекул в 1 моле:</div>
+                    <div class="value">6.022×10²³</div>
                 </div>
             </div>
-        </main>
-    </div>
+
+            <div class="formula-card">
+                <div class="formula-title">Элементный состав:</div>
+                <table class="composition-table">
+                    <thead>
+                        <tr>
+                            <th>Элемент</th>
+                            <th>Количество</th>
+                            <th>Атомная масса</th>
+                            <th>Масса, г/моль</th>
+                            <th>Массовая доля, %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compositionTable">
+                        <!-- Заполнится через JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="explanation-box">
+                <div class="explanation-header"><i class="fas fa-lightbulb"></i> Объяснение расчета</div>
+                <p id="explanation">Молярная масса H₂SO₄ рассчитывается как сумма атомных масс всех атомов в молекуле: (2×1.008) + (1×32.06) + (4×16.00) = 98.08 г/моль.</p>
+            </div>
+        </div>
+
+        <div id="error" class="error-section hidden">
+            <h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3>
+            <p id="errorMessage"></p>
+        </div>
+
+        <div class="info-section" style="margin-top: 40px;">
+            <h2>Атомные массы элементов (округленные)</h2>
+            <div class="elements-grid" id="elementsGrid">
+                <!-- Заполнится через JS -->
+            </div>
+        </div>
+    </main>
+</div>
 
     <script>
         // Атомные массы элементов (по IUPAC 2021)
@@ -810,11 +820,13 @@
             document.querySelector(".mass-card .value").innerHTML =
                 `${totalMass.toFixed(2)}<span class="unit">г/моль</span>`;
 
-            // Общая статистика
+            // Общее количество атомов
             document.getElementById("totalAtoms").textContent = totalAtoms;
+
+            // Количество уникальных элементов
             document.getElementById("uniqueElements").textContent = composition.length;
 
-            // Таблица элементного состава
+            // Таблица состава
             const tableBody = document.getElementById("compositionTable");
             tableBody.innerHTML = '';
 

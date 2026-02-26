@@ -2,6 +2,28 @@
 
 {% block title %}Панель администратора - {{ config.site_title }}{% endblock %}
 
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <img id="headerLogo" src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            <h1 class="site-title">{{ config.site_title }}</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+            <a href="/logout" class="admin-link" aria-label="Выход">
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i> <span>Выход</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
 {% block content %}
 <div class="admin-container">
     <div class="admin-sidebar">

@@ -1,0 +1,206 @@
+/* =======================================================
+   ОБЩИЕ СТИЛИ ДЛЯ ПЛАГИНОВ
+   ======================================================= */
+
+/* Стили для заголовков плагинов */
+.site-title {
+    text-align: center !important;
+    flex: 1 !important;
+    margin: 0 !important;
+    padding: 0 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Основные стили контейнера */
+.plugin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Общие стили для секций */
+.info-section {
+    background: var(--surface, #ffffff);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--accent, #3498db);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.info-section h2 {
+    color: var(--text-primary, #2c3e50);
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.info-section p {
+    color: var(--text-secondary, #666666);
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+/* Общие стили для форм */
+.form {
+    background: var(--surface, #ffffff);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form h2 {
+    color: var(--text-primary, #2c3e50);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border, #e0e0e0);
+    font-size: 22px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--text-primary, #2c3e50);
+    font-size: 16px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--border, #e0e0e0);
+    border-radius: 8px;
+    font-size: 16px;
+    background: var(--background, #ffffff);
+    color: var(--text-primary, #2c3e50);
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent, #3498db);
+}
+
+/* Общие стили для кнопок */
+.btn {
+    background: var(--accent, #3498db);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: var(--accent-hover, #2980b9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: var(--accent, #3498db);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover, #2980b9);
+}
+
+.btn-secondary {
+    background: var(--secondary, #95a5a6);
+}
+
+.btn-secondary:hover {
+    background: var(--secondary-hover, #7f8c8d);
+}
+
+/* Общие стили для результатов */
+.result-section {
+    background: var(--surface, #ffffff);
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.error-section {
+    background: #fee;
+    color: #c33;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #c33;
+    margin-top: 20px;
+}
+
+/* Общие стили для таблиц */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border, #e0e0e0);
+}
+
+.table th {
+    background: var(--surface-light, #f8f9fa);
+    font-weight: 600;
+    color: var(--text-primary, #2c3e50);
+}
+
+.table tr:hover {
+    background: var(--surface-light, #f8f9fa);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .plugin-container {
+        padding: 15px;
+    }
+    
+    .info-section,
+    .form {
+        padding: 20px;
+    }
+    
+    .form-control {
+        padding: 12px 16px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .plugin-container {
+        padding: 10px;
+    }
+    
+    .info-section,
+    .form {
+        padding: 15px;
+    }
+    
+    .info-section h2,
+    .form h2 {
+        font-size: 20px;
+    }
+}

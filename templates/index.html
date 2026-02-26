@@ -2,26 +2,28 @@
 
 {% block title %}{{ config.site_title }} - Главная{% endblock %}
 
-{% block content %}
-<div class="app-container" id="mainApp">
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <img id="headerLogo" src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
-                <h1 class="site-title">{{ config.site_title }}</h1>
-            </div>
-            <nav class="header-nav">
-                <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
-                    <i class="fas fa-moon" aria-hidden="true"></i>
-                </button>
-                <a href="/admin" class="admin-link" aria-label="Панель администратора">
-                    <i class="fas fa-lock" aria-hidden="true"></i> <span>Админ</span>
-                </a>
-            </nav>
+{% block header %}
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <img id="headerLogo" src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            <h1 class="site-title">{{ config.site_title }}</h1>
         </div>
-    </header>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/admin" class="admin-link" aria-label="Панель администратора">
+                <i class="fas fa-lock" aria-hidden="true"></i> <span>Админ</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
 
+    {% block content %}
+<div class="app-container" id="mainApp">
     <!-- Main Content -->
     <main class="main-content">
         <div class="welcome-section">

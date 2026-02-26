@@ -2,64 +2,43 @@
 
 {% block title %}Углеводороды - {{ config.site_title }}{% endblock %}
 
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i>
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            </a>
+            <h1 class="site-title">Уравнения углеводородов</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="plugin-container">
+    <main class="main-content">
+{% endblock %}
+
 {% block extra_css %}
 <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-bg: #f5f7fa;
-            --dark-bg: #1a1a2e;
-            --card-bg: #ffffff;
-            --card-bg-dark: #2d3047;
-            --text-color: #333333;
-            --text-color-dark: #f0f0f0;
-            --border-color: #dddddd;
-            --border-color-dark: #444444;
-            --muted-color: #777777;
-            --muted-color-dark: #aaaaaa;
-            --code-bg: #f8f9fa;
-            --code-bg-dark: #2a2d3e;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --input-bg: #ffffff;
-            --input-bg-dark: #2d3047;
-            --table-header-bg: #f8f9fa;
-            --table-header-bg-dark: #2a2d3e;
-            --table-hover-bg: #f8f9fa;
-            --table-hover-bg-dark: #3a3d4e;
-            --alkane-color: #3498db;
-            --alkene-color: #9b59b6;
-            --alkyne-color: #e74c3c;
-            --cyclo-color: #2ecc71;
-            --arena-color: #f39c12;
         }
 
-        [data-theme="dark"] {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --accent-color: #e74c3c;
-            --light-bg: #1a1a2e;
-            --dark-bg: #0d0d15;
-            --card-bg: #2d3047;
-            --card-bg-dark: #252736;
-            --text-color: #f0f0f0;
-            --text-color-dark: #e0e0e0;
-            --border-color: #444444;
-            --border-color-dark: #555555;
-            --muted-color: #aaaaaa;
-            --muted-color-dark: #cccccc;
-            --code-bg: #2a2d3e;
-            --code-bg-dark: #1a1d2e;
-            --input-bg: #2d3047;
-            --input-bg-dark: #252736;
-            --table-header-bg: #2a2d3e;
-            --table-header-bg-dark: #1a1d2e;
-            --table-hover-bg: #3a3d4e;
-            --table-hover-bg-dark: #4a4d5e;
+        .form-group {
+            margin-bottom: 25px;
         }
-
         * {
             margin: 0;
             padding: 0;

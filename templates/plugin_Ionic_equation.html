@@ -2,190 +2,141 @@
 
 {% block title %}Решатель ионных уравнений - {{ config.site_title }}{% endblock %}
 
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i>
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            </a>
+            <h1 class="site-title">Ионные уравнения</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
 {% block extra_css %}
 <style>
-    .plugin-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    .plugin-header {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .plugin-header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .back-button {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 10px 20px;
-        border-radius: 6px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: background 0.3s;
-    }
-
-    .back-button:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .plugin-title-section {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .plugin-header h1 {
-        font-size: 28px;
-        font-weight: 700;
-    }
-
     .input-section {
-        background: var(--card-bg);
+        background: var(--surface);
         border-radius: 12px;
         padding: 30px;
         margin-bottom: 30px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
-    .input-section label {
-        display: block;
-        margin-bottom: 10px;
-        font-weight: 600;
-        color: var(--text-color);
-    }
-
     .input-section input {
         width: 100%;
         padding: 14px 18px;
-        border: 2px solid var(--border-color);
+        border: 2px solid var(--border);
         border-radius: 8px;
         font-size: 16px;
-        margin-bottom: 15px;
+        background: var(--background);
+        color: var(--text-primary);
+        transition: border-color 0.3s;
     }
 
-    .input-section button {
-        background: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 14px 30px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
+    .input-section input:focus {
+        outline: none;
+        border-color: var(--accent);
     }
 
-    .examples {
-        background: var(--card-bg);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 30px;
-    }
-
-    .examples button {
-        background: var(--secondary-color);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        margin: 5px;
-        cursor: pointer;
-    }
-
-    .results {
-        background: var(--card-bg);
+    .results-section {
+        background: var(--surface);
         border-radius: 12px;
         padding: 30px;
         margin-top: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        display: none;
+    }
+
+    .equation, .ionic, .type, .precipitate {
+        margin-bottom: 15px;
+        padding: 15px;
+        background: var(--background);
+        border-radius: 8px;
+        border-left: 4px solid var(--accent);
     }
 
     .error {
-        color: #e74c3c;
-        padding: 15px;
-        background: rgba(231, 76, 60, 0.1);
+        background: #fee;
+        color: #c33;
+        padding: 20px;
         border-radius: 8px;
-        margin-bottom: 15px;
+        border-left: 4px solid #c33;
+    }
+
+    .notes {
+        margin-top: 15px;
+        padding: 15px;
+        background: #fff3cd;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+    }
+
+    .notes ul {
+        margin: 10px 0 0 0;
+        padding-left: 20px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="plugin-container">
-    <header class="plugin-header">
-        <div class="plugin-header-content">
-            <a href="/" class="back-button">
-                <i class="fas fa-arrow-left"></i> Назад
-            </a>
-            <div class="plugin-title-section">
-                <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
-                <h1><i class="fas fa-flask"></i> Решатель ионных уравнений</h1>
-            </div>
+    <main class="main-content">
+        <div class="input-section">
+            <h2>Решатель ионных уравнений</h2>
+            <form id="ionEquationForm">
+                <div class="form-group">
+                    <label for="equation">Введите уравнение:</label>
+                    <input type="text" id="equation" name="equation" 
+                           placeholder="Например: AgNO3 + NaCl → AgCl + NaNO3" 
+                           value="AgNO3 + NaCl → AgCl + NaNO3" required>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-calculator"></i> Решить
+                </button>
+            </form>
         </div>
-    </header>
 
-    <div class="input-section">
-        <label>Введите уравнение:</label>
-        <input type="text" id="equation-input" placeholder="NaCl + AgNO3" class="form-control">
-        <button onclick="solveEquation()" class="btn-primary">
-            <i class="fas fa-calculator"></i> Решить
-        </button>
-    </div>
-    
-    <div class="examples">
-        <strong>Примеры:</strong>
-        <button onclick="setExample('NaCl + AgNO3')">NaCl + AgNO3</button>
-        <button onclick="setExample('HCl + NaOH')">HCl + NaOH</button>
-        <button onclick="setExample('BaCl2 + Na2SO4')">BaCl2 + Na2SO4</button>
-    </div>
-    
-    <div id="results" class="results" style="display: none;">
-        <!-- Результаты будут здесь -->
-    </div>
+        <div id="results" class="results-section">
+            <!-- Результаты будут отображены здесь -->
+        </div>
+    </main>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-function setExample(equation) {
-    document.getElementById('equation-input').value = equation;
-}
-
-async function solveEquation() {
-    const equation = document.getElementById('equation-input').value;
-    if (!equation) {
-        alert('Введите уравнение');
-        return;
-    }
+document.getElementById('ionEquationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
     
+    const equation = document.getElementById('equation').value;
     const resultsDiv = document.getElementById('results');
-    resultsDiv.style.display = 'block';
-    resultsDiv.innerHTML = '<p>Рассчитываю...</p>';
     
     try {
-        const response = await fetch('/api/plugin/Ionic_equation', {
+        const response = await fetch('/api/Ionic_equation/solve', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ equation: equation })
         });
         
         const data = await response.json();
         displayResults(data);
     } catch (error) {
-        displayResults({error: true, message: 'Ошибка при расчете: ' + error.message});
+        console.error('Error:', error);
+        displayResults({ error: true, message: 'Произошла ошибка при отправке запроса' });
     }
-}
+});
 
 function displayResults(data) {
     const resultsDiv = document.getElementById('results');

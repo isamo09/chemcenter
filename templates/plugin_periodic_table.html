@@ -2,23 +2,30 @@
 
 {% block title %}Периодическая таблица - {{ config.site_title }}{% endblock %}
 
-{% block content %}
-<div class="plugin-container">
-    <header class="plugin-header">
-        <div class="plugin-header-content">
-            <a href="/" class="back-button">
-                <i class="fas fa-arrow-left"></i> Назад
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i>
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
             </a>
-            <div class="plugin-title-section">
-                <img src="{{ config.site_logo_dark }}" alt="Логотип" class="header-logo plugin-logo">
-                <h1><i class="fas fa-atom"></i> Периодическая таблица элементов</h1>
-            </div>
-            <button class="theme-toggle" id="themeToggle" title="Переключить тему">
-                <i class="fas fa-moon"></i>
-            </button>
+            <h1 class="site-title">Периодическая таблица</h1>
         </div>
-    </header>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
 
+    {% block content %}
+<div class="plugin-container">
     <main class="periodic-main-content">
         <!-- Search and Filter Controls -->
         <div class="periodic-controls">

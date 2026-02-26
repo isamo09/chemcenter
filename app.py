@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 app = Flask(__name__)
-app.secret_key = 'key'
+app.secret_key = 'fYfguehg*GJ&hjgisg93'
 CORS(app)
 
 # Configuration
