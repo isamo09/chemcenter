@@ -146,9 +146,17 @@
         <div id="tilesTab" class="tab-content">
             <div class="tab-header">
                 <h2>Управление плитками</h2>
-                <p class="tab-description">Выберите, какие плагины отображать на главной странице</p>
+                <p class="tab-description">Выберите, какие плагины отображать на главной странице и измените их порядок перетаскиванием</p>
             </div>
-            <div id="tilesList" class="tiles-list"></div>
+            <div id="tilesList" class="tiles-list sortable"></div>
+            <div class="tiles-actions">
+                <button class="btn-secondary" onclick="resetTilesOrder()">
+                    <i class="fas fa-undo"></i> Сбросить порядок
+                </button>
+                <button class="btn-primary" onclick="saveTilesOrder()">
+                    <i class="fas fa-save"></i> Сохранить порядок
+                </button>
+            </div>
         </div>
 
         <!-- Posts Tab -->
@@ -357,6 +365,78 @@
 [data-theme="dark"] .prev-stat {
     color: var(--text-muted-dark, #6b7280);
 }
+
+/* Drag and Drop styles for tiles */
+.tiles-list.sortable {
+    min-height: 200px;
+}
+
+.tile-item {
+    cursor: move;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tile-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+    z-index: 1000;
+}
+
+.tile-item.drag-over {
+    border: 2px dashed var(--primary-color, #3b82f6);
+    background: var(--hover-bg, #f3f4f6);
+}
+
+.tile-item .drag-handle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--text-muted, #9ca3af);
+    cursor: grab;
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 4px;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.tile-item .drag-handle:hover {
+    color: var(--primary-color, #3b82f6);
+    background: var(--hover-bg, #f3f4f6);
+}
+
+.tile-item .drag-handle:active {
+    cursor: grabbing;
+}
+
+.tiles-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.tiles-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Dark theme for drag and drop */
+[data-theme="dark"] .tile-item .drag-handle {
+    background: var(--card-bg-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+}
+
+[data-theme="dark"] .tile-item.drag-over {
+    background: var(--hover-bg-dark, #374151);
+}
+
+[data-theme="dark"] .tiles-actions {
+    border-color: var(--border-color-dark, #374151);
+}
 </style>
 
 <script>
@@ -480,13 +560,34 @@ async function loadVisitStats() {
 async function loadTiles() {
     try {
         const response = await axios.get('/api/plugins');
+        const configResponse = await axios.get('/api/config');
         const container = document.getElementById('tilesList');
         container.innerHTML = '';
         
-        for (const [name, plugin] of Object.entries(response.data)) {
+        // Get saved order from server config
+        const savedOrder = configResponse.data.tiles_order || [];
+        let plugins = Object.entries(response.data);
+        
+        // Sort plugins by saved order
+        if (savedOrder.length > 0) {
+            plugins.sort((a, b) => {
+                const aIndex = savedOrder.indexOf(a[0]);
+                const bIndex = savedOrder.indexOf(b[0]);
+                if (aIndex === -1) return 1;
+                if (bIndex === -1) return -1;
+                return aIndex - bIndex;
+            });
+        }
+        
+        plugins.forEach(([name, plugin], index) => {
             const item = document.createElement('div');
             item.className = 'tile-item';
+            item.draggable = true;
+            item.dataset.pluginName = name;
             item.innerHTML = `
+                <div class="drag-handle" title="Перетащить">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
                 <div class="tile-item-header">
                     <div class="tile-info">
                         <i class="fas fa-${plugin.icon}"></i>
@@ -502,8 +603,17 @@ async function loadTiles() {
                     </label>
                 </div>
             `;
+            
+            // Add drag event listeners
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+            
             container.appendChild(item);
-        }
+        });
     } catch (error) {
         console.error('Error loading tiles:', error);
     }
@@ -703,6 +813,96 @@ async function toggleTile(name, enabled) {
         loadDashboard();
     } catch (error) {
         alert('Ошибка при обновлении плагина');
+    }
+}
+
+// Drag and Drop functionality
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    
+    // Remove all drag-over classes
+    document.querySelectorAll('.tile-item').forEach(item => {
+        item.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    if (draggedElement !== this) {
+        const container = document.getElementById('tilesList');
+        const allItems = [...container.querySelectorAll('.tile-item')];
+        const draggedIndex = allItems.indexOf(draggedElement);
+        const targetIndex = allItems.indexOf(this);
+        
+        if (draggedIndex < targetIndex) {
+            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        } else {
+            this.parentNode.insertBefore(draggedElement, this);
+        }
+    }
+    
+    return false;
+}
+
+// Save and reset functions
+function saveTilesOrder() {
+    const container = document.getElementById('tilesList');
+    const items = container.querySelectorAll('.tile-item');
+    const order = Array.from(items).map(item => item.dataset.pluginName);
+    
+    // Save to server config only
+    axios.post('/api/config', { tiles_order: order })
+        .then(() => {
+            alert('Порядок плиток сохранен!');
+        })
+        .catch(error => {
+            console.error('Error saving tiles order:', error);
+            alert('Ошибка при сохранении порядка плиток');
+        });
+}
+
+function resetTilesOrder() {
+    if (confirm('Вы уверены, что хотите сбросить порядок плиток к исходному?')) {
+        // Reset to server default
+        axios.post('/api/config', { tiles_order: [] })
+            .then(() => {
+                loadTiles();
+                alert('Порядок плиток сброшен!');
+            })
+            .catch(error => {
+                console.error('Error resetting tiles order:', error);
+                alert('Ошибка при сбросе порядка плиток');
+            });
     }
 }
 

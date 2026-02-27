@@ -6,18 +6,27 @@
 <header class="header">
     <div class="header-content">
         <div class="logo-section">
-            <a href="/" class="back-link" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+            <a href="/" class="back-link"
+               style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
                 <i class="fas fa-arrow-left"></i>
-                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+                <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}"
+                     alt="Логотип {{ config.site_title }}"
+                     class="header-logo">
             </a>
             <h1 class="site-title">Вход в систему</h1>
         </div>
+
         <nav class="header-nav">
-            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+            <button class="theme-toggle"
+                    id="themeToggle"
+                    title="Переключить тему"
+                    aria-label="Переключить тему">
                 <i class="fas fa-moon" aria-hidden="true"></i>
             </button>
+
             <a href="/" class="admin-link" aria-label="На главную">
-                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+                <i class="fas fa-home" aria-hidden="true"></i>
+                <span>Главная</span>
             </a>
         </nav>
     </div>
@@ -25,42 +34,57 @@
 {% endblock %}
 
 {% block content %}
-<!-- Redesigned login page with better styles and removed default credentials hint -->
 <div class="login-page">
     <div class="login-card">
         <div class="login-card-header">
-            <img id="loginLogo" src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип" class="login-logo">
+
+            <!-- ВАЖНО: просто класс login-logo -->
+            <img src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}"
+                 alt="Логотип {{ config.site_title }}"
+                 class="login-logo">
+
             <h1>Вход в систему</h1>
             <p class="login-subtitle">{{ config.site_title }}</p>
         </div>
-        
+
         {% if error %}
         <div class="login-alert login-alert-error">
             <i class="fas fa-exclamation-triangle"></i>
             <span>{{ error }}</span>
         </div>
         {% endif %}
-        
+
         <form class="login-form" method="POST" action="/login">
             <div class="login-form-group">
                 <label for="username">
                     <i class="fas fa-user"></i> Имя пользователя
                 </label>
-                <input type="text" id="username" name="username" class="login-input" 
-                       placeholder="Введите имя пользователя" required autofocus>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       class="login-input"
+                       placeholder="Введите имя пользователя"
+                       required
+                       autofocus>
             </div>
+
             <div class="login-form-group">
                 <label for="password">
                     <i class="fas fa-lock"></i> Пароль
                 </label>
-                <input type="password" id="password" name="password" class="login-input" 
-                       placeholder="Введите пароль" required>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="login-input"
+                       placeholder="Введите пароль"
+                       required>
             </div>
+
             <button type="submit" class="login-btn">
                 <i class="fas fa-sign-in-alt"></i> Войти
             </button>
         </form>
-        
+
         <div class="login-card-footer">
             <a href="/" class="login-back-link">
                 <i class="fas fa-arrow-left"></i> Вернуться на главную
@@ -70,19 +94,33 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
+    const themeToggle = document.getElementById('themeToggle');
+
+    // Загружаем тему
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    updateLoginLogo(savedTheme);
-});
 
-function updateLoginLogo(theme) {
-    const logo = document.getElementById('loginLogo');
-    if (logo) {
-        logo.src = theme === 'light' 
-            ? '{{ config.site_logo_dark }}'
-            : '{{ config.site_logo_light }}';
+    function updateIcon(theme) {
+        const icon = themeToggle.querySelector('i');
+        icon.className = theme === 'light'
+            ? 'fas fa-sun'
+            : 'fas fa-moon';
     }
-}
+
+    updateIcon(savedTheme);
+
+    themeToggle.addEventListener('click', function () {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        updateIcon(newTheme);
+    });
+
+});
 </script>
 {% endblock %}

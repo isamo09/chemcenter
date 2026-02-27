@@ -55,7 +55,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 - 2026 {{ config.site_title }}. Все права защищены. By ИСП-225.</p>
+        <p>&copy; 2025 - 2026 {{ config.site_title }}. By ИСП-225.</p>
     </footer>
 </div>
 
@@ -90,16 +90,32 @@ function updateThemeIcon(theme) {
 
 async function loadTiles() {
     try {
-        const response = await axios.get('/api/plugins');
+        const response = await axios.get('/api/config');
+        const pluginsResponse = await axios.get('/api/plugins');
         const container = document.getElementById('tilesContainer');
         container.innerHTML = '';
 
-        for (const [name, plugin] of Object.entries(response.data)) {
-            if (plugin.enabled) {
-                const tile = createTile(name, plugin);
-                container.appendChild(tile);
-            }
+        // Get saved order from server config
+        const savedOrder = response.data.tiles_order || [];
+        let plugins = Object.entries(pluginsResponse.data);
+        
+        // Filter enabled plugins and sort by saved order
+        const enabledPlugins = plugins.filter(([name, plugin]) => plugin.enabled);
+        
+        if (savedOrder.length > 0) {
+            enabledPlugins.sort((a, b) => {
+                const aIndex = savedOrder.indexOf(a[0]);
+                const bIndex = savedOrder.indexOf(b[0]);
+                if (aIndex === -1) return 1;
+                if (bIndex === -1) return -1;
+                return aIndex - bIndex;
+            });
         }
+
+        enabledPlugins.forEach(([name, plugin]) => {
+            const tile = createTile(name, plugin);
+            container.appendChild(tile);
+        });
     } catch (error) {
         console.error('Error loading tiles:', error);
     }

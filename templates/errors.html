@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}{{ error_code }} - {{ error_title }}{% endblock %}
+
+{% block header %}
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <img id="headerLogo" src="{{ config.site_logo_dark if config and config.site_logo_dark else '/static/images/logo-dark.png' }}" alt="Логотип {{ config.site_title }}" class="header-logo">
+            <h1 class="site-title">{{ config.site_title if config else 'Science Portal' }}</h1>
+        </div>
+        <nav class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему" aria-label="Переключить тему">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+            </button>
+            <a href="/" class="admin-link" aria-label="На главную">
+                <i class="fas fa-home" aria-hidden="true"></i> <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="plugin-container">
+    <main class="main-content">
+        <div class="error-container">
+            <div class="error-visual">
+                <div class="error-code">{{ error_code }}</div>
+                <div class="error-icon">
+                    {% if error_code == '404' %}
+                        <i class="fas fa-search"></i>
+                    {% elif error_code == '403' %}
+                        <i class="fas fa-lock"></i>
+                    {% elif error_code == '500' %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="error-content">
+                <h1 class="error-title">{{ error_title }}</h1>
+                <p class="error-description">{{ error_description }}</p>
+                
+                {% if error_code == '404' %}
+                    <div class="error-suggestions">
+                        <h3>Что можно попробовать:</h3>
+                        <ul>
+                            <li>Проверьте правильность URL адреса</li>
+                            <li>Воспользуйтесь навигацией для перехода на нужную страницу</li>
+                            <li>Перейдите на <a href="/">главную страницу</a></li>
+                        </ul>
+                    </div>
+                {% elif error_code == '403' %}
+                    <div class="error-suggestions">
+                        <h3>Что можно попробовать:</h3>
+                        <ul>
+                            <li><a href="/login">Войдите в систему</a> если у вас есть доступ</li>
+                            <li>Обратитесь к администратору для получения прав доступа</li>
+                            <li>Вернитесь на <a href="/">главную страницу</a></li>
+                        </ul>
+                    </div>
+                {% elif error_code == '500' %}
+                    <div class="error-suggestions">
+                        <h3>Что можно попробовать:</h3>
+                        <ul>
+                            <li>Обновите страницу через несколько минут</li>
+                            <li>Попробуйте вернуться на <a href="/">главную страницу</a></li>
+                            <li>Если проблема повторяется, сообщите администратору</li>
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home"></i> На главную
+                    </a>
+                    <button onclick="history.back()" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 2rem;
+}
+
+.error-visual {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--primary-color, #3b82f6);
+    opacity: 0.1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: var(--primary-color, #3b82f6);
+    position: relative;
+    z-index: 2;
+    margin-bottom: 1rem;
+}
+
+.error-content {
+    max-width: 600px;
+    position: relative;
+    z-index: 2;
+}
+
+.error-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary, #1f2937);
+    margin-bottom: 1rem;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    color: var(--text-secondary, #6b7280);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-suggestions {
+    background: var(--surface, #f9fafb);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    border-left: 4px solid var(--primary-color, #3b82f6);
+}
+
+.error-suggestions h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--text-primary, #1f2937);
+    font-size: 1.1rem;
+}
+
+.error-suggestions ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.error-suggestions li {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary, #6b7280);
+}
+
+.error-suggestions a {
+    color: var(--primary-color, #3b82f6);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.error-suggestions a:hover {
+    text-decoration: underline;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: var(--primary-color, #3b82f6);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover, #2563eb);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--surface, #f3f4f6);
+    color: var(--text-primary, #1f2937);
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.btn-secondary:hover {
+    background: var(--hover-bg, #e5e7eb);
+    transform: translateY(-2px);
+}
+
+/* Dark theme support */
+[data-theme="dark"] .error-suggestions {
+    background: var(--surface-dark, #374151);
+    border-left-color: var(--primary-color, #3b82f6);
+}
+
+[data-theme="dark"] .error-suggestions h3 {
+    color: var(--text-primary-dark, #f3f4f6);
+}
+
+[data-theme="dark"] .error-suggestions li {
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+[data-theme="dark"] .error-title {
+    color: var(--text-primary-dark, #f3f4f6);
+}
+
+[data-theme="dark"] .error-description {
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: var(--surface-dark, #374151);
+    color: var(--text-primary-dark, #f3f4f6);
+    border-color: var(--border-color-dark, #4b5563);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: var(--hover-bg-dark, #4b5563);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .error-container {
+        padding: 1rem;
+    }
+    
+    .error-code {
+        font-size: 6rem;
+    }
+    
+    .error-icon {
+        font-size: 3rem;
+    }
+    
+    .error-title {
+        font-size: 1.5rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+});
+
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        const icon = themeToggle.querySelector('i');
+        icon.className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            icon.className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        });
+    }
+}
+</script>
+
+{% if error_code == '404' %}
+<script>
+// Auto-redirect for 404 after 30 seconds
+setTimeout(function() {
+    if (confirm('Перенаправить на главную страницу?')) {
+        window.location.href = '/';
+    }
+}, 30000);
+</script>
+{% endif %}
+{% endblock %}

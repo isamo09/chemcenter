@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 app = Flask(__name__)
-app.secret_key = 'fYfguehg*GJ&hjgisg93'
+app.secret_key = 'keyHERE'
 CORS(app)
 
 # Configuration
@@ -30,8 +30,26 @@ def load_visits():
     """Load visits data from file"""
     if STATS_FILE.exists():
         with open(STATS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {'visits': []}
+            data = json.load(f)
+
+            # Обеспечим совместимость со старым форматом
+            if 'archived' not in data:
+                data['archived'] = {
+                    'total_old_visits': 0,
+                    'total_old_unique': 0
+                }
+            if 'visits' not in data:
+                data['visits'] = []
+
+            return data
+
+    return {
+        'visits': [],
+        'archived': {
+            'total_old_visits': 0,
+            'total_old_unique': 0
+        }
+    }
 
 
 def save_visits(data):
@@ -41,35 +59,58 @@ def save_visits(data):
 
 
 def record_visit():
-    """Record a new visit"""
+    """Record a new visit with auto-cleanup of old data"""
     data = load_visits()
 
-    # Get or create session ID
     if 'visitor_id' not in session:
         session['visitor_id'] = str(uuid.uuid4())
 
+    now = datetime.now()
+    cutoff = now - timedelta(days=30)
+
+    new_visits = []
+    old_sessions = set()
+    old_count = 0
+
+    for visit in data['visits']:
+        try:
+            visit_time = datetime.fromisoformat(visit['timestamp'])
+            if visit_time < cutoff:
+                old_count += 1
+                old_sessions.add(visit.get('session_id'))
+            else:
+                new_visits.append(visit)
+        except:
+            continue
+
+    if old_count > 0:
+        data['archived']['total_old_visits'] += old_count
+        data['archived']['total_old_unique'] += len(old_sessions)
+
+    data['visits'] = new_visits
+
     visit = {
-        'timestamp': datetime.now().isoformat(),
-        'session_id': session['visitor_id'],
-        'ip': request.remote_addr,
-        'user_agent': request.headers.get('User-Agent', '')[:200]
+        'timestamp': now.isoformat(),
+        'session_id': session['visitor_id']
     }
 
     data['visits'].append(visit)
-
-    # Keep only last 100000 visits to prevent file from growing too large
-    if len(data['visits']) > 100000:
-        data['visits'] = data['visits'][-100000:]
 
     save_visits(data)
 
 
 def get_statistics():
     """Calculate visit statistics"""
+
     data = load_visits()
     visits = data.get('visits', [])
 
     now = datetime.now()
+
+    archived = data.get('archived', {
+        'total_old_visits': 0,
+        'total_old_unique': 0
+    })
 
     # Define time periods
     periods = {
@@ -133,6 +174,9 @@ def get_statistics():
                 if period_times['prev_start'] <= visit_time < period_times['prev_end']:
                     stats[period_name]['previous']['visits'] += 1
                     period_sessions[period_name]['previous'].add(session_id)
+            stats['total']['visits'] += archived['total_old_visits']
+            stats['total']['unique'] += archived['total_old_unique']
+
         except (ValueError, KeyError):
             continue
 
@@ -189,6 +233,48 @@ def login_required(f):
 init_admin()
 
 
+# Helper functions
+def load_config():
+    """Load configuration from file"""
+    config_file = DATA_DIR / 'config.json'
+    if config_file.exists():
+        with open(config_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return get_default_config()
+
+
+def save_config(config):
+    """Save configuration to file"""
+    config_file = DATA_DIR / 'config.json'
+    with open(config_file, 'w', encoding='utf-8') as f:
+        json.dump(config, f, ensure_ascii=False, indent=2)
+
+
+def get_default_config():
+    """Get default configuration"""
+    return {
+        'theme': 'light',
+        'site_title': 'Научный Портал',
+        'site_description': 'Интерактивная научная платформа',
+        'site_logo_light': '/static/images/logo-light.png',
+        'site_logo_dark': '/static/images/logo-dark.png',
+        'enabled_plugins': [
+            'periodic_table',
+            'le_chatelier',
+            'solubility_table',
+            'Ionic_equation',
+            'balancing_chemical_equations',
+            'electrochemical_voltage_series',
+            'hydrocarbon_equations',
+            'molar_mass_calculator',
+            'classification_and_nomenclature',
+            'equals'
+        ],
+        'tiles': [],
+        'tiles_order': []
+    }
+
+
 # Initialize plugin system
 class PluginManager:
     def __init__(self):
@@ -215,6 +301,49 @@ class PluginManager:
                         print(f"✓ Plugin loaded: {plugin_name}")
                 except Exception as e:
                     print(f"✗ Error loading plugin {plugin_name}: {e}")
+        
+        # Clean up config and update plugins list
+        self.update_config_plugins()
+
+    def update_config_plugins(self):
+        """Clean up missing plugins and add new ones to config"""
+        config = load_config()
+        
+        # Get current plugin names from filesystem
+        current_plugin_names = set(self.plugins.keys())
+        
+        # Get enabled plugins from config
+        enabled_plugins = set(config.get('enabled_plugins', []))
+        
+        # Remove missing plugins from enabled list
+        cleaned_enabled = list(current_plugin_names.intersection(enabled_plugins))
+        
+        # Add new plugins to enabled list (default to enabled)
+        new_plugins = current_plugin_names - enabled_plugins
+        cleaned_enabled.extend(list(new_plugins))
+        
+        # Clean up tiles_order - remove missing plugins
+        tiles_order = config.get('tiles_order', [])
+        cleaned_tiles_order = [plugin for plugin in tiles_order if plugin in current_plugin_names]
+        
+        # Add new plugins to tiles_order at the end
+        for plugin in new_plugins:
+            if plugin not in cleaned_tiles_order:
+                cleaned_tiles_order.append(plugin)
+        
+        # Update config if changes were made
+        if (cleaned_enabled != config.get('enabled_plugins', []) or 
+            cleaned_tiles_order != config.get('tiles_order', [])):
+            
+            config['enabled_plugins'] = cleaned_enabled
+            config['tiles_order'] = cleaned_tiles_order
+            save_config(config)
+            
+            if new_plugins:
+                print(f"✓ Added new plugins to config: {list(new_plugins)}")
+            if len(enabled_plugins) != len(cleaned_enabled):
+                removed = enabled_plugins - set(cleaned_enabled)
+                print(f"✓ Removed missing plugins from config: {list(removed)}")
 
     def get_plugin(self, name):
         return self.plugins.get(name)
@@ -230,6 +359,88 @@ class PluginManager:
 
 
 plugin_manager = PluginManager()
+
+
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    """Handle 404 Not Found errors"""
+    config = load_config()
+    return render_template('errors.html', 
+                        error_code='404',
+                        error_title='Страница не найдена',
+                        error_description='К сожалению, запрошенная вами страница не существует или была перемещена.',
+                        config=config), 404
+
+
+@app.errorhandler(403)
+def forbidden_error(error):
+    """Handle 403 Forbidden errors"""
+    config = load_config()
+    return render_template('errors.html', 
+                        error_code='403',
+                        error_title='Доступ запрещен',
+                        error_description='У вас нет прав для доступа к этой странице. Пожалуйста, войдите в систему или обратитесь к администратору.',
+                        config=config), 403
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    """Handle 500 Internal Server Error"""
+    config = load_config()
+    return render_template('errors.html', 
+                        error_code='500',
+                        error_title='Внутренняя ошибка сервера',
+                        error_description='Произошла непредвиденная ошибка на сервере. Мы уже работаем над её исправлением.',
+                        config=config), 500
+
+
+@app.errorhandler(400)
+def bad_request_error(error):
+    """Handle 400 Bad Request errors"""
+    config = load_config()
+    return render_template('errors.html', 
+                        error_code='400',
+                        error_title='Неверный запрос',
+                        error_description='Сервер не может обработать ваш запрос. Пожалуйста, проверьте введенные данные.',
+                        config=config), 400
+
+
+@app.errorhandler(401)
+def unauthorized_error(error):
+    """Handle 401 Unauthorized errors"""
+    config = load_config()
+    return render_template('errors.html', 
+                        error_code='401',
+                        error_title='Требуется авторизация',
+                        error_description='Для доступа к этой странице необходимо войти в систему.',
+                        config=config), 401
+
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    """Handle all other exceptions"""
+    import traceback
+    
+    # Log the error
+    print(f"Unhandled exception: {error}")
+    print(traceback.format_exc())
+    
+    config = load_config()
+    
+    # Don't expose internal errors in production
+    if app.debug:
+        return render_template('errors.html', 
+                            error_code='500',
+                            error_title='Ошибка отладки',
+                            error_description=f'{str(error)}',
+                            config=config), 500
+    else:
+        return render_template('errors.html', 
+                            error_code='500',
+                            error_title='Внутренняя ошибка сервера',
+                            error_description='Произошла непредвиденная ошибка. Пожалуйста, попробуйте позже.',
+                            config=config), 500
 
 
 # Routes
@@ -254,7 +465,17 @@ def update_config():
     """Update application configuration"""
     data = request.json
     config = load_config()
-    config.update(data)
+    
+    # Handle tiles_order specially
+    if 'tiles_order' in data:
+        config['tiles_order'] = data['tiles_order']
+        # Remove tiles_order from data to avoid duplicate
+        data_copy = data.copy()
+        del data_copy['tiles_order']
+        config.update(data_copy)
+    else:
+        config.update(data)
+    
     save_config(config)
     return jsonify({'success': True})
 
@@ -615,47 +836,6 @@ def get_elements_data():
     return jsonify(elements_array)
 
 
-# Helper functions
-def load_config():
-    """Load configuration from file"""
-    config_file = DATA_DIR / 'config.json'
-    if config_file.exists():
-        with open(config_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return get_default_config()
-
-
-def save_config(config):
-    """Save configuration to file"""
-    config_file = DATA_DIR / 'config.json'
-    with open(config_file, 'w', encoding='utf-8') as f:
-        json.dump(config, f, ensure_ascii=False, indent=2)
-
-
-def get_default_config():
-    """Get default configuration"""
-    return {
-        'theme': 'light',
-        'site_title': 'Научный Портал',
-        'site_description': 'Интерактивная научная платформа',
-        'site_logo_light': '/static/images/logo-light.png',
-        'site_logo_dark': '/static/images/logo-dark.png',
-        'enabled_plugins': [
-            'periodic_table',
-            'le_chatelier',
-            'solubility_table',
-            'Ionic_equation',
-            'balancing_chemical_equations',
-            'electrochemical_voltage_series',
-            'hydrocarbon_equations',
-            'molar_mass_calculator',
-            'classification_and_nomenclature',
-            'equals'
-        ],
-        'tiles': []
-    }
-
-
 def save_posts(posts):
     """Save posts to file"""
     posts_file = DATA_DIR / 'posts.json'
@@ -664,4 +844,4 @@ def save_posts(posts):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=1253, host="0.0.0.0")
+    app.run(host='0.0.0.0', port=1253, debug=False)
