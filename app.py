@@ -9,11 +9,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 app = Flask(__name__)
-<<<<<<< HEAD
-app.secret_key = 'keyHERE'
-=======
 app.secret_key = 'keyhere'
->>>>>>> 6a315ffd4e52222236879c89b8890883fcd85569
 CORS(app)
 
 # Configuration
@@ -65,13 +61,11 @@ def save_visits(data):
 def record_visit():
     """Record a new visit with auto-cleanup of old data"""
     data = load_visits()
-
     if 'visitor_id' not in session:
         session['visitor_id'] = str(uuid.uuid4())
 
     now = datetime.now()
     cutoff = now - timedelta(days=30)
-
     new_visits = []
     old_sessions = set()
     old_count = 0
@@ -92,14 +86,11 @@ def record_visit():
         data['archived']['total_old_unique'] += len(old_sessions)
 
     data['visits'] = new_visits
-
     visit = {
         'timestamp': now.isoformat(),
         'session_id': session['visitor_id']
     }
-
     data['visits'].append(visit)
-
     save_visits(data)
 
 
@@ -848,4 +839,4 @@ def save_posts(posts):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1253, debug=False)
+    app.run(host='0.0.0.0', port=1253, debug=True)

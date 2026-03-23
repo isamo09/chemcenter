@@ -122,7 +122,7 @@ document.getElementById('ionEquationForm').addEventListener('submit', async func
     const resultsDiv = document.getElementById('results');
     
     try {
-        const response = await fetch('/api/Ionic_equation/solve', {
+        const response = await fetch('/api/plugin/Ionic_equation', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -84,21 +84,6 @@
         padding: 20px;
     }
 
-    .plugin-header {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .plugin-header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
     .back-button {
         background: rgba(255, 255, 255, 0.2);
         color: white;
@@ -125,11 +110,6 @@
         height: 50px;
         width: auto;
         font-size: 32px;
-    }
-
-    .plugin-header h1 {
-        font-size: 28px;
-        font-weight: 700;
     }
 
     .theme-toggle {
@@ -557,18 +537,6 @@
 
 {% block content %}
 <div class="plugin-container">
-    <header class="plugin-header">
-        <div class="plugin-header-content">
-            <a href="/" class="back-button">
-                <i class="fas fa-arrow-left"></i> Назад
-            </a>
-            <div class="plugin-title-section">
-                <img src="{{ config.site_logo_dark }}" class="header-logo plugin-logo" alt="logo">
-                <h1><i class="fas fa-balance-scale"></i> Балансировщик химических уравнений</h1>
-            </div>
-            <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
-        </div>
-    </header>
 
     <main class="principle-container">
         <div class="info-section">

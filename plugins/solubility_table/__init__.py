@@ -10,7 +10,6 @@ PLUGIN_CONFIG = {
     'route': '/plugin/solubility_table'
 }
 
-# Хуёвая база данных растворимости (основные соединения)
 SOLUBILITY_DATA = {
     # Катионы
     'H⁺': {'name': 'Водород', 'color': '#FF9FF3'},
