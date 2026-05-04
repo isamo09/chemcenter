@@ -25,85 +25,312 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .plugin-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .main-content {
+        width: 100%;
+    }
+    .principle-container {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 2rem;
+    }
+    .rules-sidebar {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .rules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    .rule-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.25rem;
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: help;
+    }
+    .rule-card.pressure { border-left-color: #3b82f6; }
+    .rule-card.temperature { border-left-color: #ef4444; }
+    .rule-card.concentration { border-left-color: #10b981; }
+    .rule-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .rule-header i { font-size: 1.5rem; }
+    .rule-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+    }
+    .rule-example {
+        background: var(--bg-secondary);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 0.85rem;
+    }
+    .info-section {
+        margin-bottom: 2rem;
+    }
+    .info-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .info-section code {
+        background: var(--bg-secondary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: monospace;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    .result-section {
+        margin-top: 2rem;
+        animation: fadeIn 0.3s;
+    }
+    .equation-card, .formula-card {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    .formula-card {
+        background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(37,99,235,0.05));
+    }
+    .fraction {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .fraction-line {
+        width: 100%;
+        height: 2px;
+        background: var(--text-primary);
+        margin: 0.25rem 0;
+    }
+    .result-header {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .result-item {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+    .value {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    .explanation-box {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .explanation-header {
+        background: rgba(59,130,246,0.1);
+        padding: 1rem;
+        font-weight: 600;
+    }
+    .explanation-box p {
+        padding: 1rem;
+        margin: 0;
+        line-height: 1.6;
+    }
+    .error-section {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(239,68,68,0.1);
+        border-left: 4px solid #ef4444;
+        border-radius: 8px;
+    }
+    .hidden { display: none; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .examples-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    .example-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .example-btn, .conc-btn {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .conc-group {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+    }
+    .conc-controls {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+    .temp-controls {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+    @media (max-width: 768px) {
+        .plugin-container { padding: 1rem; }
+        .result-header { grid-template-columns: 1fr; }
+        .rules-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
 <div class="plugin-container">
     <main class="main-content">
         <div class="principle-container">
-
             <div class="info-section">
-                <h2>Калькулятор смещения равновесия</h2>
+                <h2>Калькулятор смещения равновесия (полная версия)</h2>
                 <p>Введите коэффициенты реакции в формате:</p>
                 <code>1-2=3+4+1</code>
+                <p style="font-size: 0.85rem; margin-top: 0.5rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Левая часть = реагенты, правая часть = продукты.<br>
+                    Коэффициенты могут быть положительными.
+                </p>
             </div>
 
             <form id="equilibriumForm" class="form">
                 <div class="form-group">
-                    <label>Уравнение:</label>
-                    <input id="equation" class="form-control" placeholder="1-2=3+4+1" required>
+                    <label><i class="fas fa-chalkboard-user"></i> Уравнение реакции:</label>
+                    <input id="equation" class="form-control" placeholder="Пример: 1+3=2" required autocomplete="off">
                 </div>
-                <button class="btn-primary">Рассчитать</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-calculator"></i> Рассчитать Δn и K</button>
             </form>
 
-            <div id="result" class="result-section hidden">
-                <h3>Результат</h3>
+            <!-- Блок концентрации -->
+            <div class="conc-group" id="concBlock" style="margin-top: 1.5rem;">
+                <label><i class="fas fa-flask"></i> Равновесные концентрации (для расчёта K):</label>
+                <div id="concInputs" style="margin-top: 0.5rem;"></div>
+                <button type="button" class="example-btn" id="calcKbtn" style="margin-top: 0.5rem;"><i class="fas fa-chart-line"></i> Рассчитать K</button>
+            </div>
 
-                <div class="equation-card">
-                    <div class="equation-number">1</div>
-                    <div id="equationDisplay" class="equation-display"></div>
+            <!-- Блок температуры -->
+            <div class="conc-group" style="margin-top: 1rem;">
+                <label><i class="fas fa-temperature-high"></i> Влияние температуры:</label>
+                <div class="temp-controls">
+                    <button type="button" class="example-btn" id="tempUpBtn">🔥 Повысить T</button>
+                    <button type="button" class="example-btn" id="tempDownBtn">❄️ Понизить T</button>
+                    <span id="tempEffectText" style="margin-left: 1rem;">(смещение не определено)</span>
                 </div>
+            </div>
 
-                <!-- ► НОВАЯ ФОРМУЛА (дробь с буквами) -->
+            <div id="result" class="result-section hidden">
+                <h3><i class="fas fa-chart-line"></i> Результат</h3>
+                <div class="equation-card"><div id="equationDisplay"></div></div>
+
                 <div class="formula-card">
-                    <div class="formula-title">Формула с буквами:</div>
-                    <div class="fraction">
-                        <div id="letterFractionNum" class="fraction-numerator"></div>
-                        <div class="fraction-line"></div>
-                        <div id="letterFractionDen" class="fraction-denominator"></div>
-                    </div>
+                    <div class="formula-title">Константа равновесия K (численно):</div>
+                    <div id="kValueDisplay" style="font-size: 1.5rem; font-weight: bold;">—</div>
                 </div>
 
                 <div class="result-header">
-                    <div class="result-item">
-                        <div class="label">Δn:</div>
-                        <div id="deltaValue" class="value"></div>
-                    </div>
-                    <div class="result-item">
-                        <div class="label">Направление:</div>
-                        <div id="direction" class="value"></div>
-                    </div>
+                    <div class="result-item"><div class="label">Δn (изменение молей газов):</div><div id="deltaValue" class="value"></div></div>
+                    <div class="result-item"><div class="label">Смещение при изменении давления:</div><div id="direction" class="value"></div></div>
+                    <div class="result-item"><div class="label">Смещение при изменении концентрации:</div><div id="concDirection" class="value">—</div></div>
                 </div>
 
+                <div id="pressureEffect" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px;"></div>
+
                 <div class="explanation-box">
-                    <div class="explanation-header"><i class="fas fa-lightbulb"></i> Объяснение</div>
+                    <div class="explanation-header"><i class="fas fa-lightbulb"></i> Подробное объяснение</div>
                     <p id="explanation"></p>
                 </div>
             </div>
 
-            <div id="error" class="error-section hidden">
-                <h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3>
-                <p id="errorMessage"></p>
-            </div>
+            <div id="error" class="error-section hidden"><h3><i class="fas fa-exclamation-circle"></i> Ошибка</h3><p id="errorMessage"></p></div>
 
+            <div class="examples-section">
+                <div class="examples-title">Быстрые примеры:</div>
+                <div class="example-buttons">
+                    <button type="button" class="example-btn" onclick="setExample('1+3=2')">N₂ + 3H₂ ⇌ 2NH₃</button>
+                    <button type="button" class="example-btn" onclick="setExample('1=2')">N₂O₄ ⇌ 2NO₂</button>
+                    <button type="button" class="example-btn" onclick="setExample('1+1=2')">H₂ + I₂ ⇌ 2HI</button>
+                </div>
+            </div>
         </div>
     </main>
+
+    <aside class="rules-sidebar">
+        <div class="rules-container">
+            <div class="rules-title"><i class="fas fa-gavel"></i> Правила Ле Шателье</div>
+            <div class="rules-grid">
+                <div class="rule-card pressure"><div class="rule-header"><i class="fas fa-arrow-down"></i><h3>Влияние давления</h3></div><div class="rule-description">При увеличении давления равновесие смещается в сторону уменьшения объёма (меньшего числа молекул газов).</div><div class="rule-example">N₂ + 3H₂ ⇌ 2NH₃ ↑P → вправо</div></div>
+                <div class="rule-card temperature"><div class="rule-header"><i class="fas fa-temperature-high"></i><h3>Влияние температуры</h3></div><div class="rule-description">Повышение T смещает равновесие в сторону эндотермической реакции, понижение — в сторону экзотермической.</div><div class="rule-example">2NO₂ ⇌ N₂O₄ + тепло ↑T → влево</div></div>
+                <div class="rule-card concentration"><div class="rule-header"><i class="fas fa-vial"></i><h3>Влияние концентрации</h3></div><div class="rule-description">Увеличение концентрации реагента → смещение в сторону продуктов. Увеличение концентрации продукта → смещение в сторону реагентов.</div><div class="rule-example">Добавление реагента → вправо</div></div>
+            </div>
+        </div>
+    </aside>
 </div>
 
-
 <script>
-/* =======================================================
-                Тёме привет!!
-======================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-    initTheme();
-    document.getElementById("equilibriumForm")
-        .addEventListener("submit", calculateEquilibrium);
-});
+let currentReaction = { leftCoefs: [], rightCoefs: [], leftSum: 0, rightSum: 0, delta: 0, equationStr: "" };
+let currentConcValues = {};
 
 function initTheme() {
     const btn = document.getElementById("themeToggle");
     const saved = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-theme", saved);
-
-    btn.addEventListener("click", () => {
+    if (btn) btn.addEventListener("click", () => {
         const current = document.documentElement.getAttribute("data-theme");
         const next = current === "light" ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", next);
@@ -111,90 +338,156 @@ function initTheme() {
     });
 }
 
-/* =======================================================
-        ГЕНЕРАЦИЯ ФОРМУЛЫ ПО 😃➰ ЛОГИКЕ
-======================================================= */
-
-function generateLetterFormula(eq) {
-    const parts = eq.split("=");
-    if (parts.length !== 2) return { numerator: "—", denominator: "—" };
-
-    const left = parts[0].match(/[+-]?\d+/g)?.map(Number) || [];
-
-    const rightRaw = parts[1].match(/[+-]?\d+/g)?.map(Number) || [];
-    const right = rightRaw.slice(0, -1); // убираем служебный
-
-    const letters = "abcdefghijklmnopqrstuvwxyz";
-
-    const SUP = {
-        "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³",
-        "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷",
-        "8": "⁸", "9": "⁹"
-    };
-
-    const toSup = n => n.toString().split("").map(c => SUP[c]).join("");
-
-    function build(arr, offset) {
-        return arr.map((coef, i) => {
-            const letter = letters[i + offset];
-            return `C${letter}${toSup(coef)}`;
-        }).join(" * ");
-    }
-
-    return {
-        numerator: build(left, 0),                  // левая часть → Ca¹, Cb⁻²
-        denominator: build(right, left.length)      // правая часть → Cc³, Cd⁴
-    };
+function parseCoefficients(equation) {
+    const parts = equation.split("=");
+    if (parts.length !== 2) throw new Error("Уравнение должно содержать знак '='");
+    const extractNumbers = (str) => (str.match(/[+-]?\d+/g) || []).map(n => Math.abs(parseInt(n, 10)));
+    const leftCoefs = extractNumbers(parts[0]);
+    const rightCoefs = extractNumbers(parts[1]);
+    if (leftCoefs.length === 0 && rightCoefs.length === 0) throw new Error("Не найдены коэффициенты");
+    const sumLeft = leftCoefs.reduce((a,b)=>a+b,0);
+    const sumRight = rightCoefs.reduce((a,b)=>a+b,0);
+    return { leftCoefs, rightCoefs, sumLeft, sumRight, delta: sumRight - sumLeft, leftRaw: parts[0], rightRaw: parts[1] };
 }
 
-/* =======================================================
-                API РАСЧЁТА
-======================================================= */
-
-async function calculateEquilibrium(e) {
-    e.preventDefault();
-
-    const input = document.getElementById("equation").value.trim();
-    if (!input) return;
-
-    try {
-        const r = await fetch(`/api/plugin/le_chatelier?equation=${encodeURIComponent(input)}`);
-        const data = await r.json();
-        if (data.error) return showError(data.message);
-        showResult(data, input);
-    } catch (err) {
-        showError(err.message);
+function generateConcInputs(coefs, side) {
+    const container = document.getElementById("concInputs");
+    if (!container) return;
+    container.innerHTML = "";
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let idx = 0;
+    for (let coef of coefs) {
+        const letter = letters[idx % letters.length];
+        const group = document.createElement("div");
+        group.style.marginBottom = "0.5rem";
+        group.innerHTML = `<label>${side === 'left' ? 'Реагент' : 'Продукт'} [${letter}] (коэф. ${coef}): <input type="number" step="0.01" id="conc_${side}_${idx}" value="${(Math.random()*2+0.5).toFixed(2)}" style="width: 100px; margin-left: 0.5rem;"></label>`;
+        container.appendChild(group);
+        idx++;
     }
 }
 
-/* =======================================================
-                ОТОБРАЖЕНИЕ
-======================================================= */
+function calculateK() {
+    if (!currentReaction.leftCoefs.length && !currentReaction.rightCoefs.length) {
+        document.getElementById("kValueDisplay").innerHTML = "— (нет данных)";
+        return;
+    }
+    let numerator = 1.0;
+    let denominator = 1.0;
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let idx = 0;
+    for (let i = 0; i < currentReaction.rightCoefs.length; i++) {
+        const letter = letters[idx % letters.length];
+        const input = document.getElementById(`conc_right_${i}`);
+        if (input) {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) numerator *= Math.pow(val, currentReaction.rightCoefs[i]);
+        }
+        idx++;
+    }
+    idx = 0;
+    for (let i = 0; i < currentReaction.leftCoefs.length; i++) {
+        const letter = letters[idx % letters.length];
+        const input = document.getElementById(`conc_left_${i}`);
+        if (input) {
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) denominator *= Math.pow(val, currentReaction.leftCoefs[i]);
+        }
+        idx++;
+    }
+    const K = denominator === 0 ? Infinity : (numerator / denominator);
+    document.getElementById("kValueDisplay").innerHTML = K === Infinity ? "∞" : K.toExponential(4);
+}
+
+function updateConcentrationEffect(changeType, speciesIndex, side) {
+    let msg = "";
+    if (changeType === "inc_reactant") msg = "Увеличение концентрации реагента → смещение ВПРАВО (в сторону продуктов)";
+    else if (changeType === "dec_reactant") msg = "Уменьшение концентрации реагента → смещение ВЛЕВО (в сторону реагентов)";
+    else if (changeType === "inc_product") msg = "Увеличение концентрации продукта → смещение ВЛЕВО (в сторону реагентов)";
+    else if (changeType === "dec_product") msg = "Уменьшение концентрации продукта → смещение ВПРАВО (в сторону продуктов)";
+    document.getElementById("concDirection").innerHTML = msg;
+}
+
+function getTempEffect(delta, isIncrease) {
+    // Эндо/экзо определяем по знаку delta: херовая эвристика, но для демки
+    const endothermic = delta > 0; // условно: если продуктов больше по молям, считаем эндотермической (можно переопределить вручную)
+    if (isIncrease) {
+        if (endothermic) return "Повышение T → смещение ВПРАВО (эндотермическая реакция)";
+        else return "Повышение T → смещение ВЛЕВО (экзотермическая реакция)";
+    } else {
+        if (endothermic) return "Понижение T → смещение ВЛЕВО (эндотермическая реакция)";
+        else return "Понижение T → смещение ВПРАВО (экзотермическая реакция)";
+    }
+}
+
+function getDirectionAndExplanation(delta) {
+    let direction = "";
+    let explanation = "";
+    let pressureEffect = "";
+    if (delta > 0) {
+        direction = "→ Вправо (при повышении давления ← влево)";
+        explanation = `Δn = ${delta} > 0, увеличивается число молей. Повышение давления смещает влево, понижение — вправо.`;
+        pressureEffect = "📈 Повышение P: ← влево | 📉 Понижение P: → вправо";
+    } else if (delta < 0) {
+        direction = "← Влево (при повышении давления → вправо)";
+        explanation = `Δn = ${delta} < 0, уменьшается число молей. Повышение давления смещает вправо, понижение — влево.`;
+        pressureEffect = "📈 Повышение P: → вправо | 📉 Понижение P: ← влево";
+    } else {
+        direction = "↔ Без смещения";
+        explanation = "Δn = 0, давление не влияет.";
+        pressureEffect = "⚖️ Давление НЕ влияет";
+    }
+    return { direction, explanation, pressureEffect };
+}
 
 function showResult(result, eq) {
     document.getElementById("error").classList.add("hidden");
     document.getElementById("result").classList.remove("hidden");
-
-    document.getElementById("equationDisplay").innerHTML = `<code>${eq}</code>`;
-    document.getElementById("deltaValue").innerText = result.delta;
-
-    const f = generateLetterFormula(eq);
-    document.getElementById("letterFractionNum").innerHTML = f.numerator;
-    document.getElementById("letterFractionDen").innerHTML = f.denominator;
-
-    document.getElementById("direction").innerText =
-        result.direction === "right" ? "→ Вправо" :
-        result.direction === "left" ? "← Влево" :
-        "↔ Без смещения";
-
-    document.getElementById("explanation").innerText = result.explanation;
+    document.getElementById("equationDisplay").innerHTML = `<code>${eq.replace(/(\d+)/g, '<span style="font-weight:bold;">$1</span>')}</code>`;
+    document.getElementById("deltaValue").innerHTML = `Δn = ${result.delta}`;
+    const dirObj = getDirectionAndExplanation(result.delta);
+    document.getElementById("direction").innerHTML = dirObj.direction;
+    document.getElementById("pressureEffect").innerHTML = dirObj.pressureEffect;
+    document.getElementById("explanation").innerHTML = `${dirObj.explanation}<br><br>Σправых = ${result.rightSum}, Σлевых = ${result.leftSum}<br>Δn = ${result.rightSum} - ${result.leftSum} = ${result.delta}`;
+    currentReaction = result;
+    generateConcInputs(result.leftCoefs, "left");
+    generateConcInputs(result.rightCoefs, "right");
+    document.getElementById("calcKbtn").onclick = () => calculateK();
+    document.getElementById("tempUpBtn").onclick = () => {
+        const effect = getTempEffect(result.delta, true);
+        document.getElementById("tempEffectText").innerHTML = `🔥 ${effect}`;
+    };
+    document.getElementById("tempDownBtn").onclick = () => {
+        const effect = getTempEffect(result.delta, false);
+        document.getElementById("tempEffectText").innerHTML = `❄️ ${effect}`;
+    };
+    calculateK();
 }
 
 function showError(msg) {
     document.getElementById("result").classList.add("hidden");
     document.getElementById("error").classList.remove("hidden");
-    document.getElementById("errorMessage").innerText = msg;
+    document.getElementById("errorMessage").innerHTML = msg;
 }
-</script>
 
+function calculateEquilibrium(e) {
+    e.preventDefault();
+    const input = document.getElementById("equation").value.trim();
+    if (!input) { showError("Введите уравнение"); return; }
+    try {
+        const parsed = parseCoefficients(input);
+        showResult(parsed, input);
+    } catch (err) { showError(err.message); }
+}
+
+function setExample(example) {
+    document.getElementById("equation").value = example;
+    calculateEquilibrium({ preventDefault: () => {} });
+}
+
+window.setExample = setExample;
+document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    document.getElementById("equilibriumForm").addEventListener("submit", calculateEquilibrium);
+});
+</script>
 {% endblock %}

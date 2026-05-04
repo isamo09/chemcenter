@@ -33,6 +33,7 @@
                 <h2> УНИВЕРСАЛЬНЫЙ РЕШАТЕЛЬ ИОННЫХ УРАВНЕНИЙ</h2>
                 <p>Вводи ЛЮБОЕ уравнение - калькулятор сам всё уравняет, определит тип реакции, растворимость и даст правильные ионные уравнения.</p>
                 <p><strong>Формат:</strong> <code>Fe + 2HCl → FeCl2 + H2</code> или <code>AgNO3 + NaCl = AgCl + NaNO3</code></p>
+                <p><strong>Поддерживает ОВР:</strong> <code>KMnO4 + HCl → MnCl2 + Cl2 + KCl + H2O</code></p>
             </div>
 
             <!-- Форма ввода -->
@@ -41,7 +42,7 @@
                     <label><i class="fas fa-pencil-alt"></i> Введите уравнение:</label>
                     <input id="equationInput" class="form-control"
                            placeholder="Пример: Fe + 2HCl → FeCl2 + H2"
-                           value="Fe + 2HCl → FeCl2 + H2"
+                           value="KMnO4 + HCl → MnCl2 + Cl2 + KCl + H2O"
                            required>
                 </div>
                 <div class="button-group">
@@ -78,6 +79,12 @@
                     </button>
                     <button class="example-btn" data-eq="CuSO4 + Zn → ZnSO4 + Cu">
                         CuSO₄ + Zn → ZnSO₄ + Cu
+                    </button>
+                    <button class="example-btn" data-eq="KMnO4 + HCl → MnCl2 + Cl2 + KCl + H2O">
+                        KMnO₄ + HCl → MnCl₂ + Cl₂ + KCl + H₂O
+                    </button>
+                    <button class="example-btn" data-eq="K2Cr2O7 + HCl → CrCl3 + Cl2 + KCl + H2O">
+                        K₂Cr₂O₇ + HCl → CrCl₃ + Cl₂ + KCl + H₂O
                     </button>
                 </div>
             </div>
@@ -508,801 +515,542 @@
 
 <script>
 // =======================================================
-// ИНИЦИАЛИЗАЦИЯ
+// ПОЛНЫЙ КАЛЬКУЛЯТОР С ОВР - ИСПРАВЛЕННАЯ ВЕРСИЯ
 // =======================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    initTheme();
-    initEventListeners();
+class ChemicalEquationBalancer {
+    constructor() {
+        this.elements = {};
+    }
 
-    // Автоматический расчет примера
-    setTimeout(() => {
-        document.getElementById("ionEquationForm").dispatchEvent(new Event('submit', {cancelable: true}));
-    }, 300);
-});
-
-function initTheme() {
-    const btn = document.getElementById("themeToggle");
-    const saved = localStorage.getItem("theme") || "light";
-    document.documentElement.setAttribute("data-theme", saved);
-
-    btn.addEventListener("click", () => {
-        const current = document.documentElement.getAttribute("data-theme");
-        const next = current === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-    });
-}
-
-function initEventListeners() {
-    const form = document.getElementById("ionEquationForm");
-    const clearBtn = document.getElementById("clearBtn");
-    const randomBtn = document.getElementById("randomExample");
-
-    form.addEventListener("submit", calculateIonEquation);
-    clearBtn.addEventListener("click", clearForm);
-    randomBtn.addEventListener("click", loadRandomExample);
-
-    // Быстрые примеры
-    document.querySelectorAll(".example-btn").forEach(btn => {
-        btn.addEventListener("click", function() {
-            const eq = this.getAttribute("data-eq");
-            document.getElementById("equationInput").value = eq;
-            calculateIonEquation(new Event('submit', {cancelable: true}));
+    parseCompounds(str) {
+        return str.split('+').map(s => s.trim()).filter(s => s).map(compound => {
+            const elements = this.parseElements(compound);
+            return { formula: compound, elements };
         });
-    });
+    }
 
-    // Enter для быстрого расчета
-    document.getElementById("equationInput").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            calculateIonEquation(new Event('submit', {cancelable: true}));
+    parseElements(formula) {
+        const elements = {};
+        let i = 0;
+        while (i < formula.length) {
+            let element = formula[i];
+            i++;
+            if (i < formula.length && /[a-z]/.test(formula[i])) {
+                element += formula[i];
+                i++;
+            }
+            let count = '';
+            while (i < formula.length && /\d/.test(formula[i])) {
+                count += formula[i];
+                i++;
+            }
+            elements[element] = (elements[element] || 0) + (count ? parseInt(count) : 1);
         }
-    });
+        return elements;
+    }
+
+    collectElements(compounds) {
+        const elements = new Set();
+        compounds.forEach(c => {
+            Object.keys(c.elements).forEach(el => elements.add(el));
+        });
+        return Array.from(elements);
+    }
+
+    buildMatrix(reactants, products, elements) {
+        const nEq = elements.length;
+        const nVars = reactants.length + products.length;
+        const matrix = Array(nEq).fill().map(() => Array(nVars + 1).fill(0));
+
+        reactants.forEach((r, idx) => {
+            elements.forEach((el, row) => {
+                matrix[row][idx] = r.elements[el] || 0;
+            });
+        });
+
+        products.forEach((p, idx) => {
+            elements.forEach((el, row) => {
+                matrix[row][reactants.length + idx] = -(p.elements[el] || 0);
+            });
+        });
+
+        matrix.push(Array(nVars + 1).fill(0));
+        matrix[nEq][0] = 1;
+        matrix[nEq][nVars] = 1;
+
+        return matrix;
+    }
+
+    solveLinearSystem(matrix) {
+        const rows = matrix.length;
+        const cols = matrix[0].length;
+        let rank = 0;
+
+        for (let col = 0; col < cols - 1 && rank < rows; col++) {
+            let maxRow = rank;
+            for (let i = rank + 1; i < rows; i++) {
+                if (Math.abs(matrix[i][col]) > Math.abs(matrix[maxRow][col])) {
+                    maxRow = i;
+                }
+            }
+            if (Math.abs(matrix[maxRow][col]) < 1e-10) continue;
+            [matrix[rank], matrix[maxRow]] = [matrix[maxRow], matrix[rank]];
+            const pivot = matrix[rank][col];
+            for (let j = col; j < cols; j++) {
+                matrix[rank][j] /= pivot;
+            }
+            for (let i = 0; i < rows; i++) {
+                if (i !== rank && Math.abs(matrix[i][col]) > 1e-10) {
+                    const factor = matrix[i][col];
+                    for (let j = col; j < cols; j++) {
+                        matrix[i][j] -= factor * matrix[rank][j];
+                    }
+                }
+            }
+            rank++;
+        }
+
+        const solution = Array(cols - 1).fill(0);
+        for (let i = 0; i < rows && i < cols - 1; i++) {
+            for (let j = 0; j < cols - 1; j++) {
+                if (Math.abs(matrix[i][j] - 1) < 1e-10) {
+                    solution[j] = matrix[i][cols - 1];
+                    break;
+                }
+            }
+        }
+        return solution;
+    }
+
+    normalizeCoefficients(coeffs) {
+        let denominators = coeffs.map(c => {
+            const str = c.toFixed(10);
+            const decimal = str.split('.')[1];
+            let denom = 1;
+            if (decimal) {
+                for (let i = decimal.length - 1; i >= 0; i--) {
+                    if (decimal[i] !== '0') {
+                        denom = Math.pow(10, i + 1);
+                        break;
+                    }
+                }
+            }
+            return denom;
+        });
+
+        let lcm = 1;
+        for (let d of denominators) {
+            lcm = this.lcm(lcm, d);
+        }
+
+        let normalized = coeffs.map(c => Math.round(c * lcm));
+        const gcd = this.gcdArray(normalized);
+        normalized = normalized.map(c => Math.round(c / gcd));
+        return normalized;
+    }
+
+    lcm(a, b) { return Math.abs(a * b) / this.gcd(a, b); }
+    gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b !== 0) { let t = b; b = a % b; a = t; } return a; }
+    gcdArray(arr) { return arr.reduce((a, b) => this.gcd(a, b)); }
+
+    balanceEquation(reactantsStr, productsStr) {
+        const reactants = this.parseCompounds(reactantsStr);
+        const products = this.parseCompounds(productsStr);
+        const allElements = this.collectElements([...reactants, ...products]);
+        const matrix = this.buildMatrix(reactants, products, allElements);
+        const coefficients = this.solveLinearSystem(matrix);
+        const normalized = this.normalizeCoefficients(coefficients);
+
+        return {
+            reactants: reactants.map((r, i) => ({ ...r, coefficient: normalized[i] })),
+            products: products.map((p, i) => ({ ...p, coefficient: normalized[reactants.length + i] }))
+        };
+    }
+
+    getIons(formula) {
+        const ionMap = {
+            'HCl': { left: ['H⁺(aq)'], right: ['Cl⁻(aq)'] },
+            'H2SO4': { left: ['2H⁺(aq)'], right: ['SO₄²⁻(aq)'] },
+            'HNO3': { left: ['H⁺(aq)'], right: ['NO₃⁻(aq)'] },
+            'NaOH': { left: ['Na⁺(aq)'], right: ['OH⁻(aq)'] },
+            'KOH': { left: ['K⁺(aq)'], right: ['OH⁻(aq)'] },
+            'NaCl': { left: ['Na⁺(aq)'], right: ['Cl⁻(aq)'] },
+            'KCl': { left: ['K⁺(aq)'], right: ['Cl⁻(aq)'] },
+            'AgNO3': { left: ['Ag⁺(aq)'], right: ['NO₃⁻(aq)'] },
+            'Na2SO4': { left: ['2Na⁺(aq)'], right: ['SO₄²⁻(aq)'] },
+            'BaCl2': { left: ['Ba²⁺(aq)'], right: ['2Cl⁻(aq)'] },
+            'CuSO4': { left: ['Cu²⁺(aq)'], right: ['SO₄²⁻(aq)'] },
+            'MnCl2': { left: ['Mn²⁺(aq)'], right: ['2Cl⁻(aq)'] },
+            'CrCl3': { left: ['Cr³⁺(aq)'], right: ['3Cl⁻(aq)'] },
+            'FeCl2': { left: ['Fe²⁺(aq)'], right: ['2Cl⁻(aq)'] },
+            'FeCl3': { left: ['Fe³⁺(aq)'], right: ['3Cl⁻(aq)'] },
+            'ZnCl2': { left: ['Zn²⁺(aq)'], right: ['2Cl⁻(aq)'] },
+            'AlCl3': { left: ['Al³⁺(aq)'], right: ['3Cl⁻(aq)'] },
+            'NaNO3': { left: ['Na⁺(aq)'], right: ['NO₃⁻(aq)'] },
+            'KNO3': { left: ['K⁺(aq)'], right: ['NO₃⁻(aq)'] },
+            'CaCl2': { left: ['Ca²⁺(aq)'], right: ['2Cl⁻(aq)'] },
+            'MgCl2': { left: ['Mg²⁺(aq)'], right: ['2Cl⁻(aq)'] }
+        };
+        return ionMap[formula] || null;
+    }
+
+    isSoluble(formula) {
+        const insoluble = ['AgCl', 'BaSO4', 'CaCO3', 'Ag2CO3', 'Fe(OH)3', 'Cu(OH)2', 'Al(OH)3', 'Mg(OH)2', 'PbSO4', 'PbCl2'];
+        return !insoluble.includes(formula);
+    }
+
+    getState(formula) {
+        if (formula === 'H2O') return 'l';
+        if (['H2', 'O2', 'CO2', 'SO2', 'NH3', 'Cl2', 'NO2', 'NO', 'SO2', 'N2', 'F2', 'Br2', 'I2'].includes(formula)) return 'g';
+        if (!this.isSoluble(formula)) return 's';
+        return 'aq';
+    }
+
+    multiplyIon(ion, coeff) {
+        const match = ion.match(/^(\d+)/);
+        if (match) {
+            const currentCoeff = parseInt(match[1]);
+            return ion.replace(/^\d+/, (currentCoeff * coeff).toString());
+        }
+        return coeff > 1 ? coeff + ion : ion;
+    }
+
+    getIonCoeff(ion) {
+        const match = ion.match(/^(\d+)/);
+        return match ? parseInt(match[1]) : 1;
+    }
+
+    generateIonicEquations(reactants, products, balancedReactants, balancedProducts) {
+        const fullLeft = [];
+        const fullRight = [];
+        const spectatorIons = new Set();
+
+        balancedReactants.forEach(r => {
+            const ions = this.getIons(r.formula);
+            if (ions && this.isSoluble(r.formula)) {
+                const coeff = r.coefficient;
+                ions.left.forEach(ion => {
+                    fullLeft.push(this.multiplyIon(ion, coeff));
+                });
+            } else {
+                fullLeft.push(`${r.coefficient > 1 ? r.coefficient : ''}${r.formula}(${this.getState(r.formula)})`);
+            }
+        });
+
+        balancedProducts.forEach(p => {
+            const ions = this.getIons(p.formula);
+            if (ions && this.isSoluble(p.formula)) {
+                const coeff = p.coefficient;
+                ions.right.forEach(ion => {
+                    fullRight.push(this.multiplyIon(ion, coeff));
+                });
+            } else {
+                fullRight.push(`${p.coefficient > 1 ? p.coefficient : ''}${p.formula}(${this.getState(p.formula)})`);
+            }
+        });
+
+        const leftMap = new Map();
+        const rightMap = new Map();
+
+        fullLeft.forEach(ion => {
+            const key = ion.replace(/^\d+/, '');
+            leftMap.set(key, (leftMap.get(key) || 0) + this.getIonCoeff(ion));
+        });
+
+        fullRight.forEach(ion => {
+            const key = ion.replace(/^\d+/, '');
+            rightMap.set(key, (rightMap.get(key) || 0) + this.getIonCoeff(ion));
+        });
+
+        for (let [ion, count] of leftMap) {
+            if (rightMap.get(ion) === count && ion.includes('(')) {
+                spectatorIons.add(ion.replace(/\(\w+\)/, '').replace(/^\d+/, ''));
+            }
+        }
+
+        const netLeft = fullLeft.filter(ion => {
+            const key = ion.replace(/^\d+/, '').replace(/\(\w+\)/, '');
+            return !spectatorIons.has(key);
+        });
+
+        const netRight = fullRight.filter(ion => {
+            const key = ion.replace(/^\d+/, '').replace(/\(\w+\)/, '');
+            return !spectatorIons.has(key);
+        });
+
+        return {
+            full: fullLeft.join(' + ') + ' → ' + fullRight.join(' + '),
+            net: netLeft.join(' + ') + ' → ' + netRight.join(' + '),
+            spectators: Array.from(spectatorIons)
+        };
+    }
+
+    getSolubilityInfo(compounds) {
+        const solubilityMap = {
+            'р': {symbol: 'р', name: 'Растворим', class: 'sol-r'},
+            'н': {symbol: 'н', name: 'Нерастворим', class: 'sol-n'},
+            'г': {symbol: 'г', name: 'Газ', class: 'sol-g'},
+            'в': {symbol: 'в', name: 'Вода', class: 'sol-w'},
+            'т': {symbol: 'т', name: 'Твёрдое', class: 'sol-t'}
+        };
+
+        return compounds.map(c => {
+            let sol = 'р';
+            if (this.isSoluble(c.formula)) sol = 'р';
+            else sol = 'н';
+            if (this.getState(c.formula) === 'g') sol = 'г';
+            if (c.formula === 'H2O') sol = 'в';
+
+            const solInfo = solubilityMap[sol] || solubilityMap['р'];
+            return {
+                formula: c.formula,
+                name: c.formula,
+                solubility: sol,
+                state: this.getState(c.formula),
+                solClass: solInfo.class,
+                solSymbol: solInfo.symbol,
+                solName: solInfo.name
+            };
+        });
+    }
 }
 
 // =======================================================
-// УЛУЧШЕННЫЙ ГЕНЕРАТОР ИОННЫХ УРАВНЕНИЙ
+// ПРЕДСКАЗАНИЕ ПРОДУКТОВ
 // =======================================================
 
-const solubilityMap = {
-    'р': {symbol: 'р', name: 'Растворим', class: 'sol-r'},
-    'м': {symbol: 'м', name: 'Малорастворим', class: 'sol-m'},
-    'н': {symbol: 'н', name: 'Нерастворим', class: 'sol-n'},
-    'г': {symbol: 'г', name: 'Газ', class: 'sol-g'},
-    'в': {symbol: 'в', name: 'Вода', class: 'sol-w'},
-    'т': {symbol: 'т', name: 'Твёрдое', class: 'sol-t'},
-    '?': {symbol: '?', name: 'Неизвестно', class: 'sol-t'}
-};
+function predictRedoxProducts(reactantsStr) {
+    const reactants = reactantsStr.split('+').map(s => s.trim());
 
-const stateMap = {
-    'aq': 'водн. р-р',
-    's': 'тв.',
-    'l': 'жидк.',
-    'g': 'газ'
-};
+    const redoxReactions = {
+        'KMnO4_HCl': {
+            reactants: ['KMnO4', 'HCl'],
+            products: ['MnCl2', 'Cl2', 'KCl', 'H2O'],
+            balanced: '2KMnO4 + 16HCl → 2MnCl2 + 5Cl2 + 2KCl + 8H2O'
+        },
+        'K2Cr2O7_HCl': {
+            reactants: ['K2Cr2O7', 'HCl'],
+            products: ['CrCl3', 'Cl2', 'KCl', 'H2O'],
+            balanced: 'K2Cr2O7 + 14HCl → 2CrCl3 + 3Cl2 + 2KCl + 7H2O'
+        },
+        'HNO3_Cu': {
+            reactants: ['HNO3', 'Cu'],
+            products: ['Cu(NO3)2', 'NO2', 'H2O'],
+            balanced: '4HNO3 + Cu → Cu(NO3)2 + 2NO2 + 2H2O'
+        },
+        'H2SO4_Cu': {
+            reactants: ['H2SO4', 'Cu'],
+            products: ['CuSO4', 'SO2', 'H2O'],
+            balanced: '2H2SO4 + Cu → CuSO4 + SO2 + 2H2O'
+        },
+        'Cl2_NaOH': {
+            reactants: ['Cl2', 'NaOH'],
+            products: ['NaCl', 'NaClO', 'H2O'],
+            balanced: 'Cl2 + 2NaOH → NaCl + NaClO + H2O'
+        },
+        'Al_HCl': {
+            reactants: ['Al', 'HCl'],
+            products: ['AlCl3', 'H2'],
+            balanced: '2Al + 6HCl → 2AlCl3 + 3H2'
+        },
+        'Zn_HCl': {
+            reactants: ['Zn', 'HCl'],
+            products: ['ZnCl2', 'H2'],
+            balanced: 'Zn + 2HCl → ZnCl2 + H2'
+        },
+        'Fe_HCl': {
+            reactants: ['Fe', 'HCl'],
+            products: ['FeCl2', 'H2'],
+            balanced: 'Fe + 2HCl → FeCl2 + H2'
+        }
+    };
 
-const compoundsDB = {
-    // Кислоты
-    'HCl': {name: 'соляная кислота', type: 'acid', ions: ['H⁺', 'Cl⁻'], sol: 'р', state: 'aq'},
-    'H2SO4': {name: 'серная кислота', type: 'acid', ions: ['2H⁺', 'SO₄²⁻'], sol: 'р', state: 'aq'},
-    'HNO3': {name: 'азотная кислота', type: 'acid', ions: ['H⁺', 'NO₃⁻'], sol: 'р', state: 'aq'},
-    'H3PO4': {name: 'фосфорная кислота', type: 'acid', ions: ['3H⁺', 'PO₄³⁻'], sol: 'р', state: 'aq'},
-    'H2CO3': {name: 'угольная кислота', type: 'acid', ions: ['2H⁺', 'CO₃²⁻'], sol: 'р', state: 'aq'},
+    const normalized = reactants.map(r => r.replace(/^\d+/, '').replace(/\([^)]+\)/, '')).sort();
 
-    // Основания
-    'NaOH': {name: 'гидроксид натрия', type: 'base', ions: ['Na⁺', 'OH⁻'], sol: 'р', state: 'aq'},
-    'KOH': {name: 'гидроксид калия', type: 'base', ions: ['K⁺', 'OH⁻'], sol: 'р', state: 'aq'},
-    'Ba(OH)2': {name: 'гидроксид бария', type: 'base', ions: ['Ba²⁺', '2OH⁻'], sol: 'р', state: 'aq'},
-    'Ca(OH)2': {name: 'гидроксид кальция', type: 'base', ions: ['Ca²⁺', '2OH⁻'], sol: 'м', state: 'aq'},
-    'NH4OH': {name: 'гидроксид аммония', type: 'base', ions: ['NH₄⁺', 'OH⁻'], sol: 'р', state: 'aq'},
+    for (const [key, reaction] of Object.entries(redoxReactions)) {
+        const reactionReactants = [...reaction.reactants].sort();
+        if (JSON.stringify(normalized) === JSON.stringify(reactionReactants)) {
+            return {
+                products: reaction.products.join(' + '),
+                balanced: reaction.balanced,
+                type: 'redox'
+            };
+        }
+    }
+    return null;
+}
 
-    // Соли растворимые
-    'NaCl': {name: 'хлорид натрия', type: 'salt', ions: ['Na⁺', 'Cl⁻'], sol: 'р', state: 'aq'},
-    'KCl': {name: 'хлорид калия', type: 'salt', ions: ['K⁺', 'Cl⁻'], sol: 'р', state: 'aq'},
-    'AgNO3': {name: 'нитрат серебра', type: 'salt', ions: ['Ag⁺', 'NO₃⁻'], sol: 'р', state: 'aq'},
-    'NaNO3': {name: 'нитрат натрия', type: 'salt', ions: ['Na⁺', 'NO₃⁻'], sol: 'р', state: 'aq'},
-    'Na2SO4': {name: 'сульфат натрия', type: 'salt', ions: ['2Na⁺', 'SO₄²⁻'], sol: 'р', state: 'aq'},
-    'K2SO4': {name: 'сульфат калия', type: 'salt', ions: ['2K⁺', 'SO₄²⁻'], sol: 'р', state: 'aq'},
-    'CaCl2': {name: 'хлорид кальция', type: 'salt', ions: ['Ca²⁺', '2Cl⁻'], sol: 'р', state: 'aq'},
-    'BaCl2': {name: 'хлорид бария', type: 'salt', ions: ['Ba²⁺', '2Cl⁻'], sol: 'р', state: 'aq'},
-    'MgCl2': {name: 'хлорид магния', type: 'salt', ions: ['Mg²⁺', '2Cl⁻'], sol: 'р', state: 'aq'},
-    'FeCl2': {name: 'хлорид железа(II)', type: 'salt', ions: ['Fe²⁺', '2Cl⁻'], sol: 'р', state: 'aq'},
-    'FeCl3': {name: 'хлорид железа(III)', type: 'salt', ions: ['Fe³⁺', '3Cl⁻'], sol: 'р', state: 'aq'},
-    'CuCl2': {name: 'хлорид меди(II)', type: 'salt', ions: ['Cu²⁺', '2Cl⁻'], sol: 'р', state: 'aq'},
-    'ZnCl2': {name: 'хлорид цинка', type: 'salt', ions: ['Zn²⁺', '2Cl⁻'], sol: 'р', state: 'aq'},
-    'AlCl3': {name: 'хлорид алюминия', type: 'salt', ions: ['Al³⁺', '3Cl⁻'], sol: 'р', state: 'aq'},
+function predictNonRedoxProducts(reactantsStr) {
+    const reactants = reactantsStr.split('+').map(s => s.trim());
+    const hasMetal = reactants.some(r => /^(Li|Na|K|Mg|Ca|Ba|Al|Zn|Fe|Cu|Ag)$/.test(r));
+    const hasAcid = reactants.some(r => /^H[A-Z]/.test(r));
+    const hasBase = reactants.some(r => r.endsWith('OH'));
+    const hasO2 = reactants.includes('O2');
+    const hasOrganic = reactants.some(r => /C\d/.test(r));
 
-    // Другие растворимые соли
-    'CuSO4': {name: 'сульфат меди(II)', type: 'salt', ions: ['Cu²⁺', 'SO₄²⁻'], sol: 'р', state: 'aq'},
-    'ZnSO4': {name: 'сульфат цинка', type: 'salt', ions: ['Zn²⁺', 'SO₄²⁻'], sol: 'р', state: 'aq'},
-    'FeSO4': {name: 'сульфат железа(II)', type: 'salt', ions: ['Fe²⁺', 'SO₄²⁻'], sol: 'р', state: 'aq'},
-    'Al2(SO4)3': {name: 'сульфат алюминия', type: 'salt', ions: ['2Al³⁺', '3SO₄²⁻'], sol: 'р', state: 'aq'},
+    if (hasMetal && hasAcid) {
+        const metal = reactants.find(r => /^(Li|Na|K|Mg|Ca|Ba|Al|Zn|Fe|Cu|Ag)$/.test(r));
+        const acid = reactants.find(r => /^H[A-Z]/.test(r));
+        let anion = 'Cl';
+        if (acid === 'H2SO4') anion = 'SO4';
+        else if (acid === 'HNO3') anion = 'NO3';
 
-    // Соли нерастворимые (осадки)
-    'AgCl': {name: 'хлорид серебра', type: 'salt', formula: 'AgCl', sol: 'н', state: 's'},
-    'BaSO4': {name: 'сульфат бария', type: 'salt', formula: 'BaSO₄', sol: 'н', state: 's'},
-    'CaCO3': {name: 'карбонат кальция', type: 'salt', formula: 'CaCO₃', sol: 'н', state: 's'},
-    'Ag2CO3': {name: 'карбонат серебра', type: 'salt', formula: 'Ag₂CO₃', sol: 'н', state: 's'},
+        const valencies = {'Li':1,'Na':1,'K':1,'Ag':1,'Mg':2,'Ca':2,'Ba':2,'Zn':2,'Cu':2,'Fe':2,'Al':3};
+        const metalValency = valencies[metal] || 2;
 
-    // Гидроксиды нерастворимые
-    'Fe(OH)3': {name: 'гидроксид железа(III)', type: 'base', formula: 'Fe(OH)₃', sol: 'н', state: 's'},
-    'Cu(OH)2': {name: 'гидроксид меди(II)', type: 'base', formula: 'Cu(OH)₂', sol: 'н', state: 's'},
-    'Al(OH)3': {name: 'гидроксид алюминия', type: 'base', formula: 'Al(OH)₃', sol: 'н', state: 's'},
-    'Mg(OH)2': {name: 'гидроксид магния', type: 'base', formula: 'Mg(OH)₂', sol: 'н', state: 's'},
+        let salt = metal;
+        if (metalValency === 1) salt += anion;
+        else if (metalValency === 2 && anion === 'Cl') salt += 'Cl2';
+        else if (metalValency === 2 && anion === 'SO4') salt += 'SO4';
+        else if (metalValency === 3) salt += 'Cl3';
+        else salt += anion;
 
-    // Газы и вода
-    'H2O': {name: 'вода', type: 'water', formula: 'H₂O', sol: 'в', state: 'l'},
-    'CO2': {name: 'оксид углерода(IV)', type: 'gas', formula: 'CO₂', sol: 'г', state: 'g'},
-    'SO2': {name: 'оксид серы(IV)', type: 'gas', formula: 'SO₂', sol: 'г', state: 'g'},
-    'H2': {name: 'водород', type: 'gas', formula: 'H₂', sol: 'г', state: 'g'},
-    'NH3': {name: 'аммиак', type: 'gas', formula: 'NH₃', sol: 'г', state: 'g'},
-    'O2': {name: 'кислород', type: 'gas', formula: 'O₂', sol: 'г', state: 'g'},
+        return { products: `${salt} + H2`, type: 'metal_acid' };
+    }
 
-    // Металлы
-    'Fe': {name: 'железо', type: 'metal', formula: 'Fe', sol: 'т', state: 's'},
-    'Cu': {name: 'медь', type: 'metal', formula: 'Cu', sol: 'т', state: 's'},
-    'Zn': {name: 'цинк', type: 'metal', formula: 'Zn', sol: 'т', state: 's'},
-    'Al': {name: 'алюминий', type: 'metal', formula: 'Al', sol: 'т', state: 's'},
-    'Mg': {name: 'магний', type: 'metal', formula: 'Mg', sol: 'т', state: 's'},
-    'Ag': {name: 'серебро', type: 'metal', formula: 'Ag', sol: 'т', state: 's'},
+    if (hasAcid && hasBase) return { products: 'соль + H2O', type: 'neutralization' };
+    if (hasO2 && hasOrganic) return { products: 'CO2 + H2O', type: 'combustion' };
 
-    // Оксиды
-    'CaO': {name: 'оксид кальция', type: 'oxide', formula: 'CaO', sol: 'р', state: 'aq'},
-    'CuO': {name: 'оксид меди(II)', type: 'oxide', formula: 'CuO', sol: 'н', state: 's'},
-    'Fe2O3': {name: 'оксид железа(III)', type: 'oxide', formula: 'Fe₂O₃', sol: 'н', state: 's'},
-    'Al2O3': {name: 'оксид алюминия', type: 'oxide', formula: 'Al₂O₃', sol: 'н', state: 's'},
+    return null;
+}
 
-    // Дополнительные
-    'Na2CO3': {name: 'карбонат натрия', type: 'salt', ions: ['2Na⁺', 'CO₃²⁻'], sol: 'р', state: 'aq'},
-    'K2CO3': {name: 'карбонат калия', type: 'salt', ions: ['2K⁺', 'CO₃²⁻'], sol: 'р', state: 'aq'},
-    'NaHCO3': {name: 'гидрокарбонат натрия', type: 'salt', ions: ['Na⁺', 'HCO₃⁻'], sol: 'р', state: 'aq'},
-    'Na2SO3': {name: 'сульфит натрия', type: 'salt', ions: ['2Na⁺', 'SO₃²⁻'], sol: 'р', state: 'aq'},
-    'Na2S': {name: 'сульфид натрия', type: 'salt', ions: ['2Na⁺', 'S²⁻'], sol: 'р', state: 'aq'}
-};
+// =======================================================
+// ГЛАВНАЯ ФУНКЦИЯ (ОДНА, БЕЗ ДУБЛЕЙ)
+// =======================================================
 
-async function calculateIonEquation(e) {
+async function calculateUltimateEquation(e) {
     e.preventDefault();
 
     const input = document.getElementById("equationInput").value.trim();
-    if (!input) return showError("Введите уравнение");
+    if (!input) {
+        showError("Введи уравнение, блядь!");
+        return;
+    }
 
     try {
-        // Показываем загрузку
-        const btn = document.querySelector("#ionEquationForm button[type='submit']");
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Рассчитываю...';
-        btn.disabled = true;
+        const balancer = new ChemicalEquationBalancer();
 
-        // Даем время для анимации
-        setTimeout(async () => {
-            try {
-                // Локальный расчет (главная фишка - правильные ионные уравнения)
-                const result = calculateWithProperIonicEquations(input);
+        let reactantsStr, productsStr;
 
-                if (result.error) {
-                    showError(result.error);
-                } else {
-                    displayResults(result);
-                }
-            } catch (error) {
-                console.error("Ошибка:", error);
-                showError("Ошибка расчета: " + error.message);
-            } finally {
-                // Восстанавливаем кнопку
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+        if (input.includes('→')) {
+            const parts = input.split('→').map(s => s.trim());
+            reactantsStr = parts[0];
+            productsStr = parts[1] || null;
+        } else if (input.includes('=')) {
+            const parts = input.split('=').map(s => s.trim());
+            reactantsStr = parts[0];
+            productsStr = parts[1] || null;
+        } else {
+            reactantsStr = input;
+            productsStr = null;
+        }
+
+        // Если нет продуктов - предсказываем
+        if (!productsStr || productsStr === '') {
+            let prediction = predictRedoxProducts(reactantsStr);
+            if (!prediction) prediction = predictNonRedoxProducts(reactantsStr);
+
+            if (prediction && prediction.balanced) {
+                const [left, right] = prediction.balanced.split('→').map(s => s.trim());
+                const balanced = {
+                    reactants: balancer.parseCompounds(left),
+                    products: balancer.parseCompounds(right)
+                };
+                displayBalancedResult(balanced, balancer, prediction.type);
+                return;
+            } else if (prediction) {
+                productsStr = prediction.products;
+            } else {
+                showError("Не могу предсказать продукты. Напиши полное уравнение с →");
+                return;
             }
-        }, 100);
+        }
+
+        const balanced = balancer.balanceEquation(reactantsStr, productsStr);
+        displayBalancedResult(balanced, balancer, 'standard');
 
     } catch (error) {
-        console.error("Критическая ошибка:", error);
-        showError("Критическая ошибка: " + error.message);
+        console.error("Ошибка:", error);
+        showError("Ошибка: " + error.message);
     }
 }
 
-function calculateWithProperIonicEquations(equation) {
-    // Нормализуем уравнение
-    const eq = equation.replace(/=/g, '→').replace(/\s+/g, ' ').trim();
-    const [left, right] = eq.split('→').map(s => s.trim());
+function displayBalancedResult(balanced, balancer, reactionType) {
+    const leftFormatted = balanced.reactants.map(r => (r.coefficient > 1 ? r.coefficient : '') + r.formula).join(' + ');
+    const rightFormatted = balanced.products.map(p => (p.coefficient > 1 ? p.coefficient : '') + p.formula).join(' + ');
+    const balancedEquation = leftFormatted + ' → ' + rightFormatted;
 
-    if (!left || !right) {
-        return { error: "Неверный формат уравнения. Используйте → или =" };
-    }
-
-    // Парсим
-    const reactants = parseSide(left);
-    const products = parseSide(right);
-
-    // Определяем тип реакции
-    const type = determineReactionType(reactants, products);
-
-    // Проверяем возможность
-    const feasible = checkFeasibility(reactants, products);
-
-    // Генерируем правильные ионные уравнения
-    const ionic = generateProperIonicEquations(reactants, products);
-
-    // Получаем растворимость
-    const solubility = getSolubilityInfo([...reactants, ...products]);
-
-    // Объяснение
-    const explanation = generateExplanation(type, feasible, reactants, products, ionic);
-
-    return {
-        balancedEquation: eq,
-        feasible: feasible,
-        reactionType: type,
-        solubility: solubility,
-        fullIonicEquation: ionic.full,
-        netIonicEquation: ionic.net,
-        spectatorIons: ionic.spectators,
-        explanation: explanation
-    };
-}
-
-function parseSide(side) {
-    return side.split('+')
-        .map(s => s.trim())
-        .filter(s => s)
-        .map(parseFormula);
-}
-
-function parseFormula(formula) {
-    // Извлечение коэффициента
-    let coeff = 1;
-    let f = formula;
-
-    // Коэффициент в начале
-    const coeffMatch = formula.match(/^(\d+)(?=[A-Z(])/);
-    if (coeffMatch) {
-        coeff = parseInt(coeffMatch[1]);
-        f = formula.slice(coeffMatch[1].length);
-    }
-
-    // Проверяем базу данных
-    const compound = compoundsDB[f] || {
-        name: f,
-        type: 'unknown',
-        sol: '?',
-        state: f.includes('OH') ? 's' : 'aq',
-        ions: guessIonsFromFormula(f)
-    };
-
-    return {
-        formula: f,
-        coefficient: coeff,
-        ...compound
-    };
-}
-
-function guessIonsFromFormula(formula) {
-    // Простая эвристика для определения ионов
-    if (formula === 'H2O') return null;
-    if (formula === 'CO2' || formula === 'SO2' || formula === 'H2') return null;
-
-    // Для кислот
-    if (formula.startsWith('H')) {
-        if (formula.includes('SO4')) return ['2H⁺', 'SO₄²⁻'];
-        if (formula.includes('NO3')) return ['H⁺', 'NO₃⁻'];
-        if (formula.includes('Cl')) return ['H⁺', 'Cl⁻'];
-        if (formula.includes('CO3')) return ['2H⁺', 'CO₃²⁻'];
-        return ['H⁺', 'X⁻']; // Общий случай
-    }
-
-    // Для оснований
-    if (formula.endsWith('OH')) {
-        const metal = formula.replace('OH', '');
-        if (metal === 'Na') return ['Na⁺', 'OH⁻'];
-        if (metal === 'K') return ['K⁺', 'OH⁻'];
-        if (metal === 'Ca' || metal === 'Ba') return [metal + '²⁺', '2OH⁻'];
-        return [metal + '⁺', 'OH⁻'];
-    }
-
-    // Для солей
-    if (formula.includes('Cl')) {
-        if (formula === 'NaCl') return ['Na⁺', 'Cl⁻'];
-        if (formula === 'KCl') return ['K⁺', 'Cl⁻'];
-        if (formula === 'CaCl2') return ['Ca²⁺', '2Cl⁻'];
-        if (formula === 'BaCl2') return ['Ba²⁺', '2Cl⁻'];
-        if (formula === 'FeCl2') return ['Fe²⁺', '2Cl⁻'];
-        if (formula === 'FeCl3') return ['Fe³⁺', '3Cl⁻'];
-    }
-
-    if (formula.includes('SO4')) {
-        if (formula === 'Na2SO4') return ['2Na⁺', 'SO₄²⁻'];
-        if (formula === 'K2SO4') return ['2K⁺', 'SO₄²⁻'];
-        if (formula === 'CuSO4') return ['Cu²⁺', 'SO₄²⁻'];
-    }
-
-    return null; // Не знаем ионы
-}
-
-function determineReactionType(reactants, products) {
-    const hasAcid = reactants.some(r => r.type === 'acid');
-    const hasBase = reactants.some(r => r.type === 'base');
-    const hasMetal = reactants.some(r => r.type === 'metal');
-    const hasGasProduct = products.some(p => p.sol === 'г');
-    const hasPrecipitate = products.some(p => p.sol === 'н');
-    const hasWater = products.some(p => p.formula === 'H2O');
-
-    if (hasAcid && hasBase && hasWater) return 'Нейтрализации';
-    if (hasMetal && hasAcid) return 'Замещения (металл + кислота)';
-    if (reactants.some(r => r.type === 'metal') && reactants.some(r => r.type === 'salt')) {
-        return 'Замещения (металл + соль)';
-    }
-    if (hasPrecipitate) return 'Обмена с осадком';
-    if (hasGasProduct) return 'С газообразованием';
-
-    return 'Обмена';
-}
-
-function checkFeasibility(reactants, products) {
-    const hasGas = products.some(p => p.sol === 'г');
-    const hasPrecipitate = products.some(p => p.sol === 'н');
-    const hasWater = products.some(p => p.formula === 'H2O');
-    const hasWeakElectrolyte = products.some(p =>
-        (p.type === 'acid' && !p.strong) ||
-        (p.type === 'base' && !p.strong)
+    const ionic = balancer.generateIonicEquations(
+        balanced.reactants, balanced.products,
+        balanced.reactants, balanced.products
     );
 
-    if (hasGas || hasPrecipitate || hasWater || hasWeakElectrolyte) {
-        return {
-            possible: true,
-            reason: 'Есть движущая сила реакции',
-            drivingForce: getDrivingForce(products)
-        };
-    }
+    const allCompounds = [...balanced.reactants, ...balanced.products];
+    const solubility = balancer.getSolubilityInfo(allCompounds);
 
-    // Проверка на ОВР (металл + кислота, металл + соль)
-    const hasRedox = reactants.some(r => r.type === 'metal') &&
-                    (reactants.some(r => r.type === 'acid') ||
-                     reactants.some(r => r.type === 'salt'));
+    document.getElementById("balancedEquation").innerHTML = formatEquation(balancedEquation);
+    document.getElementById("fullIonicEquation").innerHTML = formatEquation(ionic.full, true);
+    document.getElementById("netIonicEquation").innerHTML = formatEquation(ionic.net, true);
+    document.getElementById("feasibilityText").innerHTML = "✅ Реакция уравнена<br>Коэффициенты расставлены автоматически";
 
-    if (hasRedox) {
-        return {
-            possible: true,
-            reason: 'Окислительно-восстановительная реакция',
-            drivingForce: 'ОВР (изменение степеней окисления)'
-        };
-    }
+    let typeText = "Реакция ионного обмена";
+    if (reactionType === 'redox') typeText = "ОВР (окислительно-восстановительная)";
+    if (reactionType === 'metal_acid') typeText = "Реакция замещения (металл + кислота)";
+    if (reactionType === 'neutralization') typeText = "Реакция нейтрализации";
+    if (reactionType === 'combustion') typeText = "Реакция горения";
+    document.getElementById("reactionType").innerHTML = `<strong>Тип реакции:</strong> ${typeText}`;
 
-    return {
-        possible: false,
-        reason: 'Нет движущей силы реакции',
-        drivingForce: 'Отсутствует'
-    };
-}
-
-function getDrivingForce(products) {
-    if (products.some(p => p.sol === 'г')) return 'Выделение газа';
-    if (products.some(p => p.sol === 'н')) return 'Образование осадка';
-    if (products.some(p => p.formula === 'H2O')) return 'Образование слабого электролита (воды)';
-    return 'Неизвестно';
-}
-
-// =======================================================
-// ГЛАВНАЯ ФИШКА: ПРАВИЛЬНЫЕ ИОННЫЕ УРАВНЕНИЯ
-// =======================================================
-
-function generateProperIonicEquations(reactants, products) {
-    const equationKey = reactants.map(r => r.formula).join('+') + '→' +
-                       products.map(p => p.formula).join('+');
-
-    // База предопределенных ПРАВИЛЬНЫХ ионных уравнений
-    const predefinedIonicEquations = {
-        // Металлы с кислотами
-        'Fe+2HCl→FeCl2+H2': {
-            full: 'Fe(s) + 2H⁺(aq) + 2Cl⁻(aq) → Fe²⁺(aq) + 2Cl⁻(aq) + H₂(g)',
-            net: 'Fe(s) + 2H⁺(aq) → Fe²⁺(aq) + H₂(g)',
-            spectators: ['Cl⁻']
-        },
-        'Zn+2HCl→ZnCl2+H2': {
-            full: 'Zn(s) + 2H⁺(aq) + 2Cl⁻(aq) → Zn²⁺(aq) + 2Cl⁻(aq) + H₂(g)',
-            net: 'Zn(s) + 2H⁺(aq) → Zn²⁺(aq) + H₂(g)',
-            spectators: ['Cl⁻']
-        },
-        '2Al+6HCl→2AlCl3+3H2': {
-            full: '2Al(s) + 6H⁺(aq) + 6Cl⁻(aq) → 2Al³⁺(aq) + 6Cl⁻(aq) + 3H₂(g)',
-            net: '2Al(s) + 6H⁺(aq) → 2Al³⁺(aq) + 3H₂(g)',
-            spectators: ['Cl⁻']
-        },
-        'Mg+2HCl→MgCl2+H2': {
-            full: 'Mg(s) + 2H⁺(aq) + 2Cl⁻(aq) → Mg²⁺(aq) + 2Cl⁻(aq) + H₂(g)',
-            net: 'Mg(s) + 2H⁺(aq) → Mg²⁺(aq) + H₂(g)',
-            spectators: ['Cl⁻']
-        },
-
-        // Нейтрализация
-        'HCl+NaOH→NaCl+H2O': {
-            full: 'H⁺(aq) + Cl⁻(aq) + Na⁺(aq) + OH⁻(aq) → Na⁺(aq) + Cl⁻(aq) + H₂O(l)',
-            net: 'H⁺(aq) + OH⁻(aq) → H₂O(l)',
-            spectators: ['Na⁺', 'Cl⁻']
-        },
-        'H2SO4+2NaOH→Na2SO4+2H2O': {
-            full: '2H⁺(aq) + SO₄²⁻(aq) + 2Na⁺(aq) + 2OH⁻(aq) → 2Na⁺(aq) + SO₄²⁻(aq) + 2H₂O(l)',
-            net: 'H⁺(aq) + OH⁻(aq) → H₂O(l)',
-            spectators: ['Na⁺', 'SO₄²⁻']
-        },
-        'HNO3+NaOH→NaNO3+H2O': {
-            full: 'H⁺(aq) + NO₃⁻(aq) + Na⁺(aq) + OH⁻(aq) → Na⁺(aq) + NO₃⁻(aq) + H₂O(l)',
-            net: 'H⁺(aq) + OH⁻(aq) → H₂O(l)',
-            spectators: ['Na⁺', 'NO₃⁻']
-        },
-
-        // Осадки
-        'AgNO3+NaCl→AgCl+NaNO3': {
-            full: 'Ag⁺(aq) + NO₃⁻(aq) + Na⁺(aq) + Cl⁻(aq) → AgCl(s) + Na⁺(aq) + NO₃⁻(aq)',
-            net: 'Ag⁺(aq) + Cl⁻(aq) → AgCl(s)',
-            spectators: ['Na⁺', 'NO₃⁻']
-        },
-        'BaCl2+Na2SO4→BaSO4+2NaCl': {
-            full: 'Ba²⁺(aq) + 2Cl⁻(aq) + 2Na⁺(aq) + SO₄²⁻(aq) → BaSO₄(s) + 2Na⁺(aq) + 2Cl⁻(aq)',
-            net: 'Ba²⁺(aq) + SO₄²⁻(aq) → BaSO₄(s)',
-            spectators: ['Na⁺', 'Cl⁻']
-        },
-        'Pb(NO3)2+2KI→PbI2+2KNO3': {
-            full: 'Pb²⁺(aq) + 2NO₃⁻(aq) + 2K⁺(aq) + 2I⁻(aq) → PbI₂(s) + 2K⁺(aq) + 2NO₃⁻(aq)',
-            net: 'Pb²⁺(aq) + 2I⁻(aq) → PbI₂(s)',
-            spectators: ['K⁺', 'NO₃⁻']
-        },
-
-        // Газообразование
-        'Na2CO3+2HCl→2NaCl+H2O+CO2': {
-            full: '2Na⁺(aq) + CO₃²⁻(aq) + 2H⁺(aq) + 2Cl⁻(aq) → 2Na⁺(aq) + 2Cl⁻(aq) + H₂O(l) + CO₂(g)',
-            net: 'CO₃²⁻(aq) + 2H⁺(aq) → H₂O(l) + CO₂(g)',
-            spectators: ['Na⁺', 'Cl⁻']
-        },
-        'CaCO3+2HCl→CaCl2+CO2+H2O': {
-            full: 'CaCO₃(s) + 2H⁺(aq) + 2Cl⁻(aq) → Ca²⁺(aq) + 2Cl⁻(aq) + CO₂(g) + H₂O(l)',
-            net: 'CaCO₃(s) + 2H⁺(aq) → Ca²⁺(aq) + CO₂(g) + H₂O(l)',
-            spectators: ['Cl⁻']
-        },
-        'Na2SO3+2HCl→2NaCl+H2O+SO2': {
-            full: '2Na⁺(aq) + SO₃²⁻(aq) + 2H⁺(aq) + 2Cl⁻(aq) → 2Na⁺(aq) + 2Cl⁻(aq) + H₂O(l) + SO₂(g)',
-            net: 'SO₃²⁻(aq) + 2H⁺(aq) → H₂O(l) + SO₂(g)',
-            spectators: ['Na⁺', 'Cl⁻']
-        },
-
-        // Замещение металлов
-        'CuSO4+Zn→ZnSO4+Cu': {
-            full: 'Cu²⁺(aq) + SO₄²⁻(aq) + Zn(s) → Zn²⁺(aq) + SO₄²⁻(aq) + Cu(s)',
-            net: 'Cu²⁺(aq) + Zn(s) → Zn²⁺(aq) + Cu(s)',
-            spectators: ['SO₄²⁻']
-        },
-        'Fe+CuSO4→FeSO4+Cu': {
-            full: 'Fe(s) + Cu²⁺(aq) + SO₄²⁻(aq) → Fe²⁺(aq) + SO₄²⁻(aq) + Cu(s)',
-            net: 'Fe(s) + Cu²⁺(aq) → Fe²⁺(aq) + Cu(s)',
-            spectators: ['SO₄²⁻']
-        },
-        'Zn+CuCl2→ZnCl2+Cu': {
-            full: 'Zn(s) + Cu²⁺(aq) + 2Cl⁻(aq) → Zn²⁺(aq) + 2Cl⁻(aq) + Cu(s)',
-            net: 'Zn(s) + Cu²⁺(aq) → Zn²⁺(aq) + Cu(s)',
-            spectators: ['Cl⁻']
-        },
-
-        // С оксидами
-        'CuO+2HCl→CuCl2+H2O': {
-            full: 'CuO(s) + 2H⁺(aq) + 2Cl⁻(aq) → Cu²⁺(aq) + 2Cl⁻(aq) + H₂O(l)',
-            net: 'CuO(s) + 2H⁺(aq) → Cu²⁺(aq) + H₂O(l)',
-            spectators: ['Cl⁻']
-        },
-        'Fe2O3+6HCl→2FeCl3+3H2O': {
-            full: 'Fe₂O₃(s) + 6H⁺(aq) + 6Cl⁻(aq) → 2Fe³⁺(aq) + 6Cl⁻(aq) + 3H₂O(l)',
-            net: 'Fe₂O₃(s) + 6H⁺(aq) → 2Fe³⁺(aq) + 3H₂O(l)',
-            spectators: ['Cl⁻']
-        },
-
-        // С гидроксидами
-        'Cu(OH)2+2HCl→CuCl2+2H2O': {
-            full: 'Cu(OH)₂(s) + 2H⁺(aq) + 2Cl⁻(aq) → Cu²⁺(aq) + 2Cl⁻(aq) + 2H₂O(l)',
-            net: 'Cu(OH)₂(s) + 2H⁺(aq) → Cu²⁺(aq) + 2H₂O(l)',
-            spectators: ['Cl⁻']
-        },
-        'Al(OH)3+3HCl→AlCl3+3H2O': {
-            full: 'Al(OH)₃(s) + 3H⁺(aq) + 3Cl⁻(aq) → Al³⁺(aq) + 3Cl⁻(aq) + 3H₂O(l)',
-            net: 'Al(OH)₃(s) + 3H⁺(aq) → Al³⁺(aq) + 3H₂O(l)',
-            spectators: ['Cl⁻']
-        }
-    };
-
-    // Пробуем найти точное совпадение
-    if (predefinedIonicEquations[equationKey]) {
-        return predefinedIonicEquations[equationKey];
-    }
-
-    // Пробуем найти с разными коэффициентами
-    for (const [key, value] of Object.entries(predefinedIonicEquations)) {
-        const keyParts = key.split('→');
-        const eqParts = equationKey.split('→');
-
-        // Проверяем одинаковые вещества без учета коэффициентов
-        const keyLeft = keyParts[0].split('+').map(s => s.replace(/^\d+/, '')).sort();
-        const eqLeft = eqParts[0].split('+').map(s => s.replace(/^\d+/, '')).sort();
-
-        const keyRight = keyParts[1].split('+').map(s => s.replace(/^\d+/, '')).sort();
-        const eqRight = eqParts[1].split('+').map(s => s.replace(/^\d+/, '')).sort();
-
-        if (JSON.stringify(keyLeft) === JSON.stringify(eqLeft) &&
-            JSON.stringify(keyRight) === JSON.stringify(eqRight)) {
-            return value;
-        }
-    }
-
-    // Если не нашли - генерируем автоматически
-    return generateGenericIonicEquations(reactants, products);
-}
-
-function generateGenericIonicEquations(reactants, products) {
-    // Собираем все ионы с обеих сторон
-    const leftIons = [];
-    const rightIons = [];
-
-    // Реагенты
-    reactants.forEach(r => {
-        const coeff = r.coefficient || 1;
-        if (r.ions && (r.sol === 'р' || r.type === 'acid' || r.type === 'base')) {
-            // Растворимое ионное соединение
-            r.ions.forEach(ion => {
-                // Умножаем коэффициент иона на коэффициент вещества
-                const ionCoeff = getIonCoefficient(ion) * coeff;
-                const ionWithoutCoeff = ion.replace(/^\d+/, '');
-                leftIons.push({
-                    ion: ionWithoutCoeff,
-                    coeff: ionCoeff,
-                    state: r.state === 's' ? 's' : 'aq'
-                });
-            });
-        } else {
-            // Неионное вещество (металл, осадок, газ, вода)
-            leftIons.push({
-                ion: r.formula,
-                coeff: coeff,
-                state: r.state || 's'
-            });
-        }
-    });
-
-    // Продукты
-    products.forEach(p => {
-        const coeff = p.coefficient || 1;
-        if (p.ions && (p.sol === 'р' || p.type === 'acid' || p.type === 'base')) {
-            // Растворимое ионное соединение
-            p.ions.forEach(ion => {
-                const ionCoeff = getIonCoefficient(ion) * coeff;
-                const ionWithoutCoeff = ion.replace(/^\d+/, '');
-                rightIons.push({
-                    ion: ionWithoutCoeff,
-                    coeff: ionCoeff,
-                    state: p.state === 's' ? 's' : 'aq'
-                });
-            });
-        } else {
-            // Неионное вещество
-            rightIons.push({
-                ion: p.formula,
-                coeff: coeff,
-                state: p.state || 's'
-            });
-        }
-    });
-
-    // Находим ионы-наблюдатели
-    const spectators = [];
-    const netLeft = [];
-    const netRight = [];
-
-    // Копируем массивы для работы
-    const leftCopy = [...leftIons];
-    const rightCopy = [...rightIons];
-
-    // Находим одинаковые ионы с обеих сторон
-    for (let i = leftCopy.length - 1; i >= 0; i--) {
-        for (let j = rightCopy.length - 1; j >= 0; j--) {
-            if (leftCopy[i].ion === rightCopy[j].ion &&
-                leftCopy[i].state === 'aq' && rightCopy[j].state === 'aq') {
-                // Это ион-наблюдатель
-                if (!spectators.includes(leftCopy[i].ion)) {
-                    spectators.push(leftCopy[i].ion);
-                }
-                // Удаляем из копий
-                leftCopy.splice(i, 1);
-                rightCopy.splice(j, 1);
-                break;
-            }
-        }
-    }
-
-    // Оставшиеся ионы - реальные участники реакции
-    netLeft.push(...leftCopy);
-    netRight.push(...rightCopy);
-
-    // Формируем уравнения
-    const formatSide = (ions) => {
-        return ions.map(item => {
-            const coeff = item.coeff > 1 ? item.coeff + '' : '';
-            return `${coeff}${item.ion}(${item.state})`;
-        }).join(' + ');
-    };
-
-    const full = formatSide(leftIons) + ' → ' + formatSide(rightIons);
-    const net = formatSide(netLeft) + ' → ' + formatSide(netRight);
-
-    return {
-        full: full,
-        net: net === full ? 'Уравнение не сокращается' : net,
-        spectators: spectators
-    };
-}
-
-function getIonCoefficient(ion) {
-    const match = ion.match(/^(\d+)/);
-    return match ? parseInt(match[1]) : 1;
-}
-
-function getSolubilityInfo(compounds) {
-    return compounds.map(c => ({
-        formula: c.formula,
-        name: c.name,
-        solubility: c.sol,
-        state: c.state
-    }));
-}
-
-function generateExplanation(type, feasible, reactants, products, ionic) {
-    let explanation = `<strong>Тип реакции:</strong> ${type}<br>`;
-
-    if (feasible.possible) {
-        explanation += `<strong>Возможность:</strong> ✅ Реакция возможна<br>`;
-        explanation += `<strong>Причина:</strong> ${feasible.reason}<br>`;
-
-        if (feasible.drivingForce) {
-            explanation += `<strong>Движущая сила:</strong> ${feasible.drivingForce}<br>`;
-        }
-    } else {
-        explanation += `<strong>Возможность:</strong> ❌ Реакция маловероятна<br>`;
-        explanation += `<strong>Причина:</strong> ${feasible.reason}<br>`;
-    }
-
-    explanation += `<br><strong>Анализ:</strong><br>`;
-
-    // Анализ продуктов
-    const gases = products.filter(p => p.sol === 'г');
-    const precipitates = products.filter(p => p.sol === 'н');
-    const water = products.filter(p => p.formula === 'H2O');
-
-    if (gases.length > 0) {
-        explanation += `• Выделяется газ: ${gases.map(g => g.formula).join(', ')}<br>`;
-    }
-
-    if (precipitates.length > 0) {
-        explanation += `• Образуется осадок: ${precipitates.map(p => p.formula).join(', ')}<br>`;
-    }
-
-    if (water.length > 0) {
-        explanation += `• Образуется вода (слабый электролит)<br>`;
-    }
-
-    if (ionic.spectators && ionic.spectators.length > 0) {
-        explanation += `• Ионы-наблюдатели: ${ionic.spectators.join(', ')}<br>`;
-    }
-
-    return explanation;
-}
-
-// =======================================================
-// ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ
-// =======================================================
-
-function displayResults(data) {
-    // Скрываем ошибку
-    document.getElementById("errorSection").classList.add("hidden");
-
-    // Показываем результаты
-    const resultSection = document.getElementById("resultsSection");
-    resultSection.classList.remove("hidden");
-
-    // Заполняем данные
-    document.getElementById("feasibilityText").innerHTML =
-        data.feasible.possible ?
-        "✅ <strong>Реакция возможна</strong>" :
-        "❌ <strong>Реакция маловероятна</strong>";
-
-    if (data.feasible.reason) {
-        document.getElementById("feasibilityText").innerHTML += `<br>${data.feasible.reason}`;
-    }
-
-    document.getElementById("reactionType").innerHTML =
-        `<strong>Тип реакции:</strong> ${data.reactionType}`;
-
-    document.getElementById("balancedEquation").innerHTML =
-        formatEquation(data.balancedEquation);
-
-    // Растворимость
     const solubilityDiv = document.getElementById("solubilityInfo");
     solubilityDiv.innerHTML = '';
+    solubility.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "solubility-item";
+        div.innerHTML = `<div><strong>${formatFormula(item.formula)}</strong><div style="font-size:0.9rem">${item.name}</div></div>
+                         <div><span class="solubility-symbol ${item.solClass}">${item.solSymbol}</span><span style="margin-left:8px">${item.solName}</span></div>`;
+        solubilityDiv.appendChild(div);
+    });
 
-    if (data.solubility && data.solubility.length > 0) {
-        data.solubility.forEach(item => {
-            const sol = solubilityMap[item.solubility] || solubilityMap['?'];
-            const state = stateMap[item.state] || item.state;
-
-            const div = document.createElement("div");
-            div.className = "solubility-item";
-            div.innerHTML = `
-                <div>
-                    <strong>${formatFormula(item.formula)}</strong>
-                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
-                        ${item.name || ''}
-                    </div>
-                </div>
-                <div>
-                    <span class="solubility-symbol ${sol.class}">${sol.symbol}</span>
-                    <span style="margin-left: 8px; font-size: 0.9rem;">${sol.name}</span>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">${state}</div>
-                </div>
-            `;
-            solubilityDiv.appendChild(div);
-        });
-    }
-
-    // Ионные уравнения
-    document.getElementById("fullIonicEquation").innerHTML =
-        formatEquation(data.fullIonicEquation, true);
-
-    document.getElementById("netIonicEquation").innerHTML =
-        formatEquation(data.netIonicEquation, true);
-
-    // Ионы-наблюдатели
     const spectatorsDiv = document.getElementById("spectatorIons");
     spectatorsDiv.innerHTML = '';
-
-    if (data.spectatorIons && data.spectatorIons.length > 0) {
-        data.spectatorIons.forEach(ion => {
+    if (ionic.spectators && ionic.spectators.length > 0) {
+        ionic.spectators.forEach(ion => {
             const span = document.createElement("span");
             span.className = "spectator-tag";
             span.textContent = ion;
             spectatorsDiv.appendChild(span);
         });
     } else {
-        spectatorsDiv.textContent = "Не найдены";
+        spectatorsDiv.innerHTML = '<span class="spectator-tag">Нет ионов-наблюдателей</span>';
     }
 
-    // Объяснение
-    document.getElementById("reactionExplanation").innerHTML =
-        data.explanation || 'Объяснение отсутствует';
+    document.getElementById("reactionExplanation").innerHTML = `<strong>Анализ:</strong><br>• ${balancedEquation}<br>• Полное ионное: ${ionic.full}<br>• Сокращённое: ${ionic.net}`;
 
-    // Прокрутка к результатам
-    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById("resultsSection").classList.remove("hidden");
+    document.getElementById("errorSection").classList.add("hidden");
+    document.getElementById("resultsSection").scrollIntoView({ behavior: 'smooth' });
 }
 
 function formatEquation(equation, isIonic = false) {
     if (!equation) return '';
-
     return equation
-        .replace(/(\d+)(?=[A-Z(])/g, '<span style="color: #e74c3c; font-weight: bold;">$1</span>')
+        .replace(/(\d+)(?=[A-Z(])/g, '<span style="color:#e74c3c;font-weight:bold">$1</span>')
         .replace(/→/g, ' → ')
-        .replace(/(H₂O|CO₂|SO₂|NH₃|O₂|H₂)/g, match => {
-            return `<span style="${isIonic ? 'color: #9b59b6;' : ''}">${match}</span>`;
-        })
-        .replace(/(H⁺|Na⁺|K⁺|Ag⁺|Ca²⁺|Ba²⁺|Mg²⁺|Zn²⁺|Cu²⁺|Fe²⁺|Fe³⁺|Al³⁺|Pb²⁺|NH₄⁺|OH⁻|Cl⁻|Br⁻|I⁻|NO₃⁻|CH₃COO⁻|HCO₃⁻|SO₄²⁻|CO₃²⁻|SO₃²⁻|S²⁻|PO₄³⁻)/g,
-            '<span style="color: #9b59b6;">$1</span>')
-        .replace(/\((aq|s|l|g)\)/g, '<span style="color: #7f8c8d; font-size: 0.9em;">($1)</span>')
-        .replace(/₂/g, '₂')
-        .replace(/₃/g, '₃')
-        .replace(/₄/g, '₄');
+        .replace(/(H⁺|Na⁺|K⁺|Ag⁺|Ca²⁺|Ba²⁺|Mg²⁺|Zn²⁺|Cu²⁺|Fe²⁺|Fe³⁺|Al³⁺|NH₄⁺|OH⁻|Cl⁻|NO₃⁻|SO₄²⁻|CO₃²⁻|PO₄³⁻)/g, '<span style="color:#9b59b6">$1</span>')
+        .replace(/\((aq|s|l|g)\)/g, '<span style="color:#7f8c8d;font-size:0.9em">($1)</span>');
 }
 
 function formatFormula(formula) {
-    return formula
-        .replace(/2/g, '₂')
-        .replace(/3/g, '₃')
-        .replace(/4/g, '₄');
+    return formula.replace(/2/g, '₂').replace(/3/g, '₃').replace(/4/g, '₄');
 }
 
-// =======================================================
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-// =======================================================
+function showError(message) {
+    document.getElementById("resultsSection").classList.add("hidden");
+    const errorSection = document.getElementById("errorSection");
+    errorSection.classList.remove("hidden");
+    document.getElementById("errorMessage").textContent = message;
+    errorSection.scrollIntoView({ behavior: 'smooth' });
+}
 
 function clearForm() {
     document.getElementById("equationInput").value = '';
@@ -1314,30 +1062,62 @@ function clearForm() {
 function loadRandomExample() {
     const examples = [
         "Fe + 2HCl → FeCl2 + H2",
-        "Zn + 2HCl → ZnCl2 + H2",
-        "2Al + 6HCl → 2AlCl3 + 3H2",
         "HCl + NaOH → NaCl + H2O",
         "AgNO3 + NaCl → AgCl + NaNO3",
         "BaCl2 + Na2SO4 → BaSO4 + 2NaCl",
         "Na2CO3 + 2HCl → 2NaCl + H2O + CO2",
         "CuSO4 + Zn → ZnSO4 + Cu",
-        "CuO + 2HCl → CuCl2 + H2O",
-        "Cu(OH)2 + 2HCl → CuCl2 + 2H2O"
+        "KMnO4 + HCl → MnCl2 + Cl2 + KCl + H2O"
     ];
-
     const randomIndex = Math.floor(Math.random() * examples.length);
     document.getElementById("equationInput").value = examples[randomIndex];
     document.getElementById("equationInput").focus();
 }
 
-function showError(message) {
-    document.getElementById("resultsSection").classList.add("hidden");
+// ИНИЦИАЛИЗАЦИЯ
+document.addEventListener("DOMContentLoaded", () => {
+    const themeToggle = document.getElementById("themeToggle");
+    if (themeToggle) {
+        const saved = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", saved);
+        themeToggle.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme");
+            const next = current === "light" ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+        });
+    }
 
-    const errorSection = document.getElementById("errorSection");
-    errorSection.classList.remove("hidden");
-    document.getElementById("errorMessage").textContent = message;
+    const form = document.getElementById("ionEquationForm");
+    if (form) form.addEventListener("submit", calculateUltimateEquation);
 
-    errorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+    const clearBtn = document.getElementById("clearBtn");
+    if (clearBtn) clearBtn.addEventListener("click", clearForm);
+
+    const randomBtn = document.getElementById("randomExample");
+    if (randomBtn) randomBtn.addEventListener("click", loadRandomExample);
+
+    document.querySelectorAll(".example-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            document.getElementById("equationInput").value = this.getAttribute("data-eq");
+            calculateUltimateEquation(new Event('submit', {cancelable: true}));
+        });
+    });
+
+    const eqInput = document.getElementById("equationInput");
+    if (eqInput) {
+        eqInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                calculateUltimateEquation(new Event('submit', {cancelable: true}));
+            }
+        });
+    }
+
+    setTimeout(() => {
+        const form = document.getElementById("ionEquationForm");
+        if (form) form.dispatchEvent(new Event('submit', {cancelable: true}));
+    }, 300);
+});
 </script>
 {% endblock %}

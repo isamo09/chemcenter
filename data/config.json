@@ -7,26 +7,26 @@
   "enabled_plugins": [
     "equals",
     "classification_and_nomenclature",
+    "Ionic_equation",
     "electrochemical_voltage_series",
-    "le_chatelier",
-    "balancing_chemical_equations",
     "solubility_table",
     "hydrocarbon_equations",
+    "balancing_chemical_equations",
     "molar_mass_calculator",
-    "Ionic_equation",
+    "le_chatelier",
     "periodic_table"
   ],
   "tiles": [],
   "tiles_order": [
     "periodic_table",
     "solubility_table",
+    "electrochemical_voltage_series",
+    "molar_mass_calculator",
+    "equals",
+    "balancing_chemical_equations",
     "le_chatelier",
     "Ionic_equation",
-    "balancing_chemical_equations",
     "classification_and_nomenclature",
-    "electrochemical_voltage_series",
-    "equals",
-    "hydrocarbon_equations",
-    "molar_mass_calculator"
+    "hydrocarbon_equations"
   ]
 }

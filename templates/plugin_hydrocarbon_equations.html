@@ -31,8 +31,7 @@
         <div class="info-section">
             <h2>Углеводороды: формулы и названия</h2>
             <p>Определение названий углеводородов по формулам и генерация формул по названиям.</p>
-            <p>Используйте следующие форматы:</p>
-            <code>CH4</code> <code>C2H6</code> <code>C3H8</code> <code>C2H4</code> <code>C2H2</code> <code>C6H6</code>
+            <p>Форматы: <code>CH4</code> <code>C2H6</code> <code>C3H8</code> <code>C2H4</code> <code>C2H2</code> <code>C6H6</code></p>
         </div>
 
         <!-- Карточка 1: Определение названия по формуле -->
@@ -46,14 +45,21 @@
                 <small>Формат: CxHy (например: C3H8, C4H8, C2H2)</small>
 
                 <div class="examples-grid">
-                    <div class="example-tag" data-formula="CH4">CH4</div>
-                    <div class="example-tag" data-formula="C2H6">C2H6</div>
-                    <div class="example-tag" data-formula="C3H8">C3H8</div>
-                    <div class="example-tag" data-formula="C4H10">C4H10</div>
-                    <div class="example-tag" data-formula="C2H4">C2H4</div>
-                    <div class="example-tag" data-formula="C3H6">C3H6</div>
-                    <div class="example-tag" data-formula="C2H2">C2H2</div>
-                    <div class="example-tag" data-formula="C6H6">C6H6</div>
+                    <div class="example-tag" data-formula="CH4">CH₄</div>
+                    <div class="example-tag" data-formula="C2H6">C₂H₆</div>
+                    <div class="example-tag" data-formula="C3H8">C₃H₈</div>
+                    <div class="example-tag" data-formula="C4H10">C₄H₁₀</div>
+                    <div class="example-tag" data-formula="C5H12">C₅H₁₂</div>
+                    <div class="example-tag" data-formula="C6H14">C₆H₁₄</div>
+                    <div class="example-tag" data-formula="C2H4">C₂H₄</div>
+                    <div class="example-tag" data-formula="C3H6">C₃H₆</div>
+                    <div class="example-tag" data-formula="C4H8">C₄H₈</div>
+                    <div class="example-tag" data-formula="C5H10">C₅H₁₀</div>
+                    <div class="example-tag" data-formula="C2H2">C₂H₂</div>
+                    <div class="example-tag" data-formula="C3H4">C₃H₄</div>
+                    <div class="example-tag" data-formula="C4H6">C₄H₆</div>
+                    <div class="example-tag" data-formula="C6H6">C₆H₆</div>
+                    <div class="example-tag" data-formula="C7H8">C₇H₈</div>
                 </div>
             </div>
 
@@ -65,6 +71,33 @@
                     <i class="fas fa-broom"></i> Очистить
                 </button>
             </div>
+
+            <!-- РЕЗУЛЬТАТ АНАЛИЗА - прямо здесь -->
+            <div id="formulaResult" style="display: none;">
+                <div class="result-divider"></div>
+                <div class="result-card">
+                    <div class="result-header">📊 Результат анализа</div>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <div class="label">Класс:</div>
+                            <div class="value" id="hydrocarbonClassAlkane">—</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Название (IUPAC):</div>
+                            <div class="value" id="iupacName">—</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Общая формула:</div>
+                            <div class="value" id="generalFormula">—</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Молярная масса:</div>
+                            <div class="value" id="molarMass">—</div>
+                        </div>
+                    </div>
+                    <div class="explanation-content" id="formulaExplanation"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Карточка 2: Генерация формулы -->
@@ -74,19 +107,20 @@
             <div class="form-group">
                 <label>Тип углеводорода:</label>
                 <div class="type-selector">
-                    <div class="type-option active" data-type="alkane">Алканы</div>
-                    <div class="type-option" data-type="alkene">Алкены</div>
-                    <div class="type-option" data-type="alkyne">Алкины</div>
-                    <div class="type-option" data-type="cycloalkane">Циклоалканы</div>
-                    <div class="type-option" data-type="arena">Арены</div>
+                    <div class="type-option active" data-type="alkane">Алканы (CnH2n+2)</div>
+                    <div class="type-option" data-type="alkene">Алкены (CnH2n)</div>
+                    <div class="type-option" data-type="alkyne">Алкины (CnH2n-2)</div>
+                    <div class="type-option" data-type="cycloalkane">Циклоалканы (CnH2n)</div>
+                    <div class="type-option" data-type="arena">Арены (CnH2n-6)</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="carbonCount">Количество атомов углерода (n):</label>
-                <input type="number" id="carbonCount" class="form-control"
+                <input type="range" id="carbonRange" min="1" max="30" value="5" style="width: 200px;" oninput="updateCarbonValue()">
+                <input type="number" id="carbonCount" class="form-control" style="width: 80px; display: inline-block;"
                        min="1" max="30" value="5" oninput="generateFormula()">
-                <small>Введите число от 1 до 30</small>
+                <small>(1-30)</small>
             </div>
 
             <div class="btn-group">
@@ -97,97 +131,32 @@
                     <i class="fas fa-fire"></i> Уравнение горения
                 </button>
             </div>
-        </div>
 
-        <!-- Результат анализа формулы -->
-        <div id="formulaResult" class="info-section" style="display: none;">
-            <h3><i class="fas fa-file-alt"></i> Результат анализа</h3>
-
-            <div class="equation-card">
-                <div class="equation-number">1</div>
-                <div id="formulaDisplay" class="equation-display">
-                    C₅H₁₂
-                </div>
-            </div>
-
-            <div class="formula-card">
-                <div class="formula-title">Класс углеводорода:</div>
-                <div id="hydrocarbonClass" class="hydrocarbon-class alkane">
-                    Алкан
-                </div>
-            </div>
-
-            <div class="result-header">
-                <div class="result-item">
-                    <div class="label">Название по ИЮПАК:</div>
-                    <div class="value" id="iupacName">Пентан</div>
-                </div>
-
-                <div class="result-item">
-                    <div class="label">Молекулярная формула:</div>
-                    <div class="value" id="molecularFormula">C5H12</div>
-                </div>
-
-                <div class="result-item">
-                    <div class="label">Общая формула:</div>
-                    <div class="value" id="generalFormula">CnH2n+2</div>
-                </div>
-
-                <div class="result-item">
-                    <div class="label">Молярная масса:</div>
-                    <div class="value" id="molarMass">72.15 г/моль</div>
-                </div>
-            </div>
-
-            <div class="explanation-box">
-                <div class="explanation-header"><i class="fas fa-lightbulb"></i> Объяснение</div>
-                <div class="explanation-content" id="formulaExplanation">
-                    Формула C5H12 соответствует алканам (предельным углеводородам) с общей формулой CnH2n+2. При n=5 получаем пентан.
-                </div>
-            </div>
-        </div>
-
-        <!-- Результат генерации формулы -->
-        <div id="generationResult" class="info-section" style="display: none;">
-            <h3><i class="fas fa-magic"></i> Результат генерации</h3>
-
-            <div class="equation-card">
-                <div class="equation-number">2</div>
-                <div id="generatedFormulaDisplay" class="equation-display">
-                    C₅H₁₂
-                </div>
-            </div>
-
-            <div class="result-header">
-                <div class="result-item">
-                    <div class="label">Тип углеводорода:</div>
-                    <div class="value" id="generatedType">Алканы</div>
-                </div>
-
-                <div class="result-item">
-                    <div class="label">Общая формула:</div>
-                    <div class="value" id="generalFormulaDisplay">CnH2n+2</div>
-                </div>
-
-                <div class="result-item">
-                    <div class="label">При n = <span id="nValue">5</span>:</div>
-                    <div class="value" id="specificFormula">C5H12</div>
-                </div>
-
-                <div class="result-item">
-                    <div class="label">Название:</div>
-                    <div class="value" id="generatedName">Пентан</div>
-                </div>
-            </div>
-
-            <div id="combustionEquation" class="combustion-equation" style="display: none;">
-                C₅H₁₂ + 8O₂ → 5CO₂ + 6H₂O
-            </div>
-
-            <div class="explanation-box">
-                <div class="explanation-header"><i class="fas fa-lightbulb"></i> Информация</div>
-                <div class="explanation-content" id="generationExplanation">
-                    Алканы - предельные углеводороды с общей формулой CnH2n+2. При n=5 получаем пентан.
+            <!-- РЕЗУЛЬТАТ ГЕНЕРАЦИИ - прямо здесь -->
+            <div id="generationResult" style="display: none;">
+                <div class="result-divider"></div>
+                <div class="result-card">
+                    <div class="result-header">⚡ Результат генерации</div>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <div class="label">Формула:</div>
+                            <div class="value" id="generatedFormulaDisplay">—</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Тип:</div>
+                            <div class="value" id="generatedType">—</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Общая формула:</div>
+                            <div class="value" id="generalFormulaDisplay">—</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Название:</div>
+                            <div class="value" id="generatedName">—</div>
+                        </div>
+                    </div>
+                    <div id="combustionEquation" class="combustion-equation" style="display: none;"></div>
+                    <div class="explanation-content" id="generationExplanation"></div>
                 </div>
             </div>
         </div>
@@ -198,58 +167,88 @@
             <p id="formulaErrorMessage" style="color: #e74c3c;"></p>
         </div>
 
-        <!-- Справочная таблица -->
+        <!-- Справочная таблица (расширенная) -->
         <div class="info-section">
-            <h3><i class="fas fa-table"></i> Справочная информация</h3>
-
-            <table class="hydrocarbon-table">
-                <thead>
-                    <tr>
-                        <th>Класс углеводородов</th>
-                        <th>Общая формула</th>
-                        <th>Пример</th>
-                        <th>Название</th>
-                        <th>Особенности</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Алканы</strong></td>
-                        <td>C<sub>n</sub>H<sub>2n+2</sub></td>
-                        <td>C<sub>4</sub>H<sub>10</sub></td>
-                        <td>Бутан</td>
-                        <td>Только одинарные связи, sp³-гибридизация</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Алкены</strong></td>
-                        <td>C<sub>n</sub>H<sub>2n</sub></td>
-                        <td>C<sub>3</sub>H<sub>6</sub></td>
-                        <td>Пропен</td>
-                        <td>Одна двойная связь, sp²-гибридизация</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Алкины</strong></td>
-                        <td>C<sub>n</sub>H<sub>2n-2</sub></td>
-                        <td>C<sub>2</sub>H<sub>2</sub></td>
-                        <td>Этин (ацетилен)</td>
-                        <td>Одна тройная связь, sp-гибридизация</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Циклоалканы</strong></td>
-                        <td>C<sub>n</sub>H<sub>2n</sub></td>
-                        <td>C<sub>6</sub>H<sub>12</sub></td>
-                        <td>Циклогексан</td>
-                        <td>Циклическое строение, напряжения цикла</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Арены</strong></td>
-                        <td>C<sub>n</sub>H<sub>2n-6</sub></td>
-                        <td>C<sub>6</sub>H<sub>6</sub></td>
-                        <td>Бензол</td>
-                        <td>Ароматичность, сопряжение π-электронов</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h3><i class="fas fa-table"></i> Справочник углеводородов (до 10 атомов C)</h3>
+            <div class="table-responsive">
+                <table class="hydrocarbon-table">
+                    <thead>
+                        <tr>
+                            <th>Класс</th>
+                            <th>n=1</th><th>n=2</th><th>n=3</th><th>n=4</th>
+                            <th>n=5</th><th>n=6</th><th>n=7</th><th>n=8</th>
+                            <th>n=9</th><th>n=10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Алканы</strong><br>CₙH₂ₙ₊₂</td>
+                            <td>CH₄<br>Метан</td>
+                            <td>C₂H₆<br>Этан</td>
+                            <td>C₃H₈<br>Пропан</td>
+                            <td>C₄H₁₀<br>Бутан</td>
+                            <td>C₅H₁₂<br>Пентан</td>
+                            <td>C₆H₁₄<br>Гексан</td>
+                            <td>C₇H₁₆<br>Гептан</td>
+                            <td>C₈H₁₈<br>Октан</td>
+                            <td>C₉H₂₀<br>Нонан</td>
+                            <td>C₁₀H₂₂<br>Декан</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Алкены</strong><br>CₙH₂ₙ</td>
+                            <td>-</td>
+                            <td>C₂H₄<br>Этен</td>
+                            <td>C₃H₆<br>Пропен</td>
+                            <td>C₄H₈<br>Бутен</td>
+                            <td>C₅H₁₀<br>Пентен</td>
+                            <td>C₆H₁₂<br>Гексен</td>
+                            <td>C₇H₁₄<br>Гептен</td>
+                            <td>C₈H₁₆<br>Октен</td>
+                            <td>C₉H₁₈<br>Нонен</td>
+                            <td>C₁₀H₂₀<br>Децен</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Алкины</strong><br>CₙH₂ₙ₋₂</td>
+                            <td>-</td>
+                            <td>C₂H₂<br>Этин</td>
+                            <td>C₃H₄<br>Пропин</td>
+                            <td>C₄H₆<br>Бутин</td>
+                            <td>C₅H₈<br>Пентин</td>
+                            <td>C₆H₁₀<br>Гексин</td>
+                            <td>C₇H₁₂<br>Гептин</td>
+                            <td>C₈H₁₄<br>Октин</td>
+                            <td>C₉H₁₆<br>Нонин</td>
+                            <td>C₁₀H₁₈<br>Децин</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Циклоалканы</strong><br>CₙH₂ₙ</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>C₃H₆<br>Цикло-<br>пропан</td>
+                            <td>C₄H₈<br>Цикло-<br>бутан</td>
+                            <td>C₅H₁₀<br>Цикло-<br>пентан</td>
+                            <td>C₆H₁₂<br>Цикло-<br>гексан</td>
+                            <td>C₇H₁₄<br>Цикло-<br>гептан</td>
+                            <td>C₈H₁₆<br>Цикло-<br>октан</td>
+                            <td>C₉H₁₈<br>Цикло-<br>нонан</td>
+                            <td>C₁₀H₂₀<br>Цикло-<br>декан</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Арены</strong><br>CₙH₂ₙ₋₆</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>C₆H₆<br>Бензол</td>
+                            <td>C₇H₈<br>Толуол</td>
+                            <td>C₈H₁₀<br>Ксилол</td>
+                            <td>C₉H₁₂<br>ТМБ</td>
+                            <td>C₁₀H₁₄<br>ДМБ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 </div>
@@ -259,14 +258,14 @@
 <style>
     .examples-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 10px;
         margin-top: 15px;
     }
 
     @media (max-width: 768px) {
         .examples-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
         }
     }
 
@@ -274,13 +273,14 @@
         background: var(--surface, #ffffff);
         border: 2px solid var(--border, #e0e0e0);
         border-radius: 6px;
-        padding: 12px;
+        padding: 10px;
         text-align: center;
         font-family: 'Courier New', monospace;
         font-weight: bold;
         cursor: pointer;
         transition: all 0.3s;
         color: var(--text-primary, #2c3e50);
+        font-size: 14px;
     }
 
     .example-tag:hover {
@@ -298,13 +298,15 @@
     }
 
     .type-option {
-        padding: 10px 20px;
+        padding: 8px 15px;
         border: 2px solid var(--border, #e0e0e0);
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.3s;
         font-weight: 600;
         color: var(--text-primary, #2c3e50);
+        background: var(--surface, #ffffff);
+        font-size: 14px;
     }
 
     .type-option:hover {
@@ -324,152 +326,121 @@
         margin-top: 20px;
     }
 
-    .equation-card {
-        background: var(--background, #f8f9fa);
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .equation-number {
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
         background: var(--accent, #3498db);
         color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 18px;
-        flex-shrink: 0;
     }
 
-    .equation-display {
-        font-family: 'Courier New', monospace;
-        font-size: 28px;
-        color: var(--text-primary, #2c3e50);
-        flex-grow: 1;
-        text-align: center;
+    .btn:hover {
+        opacity: 0.85;
+        transform: translateY(-2px);
     }
 
-    .formula-card {
+    .result-divider {
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent, #3498db), transparent);
+        margin: 20px 0 15px 0;
+    }
+
+    .result-card {
         background: var(--surface, #ffffff);
-        border: 2px solid var(--border, #e0e0e0);
-        border-radius: 8px;
+        border: 1px solid var(--border, #e0e0e0);
+        border-radius: 12px;
         padding: 20px;
-        margin-bottom: 25px;
-    }
-
-    .formula-title {
-        font-weight: 600;
-        color: var(--text-primary, #2c3e50);
-        margin-bottom: 15px;
-        font-size: 16px;
-    }
-
-    .hydrocarbon-class {
-        display: inline-block;
-        padding: 6px 15px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .hydrocarbon-class.alkane {
-        background-color: rgba(52, 152, 219, 0.2);
-        color: #3498db;
+        margin-top: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     .result-header {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: var(--accent, #3498db);
+        border-bottom: 2px solid var(--accent, #3498db);
+        padding-bottom: 8px;
+        display: inline-block;
+    }
+
+    .result-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-bottom: 25px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
     }
 
     .result-item {
-        background: var(--surface, #ffffff);
-        border: 2px solid var(--border, #e0e0e0);
+        background: var(--background, #f8f9fa);
         border-radius: 8px;
-        padding: 20px;
+        padding: 12px;
+        text-align: center;
     }
 
     .result-item .label {
-        font-size: 14px;
+        font-size: 12px;
         color: var(--text-secondary, #666666);
-        margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        margin-bottom: 5px;
     }
 
     .result-item .value {
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
         color: var(--text-primary, #2c3e50);
     }
 
-    .explanation-box {
-        background: var(--surface, #ffffff);
-        border-radius: 8px;
-        padding: 25px;
-        border-left: 4px solid var(--accent, #3498db);
-        margin-top: 25px;
-    }
-
-    .explanation-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
-        font-weight: 600;
-        color: var(--text-primary, #2c3e50);
-        font-size: 18px;
-    }
-
     .explanation-content {
+        background: var(--background, #f8f9fa);
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 14px;
         color: var(--text-primary, #2c3e50);
-        line-height: 1.7;
+        border-left: 3px solid var(--accent, #3498db);
+    }
+
+    .combustion-equation {
+        background: var(--background, #f8f9fa);
+        border-radius: 8px;
+        padding: 12px;
+        margin: 15px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 16px;
+        text-align: center;
+        border: 1px solid var(--border, #e0e0e0);
     }
 
     .hydrocarbon-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        font-size: 12px;
+    }
+
+    .hydrocarbon-table th,
+    .hydrocarbon-table td {
+        padding: 8px 4px;
+        border: 1px solid var(--border, #e0e0e0);
+        text-align: center;
+        color: var(--text-primary, #2c3e50);
     }
 
     .hydrocarbon-table th {
-        background: var(--background, #f8f9fa);
-        padding: 12px;
-        text-align: left;
+        background: var(--accent, #3498db);
+        color: white;
         font-weight: 600;
-        color: var(--text-primary, #2c3e50);
-        border-bottom: 2px solid var(--border, #e0e0e0);
-    }
-
-    .hydrocarbon-table td {
-        padding: 12px;
-        border-bottom: 1px solid var(--border, #e0e0e0);
-        color: var(--text-primary, #2c3e50);
     }
 
     .hydrocarbon-table tr:hover {
         background: var(--background, #f8f9fa);
     }
 
-    .combustion-equation {
-        background: var(--background, #f8f9fa);
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 25px;
-        font-family: 'Courier New', monospace;
-        font-size: 20px;
-        text-align: center;
-        border: 1px solid var(--border, #e0e0e0);
+    .table-responsive {
+        overflow-x: auto;
     }
 
     .formula-input {
@@ -483,11 +454,11 @@
 <script>
     // Данные по углеводородам
     const hydrocarbonData = {
-        alkane: { formula: "CnH2n+2", name: "Алканы", class: "alkane" },
-        alkene: { formula: "CnH2n", name: "Алкены", class: "alkene" },
-        alkyne: { formula: "CnH2n-2", name: "Алкины", class: "alkyne" },
-        cycloalkane: { formula: "CnH2n", name: "Циклоалканы", class: "cycloalkane" },
-        arena: { formula: "CnH2n-6", name: "Арены", class: "arena" }
+        alkane: { formula: "CₙH₂ₙ₊₂", name: "Алканы", class: "alkane" },
+        alkene: { formula: "CₙH₂ₙ", name: "Алкены", class: "alkene" },
+        alkyne: { formula: "CₙH₂ₙ₋₂", name: "Алкины", class: "alkyne" },
+        cycloalkane: { formula: "CₙH₂ₙ", name: "Циклоалканы", class: "cycloalkane" },
+        arena: { formula: "CₙH₂ₙ₋₆", name: "Арены", class: "arena" }
     };
 
     const carbonNames = [
@@ -495,166 +466,223 @@
         "Ундекан", "Додекан", "Тридекан", "Тетрадекан", "Пентадекан", "Гексадекан", "Гептадекан", "Октадекан", "Нонадекан", "Эйкозан"
     ];
 
+    // Форматирование с индексами
+    function formatWithIndices(str) {
+        return str.replace(/(\d+)/g, function(m) {
+            return m.split('').map(d => '₀₁₂₃₄₅₆₇₈₉'[parseInt(d)]).join('');
+        });
+    }
+
     // Обработчики для примеров
     document.querySelectorAll('.example-tag').forEach(tag => {
         tag.addEventListener('click', function() {
-            document.getElementById('formulaInput').value = this.dataset.formula;
-            analyzeFormula();
+            let formula = this.getAttribute('data-formula');
+            formula = formula.replace(/[₀₁₂₃₄₅₆₇₈₉]/g, m => {
+                const map = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
+                return map[m];
+            });
+            document.getElementById('formulaInput').value = formula;
+            // НЕ ВЫЗЫВАЕМ analyzeFormula() автоматически, пусть юзер жмет кнопку
         });
     });
 
-    // Обработчики для типа углеводорода
+    // Переключение типа - ТОЛЬКО меняем активный класс, НЕ вызываем generateFormula()
     document.querySelectorAll('.type-option').forEach(option => {
         option.addEventListener('click', function() {
             document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
-            generateFormula();
+            // Убираем авто-генерацию. Только меняем тип, результат не показываем
+            // Чтобы юзер потом нажал "Сгенерировать формулу"
         });
     });
 
+    function updateCarbonValue() {
+        const val = document.getElementById('carbonRange').value;
+        document.getElementById('carbonCount').value = val;
+        // НЕ вызываем generateFormula() автоматически
+    }
+
     function analyzeFormula() {
-        const formula = document.getElementById('formulaInput').value.trim().toUpperCase();
-        if (!formula) return;
+        let formula = document.getElementById('formulaInput').value.trim().toUpperCase();
+        if (!formula) {
+            showError('Введите формулу, блядь!');
+            return;
+        }
+
+        // Конвертируем индексы
+        formula = formula.replace(/[₀₁₂₃₄₅₆₇₈₉]/g, m => {
+            const map = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
+            return map[m];
+        });
 
         const match = formula.match(/^C(\d*)H(\d*)$/);
         if (!match) {
-            showError('Неверный формат формулы. Используйте формат CxHy (например: C5H12)');
+            showError('Неверный формат. Используйте CxHy (например: C5H12)');
             return;
         }
 
         const c = match[1] ? parseInt(match[1]) : 1;
         const h = match[2] ? parseInt(match[2]) : 4;
 
-        let type, name, generalFormula;
+        let type, name, generalFormula, explanation;
 
         if (h === 2 * c + 2) {
             type = 'alkane';
-            name = carbonNames[c] || `Алкан (${c} атомов углерода)`;
-            generalFormula = 'CnH2n+2';
+            name = carbonNames[c] || `Алкан C${c}H${h}`;
+            generalFormula = 'CₙH₂ₙ₊₂';
+            explanation = `Алканы - предельные углеводороды с общей формулой ${generalFormula}. При n=${c} получается ${name.toLowerCase()}. Все связи одинарные, sp³-гибридизация.`;
         } else if (h === 2 * c) {
-            type = 'alkene';
-            name = carbonNames[c] ? carbonNames[c].replace('ан', 'ен') : `Алкен (${c} атомов углерода)`;
-            generalFormula = 'CnH2n';
+            if (c >= 3 && c <= 10) {
+                type = 'cycloalkane';
+                name = c === 3 ? 'Циклопропан' : (c === 4 ? 'Циклобутан' : (c === 5 ? 'Циклопентан' : (c === 6 ? 'Циклогексан' : `Цикло${carbonNames[c]?.toLowerCase().replace('ан', 'ан') || 'алкан'}`)));
+                generalFormula = 'CₙH₂ₙ';
+                explanation = `Циклоалканы - циклические насыщенные углеводороды с общей формулой ${generalFormula}. При n=${c} получается ${name.toLowerCase()}.`;
+            } else {
+                type = 'alkene';
+                name = carbonNames[c] ? carbonNames[c].replace('ан', 'ен') : `Алкен C${c}H${h}`;
+                generalFormula = 'CₙH₂ₙ';
+                explanation = `Алкены - непредельные углеводороды с одной двойной связью, общая формула ${generalFormula}. При n=${c} получается ${name.toLowerCase()}. sp²-гибридизация.`;
+            }
         } else if (h === 2 * c - 2) {
             type = 'alkyne';
-            name = carbonNames[c] ? carbonNames[c].replace('ан', 'ин') : `Алкин (${c} атомов углерода)`;
-            generalFormula = 'CnH2n-2';
+            name = carbonNames[c] ? carbonNames[c].replace('ан', 'ин') : `Алкин C${c}H${h}`;
+            generalFormula = 'CₙH₂ₙ₋₂';
+            explanation = `Алкины - непредельные углеводороды с одной тройной связью, общая формула ${generalFormula}. При n=${c} получается ${name.toLowerCase()}. sp-гибридизация.`;
         } else if (c === 6 && h === 6) {
             type = 'arena';
             name = 'Бензол';
-            generalFormula = 'CnH2n-6';
+            generalFormula = 'CₙH₂ₙ₋₆';
+            explanation = 'Бензол C₆H₆ - простейший ароматический углеводород.';
+        } else if (h === 2 * c - 6 && c > 6) {
+            type = 'arena';
+            const arenaNames = {7:'Толуол',8:'Ксилол',9:'Триметилбензол',10:'Тетраметилбензол'};
+            name = arenaNames[c] || `C${c}H${h} (арен)`;
+            generalFormula = 'CₙH₂ₙ₋₆';
+            explanation = `Арены - ароматические углеводороды с общей формулой ${generalFormula}. При n=${c} получается ${name.toLowerCase()}.`;
         } else {
-            showError('Не удалось определить тип углеводорода для данной формулы');
+            showError(`Не удалось определить тип для C${c}H${h}`);
             return;
         }
 
-        const molarMass = (c * 12.01 + h * 1.008).toFixed(2);
+        const molarMass = (c * 12.011 + h * 1.008).toFixed(2);
 
-        // Отображаем результаты
-        document.getElementById('formulaDisplay').textContent = formula.replace(/(\d+)/g, '$1');
-        document.getElementById('hydrocarbonClass').textContent = hydrocarbonData[type].name;
-        document.getElementById('hydrocarbonClass').className = `hydrocarbon-class ${type}`;
-        document.getElementById('iupacName').textContent = name;
-        document.getElementById('molecularFormula').textContent = formula;
-        document.getElementById('generalFormula').textContent = generalFormula;
-        document.getElementById('molarMass').textContent = `${molarMass} г/моль`;
-        document.getElementById('formulaExplanation').textContent = 
-            `Формула ${formula} соответствует ${hydrocarbonData[type].name.toLowerCase()} с общей формулой ${generalFormula}. При n=${c} получаем ${name.toLowerCase()}.`;
+        document.getElementById('hydrocarbonClassAlkane').innerHTML = hydrocarbonData[type].name;
+        document.getElementById('iupacName').innerHTML = name;
+        document.getElementById('generalFormula').innerHTML = generalFormula;
+        document.getElementById('molarMass').innerHTML = `${molarMass} г/моль`;
+        document.getElementById('formulaExplanation').innerHTML = explanation;
 
         document.getElementById('formulaResult').style.display = 'block';
         document.getElementById('formulaError').style.display = 'none';
+
+        // Прокрутка к результату
+        document.getElementById('formulaResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function generateFormula() {
         const type = document.querySelector('.type-option.active').dataset.type;
-        const n = parseInt(document.getElementById('carbonCount').value);
+        let n = parseInt(document.getElementById('carbonCount').value);
 
-        if (n < 1 || n > 30) {
-            showError('Количество атомов углерода должно быть от 1 до 30');
+        if (n < 1) n = 1;
+        if (n > 30) n = 30;
+        document.getElementById('carbonRange').value = n;
+        document.getElementById('carbonCount').value = n;
+
+        let h;
+        switch (type) {
+            case 'alkane': h = 2 * n + 2; break;
+            case 'alkene': h = 2 * n; break;
+            case 'alkyne': h = 2 * n - 2; break;
+            case 'cycloalkane': h = 2 * n; break;
+            case 'arena': h = 2 * n - 6; break;
+            default: return;
+        }
+
+        if (h <= 0) {
+            showError('Невозможно сгенерировать формулу для таких параметров');
             return;
         }
 
-        const data = hydrocarbonData[type];
-        let h;
+        const formula = `C${n}H${h}`;
+        let name;
 
         switch (type) {
-            case 'alkane':
-                h = 2 * n + 2;
-                break;
-            case 'alkene':
+            case 'alkane': name = carbonNames[n] || `C${n}H${h}`; break;
+            case 'alkene': name = carbonNames[n] ? carbonNames[n].replace('ан', 'ен') : `C${n}H${h}`; break;
+            case 'alkyne': name = carbonNames[n] ? carbonNames[n].replace('ан', 'ин') : `C${n}H${h}`; break;
             case 'cycloalkane':
-                h = 2 * n;
-                break;
-            case 'alkyne':
-                h = 2 * n - 2;
+                if (n === 3) name = 'Циклопропан';
+                else if (n === 4) name = 'Циклобутан';
+                else if (n === 5) name = 'Циклопентан';
+                else if (n === 6) name = 'Циклогексан';
+                else if (n > 6) name = `Цикло${carbonNames[n]?.toLowerCase().replace('ан', 'ан') || 'алкан'}`;
+                else name = 'не существует';
                 break;
             case 'arena':
-                h = 2 * n - 6;
+                if (n === 6) name = 'Бензол';
+                else if (n === 7) name = 'Толуол';
+                else if (n === 8) name = 'Ксилол';
+                else if (n === 9) name = 'Триметилбензол';
+                else if (n === 10) name = 'Тетраметилбензол';
+                else name = `C${n}H${h}`;
                 break;
         }
 
-        const formula = `C${n}H${h}`;
-        let name = carbonNames[n] || `${data.name} (${n} атомов углерода)`;
+        document.getElementById('generatedFormulaDisplay').innerHTML = formatWithIndices(formula);
+        document.getElementById('generatedType').innerHTML = hydrocarbonData[type].name;
+        document.getElementById('generalFormulaDisplay').innerHTML = hydrocarbonData[type].formula;
+        document.getElementById('generatedName').innerHTML = name;
+        document.getElementById('generationExplanation').innerHTML = `${hydrocarbonData[type].name} - ${hydrocarbonData[type].formula}. При n=${n}: ${formula} (${name.toLowerCase()}).`;
 
-        if (type === 'alkene' && carbonNames[n]) {
-            name = carbonNames[n].replace('ан', 'ен');
-        } else if (type === 'alkyne' && carbonNames[n]) {
-            name = carbonNames[n].replace('ан', 'ин');
-        } else if (type === 'arena' && n === 6) {
-            name = 'Бензол';
-        }
-
-        // Отображаем результаты
-        document.getElementById('generatedFormulaDisplay').textContent = formula;
-        document.getElementById('generatedType').textContent = data.name;
-        document.getElementById('generalFormulaDisplay').textContent = data.formula;
-        document.getElementById('nValue').textContent = n;
-        document.getElementById('specificFormula').textContent = formula;
-        document.getElementById('generatedName').textContent = name;
-        document.getElementById('generationExplanation').textContent = 
-            `${data.name} - ${data.name.toLowerCase()} с общей формулой ${data.formula}. При n=${n} получаем ${name.toLowerCase()}.`;
+        // Прячем уравнение горения при новой генерации
+        document.getElementById('combustionEquation').style.display = 'none';
 
         document.getElementById('generationResult').style.display = 'block';
         document.getElementById('formulaError').style.display = 'none';
+
+        // Прокрутка к результату
+        document.getElementById('generationResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function generateCombustionEquation() {
+        // Сначала генерируем формулу, если её еще нет
         const type = document.querySelector('.type-option.active').dataset.type;
-        const n = parseInt(document.getElementById('carbonCount').value);
+        let n = parseInt(document.getElementById('carbonCount').value);
 
         let h;
         switch (type) {
-            case 'alkane':
-                h = 2 * n + 2;
-                break;
-            case 'alkene':
-            case 'cycloalkane':
-                h = 2 * n;
-                break;
-            case 'alkyne':
-                h = 2 * n - 2;
-                break;
-            case 'arena':
-                h = 2 * n - 6;
-                break;
+            case 'alkane': h = 2 * n + 2; break;
+            case 'alkene': h = 2 * n; break;
+            case 'alkyne': h = 2 * n - 2; break;
+            case 'cycloalkane': h = 2 * n; break;
+            case 'arena': h = 2 * n - 6; break;
+            default: return;
+        }
+
+        if (h <= 0) {
+            showError('Невозможно составить уравнение горения');
+            return;
         }
 
         const formula = `C${n}H${h}`;
-        const o2 = (n + h/4);
-        const co2 = n;
-        const h2o = h/2;
+        const o2 = (n + h/4).toFixed(1);
+        const equation = `${formatWithIndices(formula)} + ${o2}O₂ → ${n}CO₂ + ${h/2}H₂O`;
 
-        const equation = `${formula} + ${o2}O₂ → ${co2}CO₂ + ${h2o}H₂O`;
-        document.getElementById('combustionEquation').textContent = equation;
-        document.getElementById('combustionEquation').style.display = 'block';
+        const eqDiv = document.getElementById('combustionEquation');
+        eqDiv.innerHTML = equation;
+        eqDiv.style.display = 'block';
+
+        // Показываем результат генерации, если скрыт
+        document.getElementById('generationResult').style.display = 'block';
+        eqDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function clearFormula() {
         document.getElementById('formulaInput').value = '';
         document.getElementById('formulaResult').style.display = 'none';
         document.getElementById('generationResult').style.display = 'none';
-        document.getElementById('combustionEquation').style.display = 'none';
         document.getElementById('formulaError').style.display = 'none';
+        document.getElementById('combustionEquation').style.display = 'none';
     }
 
     function showError(message) {
@@ -664,9 +692,18 @@
         document.getElementById('generationResult').style.display = 'none';
     }
 
-    // Инициализация при загрузке
+    // Инициализация - НЕ вызываем generateFormula() при загрузке
     document.addEventListener('DOMContentLoaded', function() {
-        generateFormula();
+        // Ничего не генерируем автоматически. Ждем действий пользователя.
+
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const html = document.documentElement;
+                const current = html.getAttribute('data-theme');
+                html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+            });
+        }
     });
 </script>
 {% endblock %}

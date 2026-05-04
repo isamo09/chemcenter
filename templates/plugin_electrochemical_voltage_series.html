@@ -27,17 +27,29 @@
 {% block content %}
 <div class="plugin-container">
     <main class="main-content">
-        <!-- Информационная секция -->
         <div class="info-section">
             <h2>Электрохимический ряд напряжений</h2>
             <p>Электрохимический ряд напряжений — это список металлов, расположенных в порядке убывания их электрохимической активности.</p>
             <p>Металлы, стоящие левее водорода, вытесняют водород из кислот, а металлы, стоящие правее, — не вытесняют.</p>
         </div>
 
-        <!-- Фильтры и поиск -->
+        <!-- Полоса -->
+        <div id="voltageBarPlaceholder"></div>
+
+        <!-- Модальное окно -->
+        <div id="metalModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalMetalName">Металл</h2>
+                    <button class="modal-close" onclick="closeMetalModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modalMetalContent"></div>
+            </div>
+        </div>
+
         <div class="form">
             <h2><i class="fas fa-filter"></i> Фильтры и поиск</h2>
-            
+
             <div class="form-group">
                 <label for="metalSearch">Поиск металла:</label>
                 <input type="text" id="metalSearch" class="form-control" placeholder="Введите название или символ металла...">
@@ -58,49 +70,40 @@
                 <select id="compareSelect" class="form-control">
                     <option value="">Выберите металл для сравнения</option>
                 </select>
-                <button type="button" class="btn" onclick="compareMetals()">
+                <button type="button" class="btn" onclick="window.compareMetals()">
                     <i class="fas fa-balance-scale"></i> Сравнить
                 </button>
             </div>
         </div>
 
-        <!-- Результат сравнения -->
         <div id="comparisonResult" class="info-section" style="display: none;">
             <h3><i class="fas fa-balance-scale"></i> Результат сравнения</h3>
             <div id="comparisonContent"></div>
         </div>
 
-        <!-- Ряд напряжений -->
         <div class="info-section">
             <h3><i class="fas fa-bolt"></i> Электрохимический ряд напряжений</h3>
-            <div class="voltage-series" id="voltageSeries">
-                <!-- Металлы будут добавлены через JavaScript -->
-            </div>
+            <div id="voltageSeries"></div>
         </div>
 
-        <!-- Справочная информация -->
         <div class="info-section">
             <h3><i class="fas fa-info-circle"></i> Справочная информация</h3>
-            
             <div class="info-grid">
                 <div class="info-card">
                     <h4><i class="fas fa-arrow-left"></i> Активные металлы</h4>
                     <p>Наиболее активные металлы (Li, K, Ca, Na, Mg, Al). Легко вступают в реакции, вытесняют другие металлы из растворов.</p>
                 </div>
-                
                 <div class="info-card">
                     <h4><i class="fas fa-equals"></i> Металлы средней активности</h4>
                     <p>Металлы средней активности (Zn, Fe, Pb, H). Вытесняют менее активные металлы, но не вытесняют водород из воды.</p>
                 </div>
-                
                 <div class="info-card">
                     <h4><i class="fas fa-arrow-right"></i> Благородные металлы</h4>
                     <p>Наименее активные металлы (Cu, Ag, Hg, Pt, Au). Не вытесняют водород из кислот, устойчивы к коррозии.</p>
                 </div>
             </div>
-
             <div class="rules-section">
-                <h4>Основные правила электрохимического ряда:</h4>
+                <h4>Основные правила:</h4>
                 <ul>
                     <li>Каждый металл вытесняет из солей те металлы, которые стоят правее его в ряду</li>
                     <li>Металлы, стоящие левее водорода, вытесняют водород из кислот</li>
@@ -158,7 +161,6 @@
         border-left: 4px solid;
         transition: all 0.3s;
         cursor: pointer;
-        position: relative;
     }
 
     .metal-card:hover {
@@ -350,12 +352,127 @@
         background: rgba(243, 156, 18, 0.2);
         color: #f39c12;
     }
+
+    /* Стили для полосы */
+    .voltage-bar-container {
+        background: var(--surface, #ffffff);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        overflow-x: auto;
+    }
+
+    .voltage-bar-element {
+        transition: all 0.2s ease;
+        flex: 1;
+        min-width: 60px;
+        padding: 12px 8px;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .voltage-bar-element:hover {
+        transform: translateY(-5px);
+        opacity: 0.9;
+    }
+
+    /* Модальное окно */
+    .modal {
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        background: var(--surface, #ffffff);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 550px;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    [data-theme="dark"] .modal-content {
+        background: #2d3047;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 2px solid var(--border, #e0e0e0);
+        background: var(--accent, #3498db);
+        color: white;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 36px;
+        cursor: pointer;
+        color: white;
+        transition: all 0.2s;
+        line-height: 1;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+        color: #e74c3c;
+    }
+
+    .modal-body {
+        padding: 25px;
+    }
+
+    @media (max-width: 768px) {
+        .voltage-bar-element {
+            min-width: 45px !important;
+            padding: 8px 4px !important;
+        }
+        .voltage-bar-element div:first-child {
+            font-size: 11px !important;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Электрохимический ряд напряжений
     const electrochemicalSeries = [
         { symbol: 'Li', name: 'Литий', potential: -3.04, activity: 'active', description: 'Щелочной металл' },
         { symbol: 'K', name: 'Калий', potential: -2.93, activity: 'active', description: 'Щелочной металл' },
@@ -377,153 +494,120 @@
     let currentFilter = 'all';
     let selectedMetal = null;
 
-    // Инициализация
-    document.addEventListener('DOMContentLoaded', function() {
-        renderMetalCards();
-        setupEventListeners();
-        populateCompareSelect();
-    });
+    function getColorByPotential(potential) {
+        if (potential < -2) return '#27ae60';
+        if (potential < -1) return '#2ecc71';
+        if (potential < 0) return '#f39c12';
+        if (potential === 0) return '#95a5a6';
+        if (potential < 1) return '#e67e22';
+        return '#e74c3c';
+    }
 
-    function renderMetalCards(filter = 'all', searchTerm = '') {
+    function getBorderColor(activity) {
+        switch(activity) {
+            case 'active': return '#27ae60';
+            case 'medium': return '#f39c12';
+            case 'noble': return '#e74c3c';
+            default: return '#3498db';
+        }
+    }
+
+    function getActivityText(activity) {
+        const texts = { 'active': 'Активный', 'medium': 'Средний', 'noble': 'Благородный' };
+        return texts[activity] || activity;
+    }
+
+    function renderVoltageBar() {
+        const placeholder = document.getElementById('voltageBarPlaceholder');
+        if (!placeholder) return;
+        let barHTML = `<div class="voltage-bar-container"><h3><i class="fas fa-chart-line"></i> Ряд напряжений</h3><div style="display: flex; overflow-x: auto; gap: 2px; padding: 10px 0;">`;
+        for (let metal of electrochemicalSeries) {
+            barHTML += `<div class="voltage-bar-element" data-symbol="${metal.symbol}" style="background: ${getColorByPotential(metal.potential)}; border-bottom: 3px solid ${getBorderColor(metal.activity)};" onclick="selectMetalBySymbol('${metal.symbol}')"><div style="font-weight: bold;">${metal.symbol}</div><div style="font-size: 10px;">${metal.potential.toFixed(2)}В</div></div>`;
+        }
+        barHTML += `</div><div style="display: flex; justify-content: space-between; margin-top: 15px;"><span style="color: #27ae60;">← Активные</span><span style="color: #e74c3c;">Благородные →</span></div></div>`;
+        placeholder.innerHTML = barHTML;
+    }
+
+    function renderMetalCards() {
         const container = document.getElementById('voltageSeries');
+        if (!container) return;
+        const searchTerm = document.getElementById('metalSearch')?.value || '';
+        let filtered = electrochemicalSeries.filter(m => (currentFilter === 'all' || m.activity === currentFilter) && (searchTerm === '' || m.name.toLowerCase().includes(searchTerm.toLowerCase()) || m.symbol.toLowerCase().includes(searchTerm.toLowerCase())));
         container.innerHTML = '';
-
-        let filteredMetals = electrochemicalSeries.filter(metal => {
-            const matchesFilter = filter === 'all' || metal.activity === filter;
-            const matchesSearch = searchTerm === '' || 
-                metal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                metal.symbol.toLowerCase().includes(searchTerm.toLowerCase());
-            return matchesFilter && matchesSearch;
-        });
-
-        filteredMetals.forEach(metal => {
-            const card = createMetalCard(metal);
+        container.className = 'voltage-series';
+        filtered.forEach(metal => {
+            const card = document.createElement('div');
+            card.className = `metal-card ${metal.activity}`;
+            card.setAttribute('data-symbol', metal.symbol);
+            card.onclick = () => selectMetal(metal);
+            card.innerHTML = `<div class="metal-header"><div class="metal-name">${metal.name}</div><div class="metal-symbol">${metal.symbol}</div></div><div class="metal-info"><div class="metal-property"><span class="property-label">Потенциал:</span><span class="property-value">${metal.potential.toFixed(2)} В</span></div><div class="metal-property"><span class="property-label">Активность:</span><span class="activity-badge activity-${metal.activity}">${getActivityText(metal.activity)}</span></div><div class="metal-property"><span class="property-label">Описание:</span><span class="property-value">${metal.description}</span></div></div>`;
             container.appendChild(card);
         });
     }
 
-    function createMetalCard(metal) {
-        const card = document.createElement('div');
-        card.className = `metal-card ${metal.activity}`;
-        card.dataset.symbol = metal.symbol;
-        
-        card.innerHTML = `
-            <div class="metal-header">
-                <div class="metal-name">${metal.name}</div>
-                <div class="metal-symbol">${metal.symbol}</div>
-            </div>
-            <div class="metal-info">
-                <div class="metal-property">
-                    <span class="property-label">Потенциал:</span>
-                    <span class="property-value">${metal.potential.toFixed(2)} В</span>
-                </div>
-                <div class="metal-property">
-                    <span class="property-label">Активность:</span>
-                    <span class="activity-badge activity-${metal.activity}">${getActivityText(metal.activity)}</span>
-                </div>
-                <div class="metal-property">
-                    <span class="property-label">Описание:</span>
-                    <span class="property-value">${metal.description}</span>
-                </div>
-            </div>
-        `;
-
-        card.addEventListener('click', () => selectMetal(metal));
-        return card;
-    }
-
-    function getActivityText(activity) {
-        const texts = {
-            'active': 'Активный',
-            'medium': 'Средний',
-            'noble': 'Благородный'
-        };
-        return texts[activity] || activity;
-    }
-
     function selectMetal(metal) {
-        // Убираем предыдущее выделение
-        document.querySelectorAll('.metal-card').forEach(card => {
-            card.style.background = '';
-        });
-
-        // Выделяем выбранный металл
-        const selectedCard = document.querySelector(`[data-symbol="${metal.symbol}"]`);
-        if (selectedCard) {
-            selectedCard.style.background = 'var(--accent, #3498db)';
-            selectedCard.style.color = 'white';
-        }
-
+        if (!metal) return;
+        document.querySelectorAll('.metal-card').forEach(card => { card.style.background = ''; card.style.color = ''; });
+        const selectedCard = document.querySelector(`.metal-card[data-symbol="${metal.symbol}"]`);
+        if (selectedCard) { selectedCard.style.background = '#3498db'; selectedCard.style.color = 'white'; }
         selectedMetal = metal;
-        document.getElementById('compareSelect').value = metal.symbol;
+        const selectEl = document.getElementById('compareSelect');
+        if (selectEl) selectEl.value = metal.symbol;
+        showMetalModal(metal);
     }
 
-    function setupEventListeners() {
-        // Поиск
-        document.getElementById('metalSearch').addEventListener('input', (e) => {
-            renderMetalCards(currentFilter, e.target.value);
-        });
-
-        // Фильтры
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                renderMetalCards(currentFilter, document.getElementById('metalSearch').value);
-            });
-        });
+    function showMetalModal(metal) {
+        const charge = {'Li':1,'K':1,'Na':1,'Ag':1,'Ca':2,'Mg':2,'Zn':2,'Cu':2,'Hg':2,'Al':3,'Fe':2,'Pb':2,'Pt':2,'Au':3};
+        const chargeVal = charge[metal.symbol] || 1;
+        let chargeSign = chargeVal === 1 ? '⁺' : (chargeVal === 2 ? '²⁺' : '³⁺');
+        const oxidations = { 'Li': '+1', 'K': '+1', 'Ca': '+2', 'Na': '+1', 'Mg': '+2', 'Al': '+3', 'Zn': '+2', 'Fe': '+2,+3', 'Pb': '+2,+4', 'Cu': '+1,+2', 'Ag': '+1', 'Hg': '+1,+2', 'Pt': '+2,+4', 'Au': '+1,+3' };
+        let waterReaction = '';
+        if (metal.symbol === 'Li' || metal.symbol === 'K' || metal.symbol === 'Na') waterReaction = `2${metal.symbol} + 2H₂O → 2${metal.symbol}OH + H₂↑ (бурно)`;
+        else if (metal.symbol === 'Ca') waterReaction = `${metal.symbol} + 2H₂O → ${metal.symbol}(OH)₂ + H₂↑ (умеренно)`;
+        else if (metal.symbol === 'Mg') waterReaction = `${metal.symbol} + 2H₂O → ${metal.symbol}(OH)₂ + H₂↑ (медленно, при нагревании)`;
+        else if (metal.potential < 0 && metal.symbol !== 'H') waterReaction = `${metal.symbol} + H₂O → ${metal.symbol}O + H₂↑ (с паром)`;
+        else waterReaction = 'С холодной водой не реагирует';
+        let acidReaction = (metal.potential < 0 && metal.symbol !== 'H') ? `${metal.symbol} + 2HCl → ${metal.symbol}Cl₂ + H₂↑` : 'Не вытесняет водород из кислот';
+        let potentialColor = getColorByPotential(metal.potential);
+        const modalHtml = `<div><div style="background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px;"><div style="font-size: 11px; text-transform: uppercase; color: #666;">Потенциал</div><div style="font-size: 28px; font-weight: 700;">${metal.potential.toFixed(2)} В<span style="background: ${potentialColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-left: 10px;">${metal.potential < 0 ? 'Восстановитель' : 'Окислитель'}</span></div><div style="font-family: monospace; background: #2a2d3e; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; color: white;">${metal.symbol} ⇌ ${metal.symbol}${chargeSign} + ${chargeVal}e⁻</div></div><div style="background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px;"><div style="font-size: 11px; text-transform: uppercase; color: #666;">Активность</div><div style="font-size: 20px; font-weight: 700;">${getActivityText(metal.activity)} металл</div><ul style="list-style: none; padding: 0; margin-top: 10px;"><li style="padding: 5px 0;">✓ ${metal.potential < -1.5 ? 'Бурно реагирует с водой' : (metal.potential < 0 ? 'Реагирует с кислотами' : 'Не реагирует с водой')}</li><li style="padding: 5px 0;">✓ ${metal.potential < 0 ? 'Вытесняет водород из кислот' : 'Не вытесняет водород'}</li><li style="padding: 5px 0;">✓ ${metal.activity === 'active' ? 'Сильный восстановитель' : (metal.activity === 'noble' ? 'Слабый восстановитель' : 'Средний восстановитель')}</li></ul></div><div style="background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px;"><div style="font-size: 11px; text-transform: uppercase; color: #666;">Степени окисления</div><div style="font-size: 20px; font-weight: 700;">${oxidations[metal.symbol] || 'Переменная'}</div></div><div style="background: #f8f9fa; border-radius: 12px; padding: 15px;"><div style="font-size: 11px; text-transform: uppercase; color: #666;">Реакции</div><div style="font-family: monospace; background: #2a2d3e; padding: 10px; border-radius: 8px; margin-top: 5px; color: white;">${waterReaction}</div><div style="font-family: monospace; background: #2a2d3e; padding: 10px; border-radius: 8px; margin-top: 8px; color: white;">${acidReaction}</div></div></div>`;
+        document.getElementById('modalMetalName').innerHTML = `${metal.name} (${metal.symbol})`;
+        document.getElementById('modalMetalContent').innerHTML = modalHtml;
+        document.getElementById('metalModal').style.display = 'flex';
     }
 
-    function populateCompareSelect() {
-        const select = document.getElementById('compareSelect');
-        electrochemicalSeries.forEach(metal => {
-            const option = document.createElement('option');
-            option.value = metal.symbol;
-            option.textContent = `${metal.name} (${metal.symbol})`;
-            select.appendChild(option);
-        });
-    }
-
-    function compareMetals() {
+    function closeMetalModal() { document.getElementById('metalModal').style.display = 'none'; }
+    window.onclick = function(event) { if (event.target === document.getElementById('metalModal')) closeMetalModal(); };
+    window.selectMetalBySymbol = function(symbol) { const metal = electrochemicalSeries.find(m => m.symbol === symbol); if (metal) selectMetal(metal); };
+    window.compareMetals = function() {
         const compareValue = document.getElementById('compareSelect').value;
-        if (!compareValue || !selectedMetal) {
-            alert('Пожалуйста, выберите металл для сравнения');
-            return;
-        }
-
+        if (!compareValue || !selectedMetal) { alert('Выберите металл для сравнения'); return; }
         const compareMetal = electrochemicalSeries.find(m => m.symbol === compareValue);
         if (!compareMetal) return;
-
-        const comparisonResult = document.getElementById('comparisonResult');
-        const comparisonContent = document.getElementById('comparisonContent');
-
-        // Сравниваем потенциалы
-        const result = selectedMetal.potential < compareMetal.potential ? 'wins' : 
-                      selectedMetal.potential > compareMetal.potential ? 'loses' : 'equal';
-
-        const resultText = result === 'wins' ? 'вытесняет' : 
-                          result === 'loses' ? 'не вытесняет' : 'равноактивен';
-
-        const resultClass = result === 'wins' ? 'comparison-wins' : 
-                          result === 'loses' ? 'comparison-loses' : 'comparison-equal';
-
-        comparisonContent.innerHTML = `
-            <div class="comparison-item">
-                <span class="comparison-metal">${selectedMetal.name} (${selectedMetal.symbol})</span>
-                <span class="comparison-result ${resultClass}">${resultText} ${compareMetal.name} (${compareMetal.symbol})</span>
-            </div>
-            <div class="comparison-item">
-                <span class="comparison-metal">Разница потенциалов:</span>
-                <span class="comparison-result">${Math.abs(selectedMetal.potential - compareMetal.potential).toFixed(2)} В</span>
-            </div>
-            <div class="comparison-item">
-                <span class="comparison-metal">Реакция:</span>
-                <span class="comparison-result">${selectedMetal.symbol} → ${selectedMetal.symbol}⁺ + e⁻</span>
-            </div>
-        `;
-
-        comparisonResult.style.display = 'block';
+        const result = selectedMetal.potential < compareMetal.potential ? 'wins' : (selectedMetal.potential > compareMetal.potential ? 'loses' : 'equal');
+        const resultText = result === 'wins' ? 'вытесняет' : (result === 'loses' ? 'не вытесняет' : 'равноактивен');
+        const resultClass = result === 'wins' ? 'comparison-wins' : (result === 'loses' ? 'comparison-loses' : 'comparison-equal');
+        document.getElementById('comparisonContent').innerHTML = `<div class="comparison-item"><span class="comparison-metal">${selectedMetal.name} (${selectedMetal.symbol})</span><span class="comparison-result ${resultClass}">${resultText} ${compareMetal.name} (${compareMetal.symbol})</span></div><div class="comparison-item"><span class="comparison-metal">Разница потенциалов:</span><span class="comparison-result">${Math.abs(selectedMetal.potential - compareMetal.potential).toFixed(2)} В</span></div>`;
+        document.getElementById('comparisonResult').style.display = 'block';
+    };
+    function setupEventListeners() {
+        const searchInput = document.getElementById('metalSearch');
+        if (searchInput) searchInput.addEventListener('input', () => renderMetalCards());
+        document.querySelectorAll('.filter-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.getAttribute('data-filter'); renderMetalCards(); }); });
     }
+    function populateCompareSelect() {
+        const select = document.getElementById('compareSelect');
+        if (!select) return;
+        select.innerHTML = '<option value="">Выберите металл для сравнения</option>';
+        for (let metal of electrochemicalSeries) { const option = document.createElement('option'); option.value = metal.symbol; option.textContent = `${metal.name} (${metal.symbol})`; select.appendChild(option); }
+    }
+    function initTheme() {
+        const btn = document.getElementById("themeToggle");
+        if (!btn) return;
+        const saved = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", saved);
+        btn.innerHTML = saved === "light" ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        btn.onclick = () => { const cur = document.documentElement.getAttribute("data-theme"); const next = cur === "light" ? "dark" : "light"; document.documentElement.setAttribute("data-theme", next); localStorage.setItem("theme", next); btn.innerHTML = next === "light" ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>'; };
+    }
+    document.addEventListener('DOMContentLoaded', function() { initTheme(); renderVoltageBar(); renderMetalCards(); setupEventListeners(); populateCompareSelect(); if (electrochemicalSeries.length > 0) selectMetal(electrochemicalSeries[0]); });
 </script>
 {% endblock %}
